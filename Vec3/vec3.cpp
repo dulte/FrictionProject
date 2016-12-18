@@ -11,6 +11,13 @@ vec3::vec3()
     componants[1] = 0;
     componants[2] = 0;
 }
+vec3::vec3(double a, double b, double c)
+{
+    componants[0] = a;
+    componants[1] = b;
+    componants[2] = c;
+}
+
 
 vec3 &vec3::operator-=(vec3 rhs)
 {

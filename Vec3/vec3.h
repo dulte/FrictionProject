@@ -5,6 +5,8 @@ class vec3
 {
 public:
     vec3();
+    vec3(double a, double b,double c);
+
 
     double componants[3];
     double &operator()(int index){return componants[index];}

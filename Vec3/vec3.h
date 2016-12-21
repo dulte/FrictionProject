@@ -25,6 +25,10 @@ public:
 
     void print();
 
+    double x() {return componants[0];}
+    double y() {return componants[1];}
+    double z() {return componants[2];}
+
     double lengthSquared();
     double length();
 

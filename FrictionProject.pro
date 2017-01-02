@@ -17,7 +17,13 @@ SOURCES += main.cpp \
     ForceModifier/ConstantForce/constantforce.cpp \
     ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.cpp \
     ForceModifier/SpringFriction/springfriction.cpp \
-    FrictionInfo/frictioninfo.cpp
+    FrictionInfo/frictioninfo.cpp \
+    Lattice/SquareLattice/squarelattice.cpp \
+    Lattice/TriangularLattice/triangularlattice.cpp \
+    DataOutput/datapacket.cpp \
+    DataOutput/datapackethandler.cpp \
+    DataOutput/dumpable.cpp \
+    FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp
 
 
 HEADERS += \
@@ -34,5 +40,13 @@ HEADERS += \
     ForceModifier/ConstantForce/constantforce.h \
     ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.h \
     ForceModifier/SpringFriction/springfriction.h \
-    FrictionInfo/frictioninfo.h
+    FrictionInfo/frictioninfo.h \
+    Lattice/TriangularLattice/triangularlattice.h \
+    DataOutput/datapacket.h \
+    DataOutput/datapackethandler.h \
+    DataOutput/dumpable.h \
+    Lattice/SquareLattice/squarelattice.h \
+    Lattice/TriangularLattice/triangularlattice.h \
+    sidepotentialloading.h \
+    FrictionSystem/SidePotentialLoading/sidepotentialloading.h
 

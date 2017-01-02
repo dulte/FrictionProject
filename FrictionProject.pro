@@ -32,21 +32,5 @@ HEADERS += \
     NodeInfo/nodeinfo.h \
     Vec3/vec3.h \
     LatticeInfo/latticeinfo.h \
-    ForceModifier/forcemodifier.h \
-    ForceModifier/PotentialSurface/potentialsurface.h \
-    ForceModifier/RelativeVelocityDamper/relativevelocitydamper.h \
-    ForceModifier/PotentialPusher/potentialpusher.h \
-    ForceModifier/ConstantMoment/constantmoment.h \
-    ForceModifier/ConstantForce/constantforce.h \
-    ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.h \
-    ForceModifier/SpringFriction/springfriction.h \
-    FrictionInfo/frictioninfo.h \
-    Lattice/TriangularLattice/triangularlattice.h \
-    DataOutput/datapacket.h \
-    DataOutput/datapackethandler.h \
-    DataOutput/dumpable.h \
-    Lattice/SquareLattice/squarelattice.h \
-    Lattice/TriangularLattice/triangularlattice.h \
-    sidepotentialloading.h \
-    FrictionSystem/SidePotentialLoading/sidepotentialloading.h
+    ForceModifier/forcemodifier.h
 

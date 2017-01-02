@@ -1,6 +1,7 @@
 #include "squarelattice.h"
-#include <QDebug>
-#include "NodeConnectionInfo/nodeconnectioninfo.h"
+//#include <QDebug>
+#include "NodeInfo/nodeinfo.h"
+#include "memory.h"
 
 #define pi 3.14159265358979323
 
@@ -33,6 +34,6 @@ void SquareLattice::populate(int nx, int ny, double d, double E, double nu, doub
                 node->connectToNode(node2);
             }
         }
-        qDebug() << node->numNeighbors();
+//        qDebug() << node->numNeighbors();
     }
 }

@@ -4,6 +4,7 @@
 #include <vector>
 #include "Lattice/lattice.h"
 #include "Node/node.h"
+#include "DataOutput/datapacket.h"
 
 class Node;
 class LatticeInfo;
@@ -25,7 +26,7 @@ public:
     virtual void populate(int nx, int ny, double d, double E, double nu, double hZ, double density) = 0;
     virtual void step(double dt);
     virtual std::string xyzString();
-    //virtual std::vector<DataPacket> getDataPackets(int, double) override = 0;
+    virtual std::vector<DataPacket> getDataPackets(int, double) = 0;
 
 protected:
     double m_t=0; // Simulation time

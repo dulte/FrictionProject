@@ -1,4 +1,6 @@
 #include "sidepotentialloading.h"
+#include <iostream>
+
 
 #include <ForceModifier/ConstantForce/constantforce.h>
 #include <ForceModifier/PotentialSurface/potentialsurface.h>

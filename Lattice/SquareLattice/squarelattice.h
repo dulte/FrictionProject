@@ -2,6 +2,9 @@
 #define SQUARELATTICE_H
 
 #include "Lattice/lattice.h"
+#include "LatticeInfo/latticeinfo.h"
+
+class LatticeInfo;
 
 class SquareLattice : public Lattice
 {

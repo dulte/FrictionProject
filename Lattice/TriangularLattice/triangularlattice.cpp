@@ -1,8 +1,8 @@
 #include "triangularlattice.h"
 #include <math.h>
-#include <QDebug>
+//#include <QDebug>
 #include <sstream>
-#include "NodeConnectionInfo/nodeconnectioninfo.h"
+#include "NodeInfo/nodeinfo.h"
 
 
 

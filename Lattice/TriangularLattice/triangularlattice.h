@@ -5,6 +5,9 @@
 #include "Lattice/lattice.h"
 #include "DataOutput/dumpable.h"
 #include "Node/node.h"
+#include "LatticeInfo/latticeinfo.h"
+
+class LatticeInfo;
 
 class TriangularLattice : public Lattice
 {

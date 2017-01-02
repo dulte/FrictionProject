@@ -23,28 +23,28 @@ int main(int argc, char *argv[])
 {
 
     clock_t start = clock();
-    std::ofstream myStream("/media/henrik/IcyBox/friction/sandbox/out.xyz",std::ofstream::out);
+    std::ofstream myStream("out.xyz",std::ofstream::out);
 
     int nx = 57;
     int ny = 31;
 
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, 1920);
-    DataPacketHandler dataPacketHandler("/Users/henriksveinsson/sandbox");
+    DataPacketHandler dataPacketHandler("/Output");
     int nt = 1000;
 
-    mySystem.isLockFrictionSprings(true);
+    mySystem.isLockFrictionSprings(false);
     for (int i = 0; i<nt; i++)
     {
         mySystem.lattice->step(1e-7);
         if (i%100 == 0)
         {
-            //myStream << mySystem.lattice->xyzString();
-            //mySystem.dumpData();
+            myStream << mySystem.lattice->xyzString();
+            mySystem.dumpData();
             std::cout << static_cast<double>(i)/nt << std::endl;
             dataPacketHandler.step(mySystem.getDataPackets(i, i*1e-7));
         }
     }
-    mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
+//    mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
     nt = 1000;
     for (int i = 0; i<nt; i++)
@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
         mySystem.lattice->step(1e-7);
         if (i%100 == 0)
         {
-            //myStream << mySystem.lattice->xyzString();
+            myStream << mySystem.lattice->xyzString();
             std::cout << static_cast<double>(i)/nt << std::endl;
             dataPacketHandler.step(mySystem.getDataPackets(i, i*1e-7));
         }

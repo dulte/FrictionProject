@@ -23,7 +23,8 @@ SOURCES += main.cpp \
     DataOutput/datapacket.cpp \
     DataOutput/datapackethandler.cpp \
     DataOutput/dumpable.cpp \
-    FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp
+    FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp \
+    InputManagement/ConfigReader/configreader.cpp
 
 
 HEADERS += \
@@ -32,5 +33,6 @@ HEADERS += \
     NodeInfo/nodeinfo.h \
     Vec3/vec3.h \
     LatticeInfo/latticeinfo.h \
-    ForceModifier/forcemodifier.h
+    ForceModifier/forcemodifier.h \
+    InputManagement/ConfigReader/configreader.h
 

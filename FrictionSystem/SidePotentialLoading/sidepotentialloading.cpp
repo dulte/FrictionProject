@@ -12,7 +12,7 @@
 
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
-    std::string outFileFolder = "/media/henrik/IcyBox/friction/sandbox/";
+    std::string outFileFolder = "/Output";
     outfile.open(outFileFolder+std::string("testnumsprings.bin"));
     outfileNormalForces.open(outFileFolder+std::string("normalforces.bin"));
     outfilePusherForces.open(outFileFolder+std::string("pusherforces.bin"));
@@ -89,7 +89,7 @@ void SidePotentialLoading::dumpData()
     for (auto & frictionElement : frictionElements)
     {
         double numSprings = frictionElement->m_numSpringsAttached;
-        //std::cout << numSprings << std::endl;
+//        std::cout << numSprings << std::endl;
         outfile.write((char*)&numSprings, sizeof(double));
         outfileNormalForces.write((char*)&frictionElement->m_normalForce, sizeof(double));
 

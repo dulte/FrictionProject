@@ -68,9 +68,10 @@ void Node::updateForcesAndMoments(){
 
             if (phi_ij + phi_ji > pi)
             {
-                cout << "Something went wrong, and block i deformed" << endl;
-                cout << phi_ij+phi_ji << endl;
-                exit(1);
+//                cout << "Something went wrong, and block i deformed" << endl;
+//                cout << phi_ij+phi_ji << endl;
+//                exit(1);
+//                m_r.print();
             }
 
 

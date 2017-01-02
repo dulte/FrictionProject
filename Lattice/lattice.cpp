@@ -2,6 +2,7 @@
 #include <sstream>
 #include <omp.h>
 #include <cmath>
+#include <iostream>
 
 Lattice::Lattice()
 {
@@ -21,8 +22,10 @@ std::string Lattice::xyzString()
     {
         vec3 r = node->r()+node->r_offset();
         double phi = node->phi();
-        xyz << "C " << r[0] << " " << r[1] << " " << r[2] << " " << cos(phi) << " " << sin(phi) << " " << 0 << "\n";
+        xyz  << r[0] << " " << r[1] << " " << r[2] << " " << cos(phi) << " " << sin(phi) << " " << 0 << "\n";
     }
+
+//    std::cout << xyz.str() << endl;
     return xyz.str();
 }
 

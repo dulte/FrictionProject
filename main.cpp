@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
     int ny = int(input->get("ny"));
     int writingFreq = int(input->get("writingFreq"));
 
-    SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, 392000);
+    SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
     DataPacketHandler dataPacketHandler("/Output");
     int nt = int(input->get("nt"));
 

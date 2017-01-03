@@ -1,9 +1,10 @@
 nx 57
 ny 31
-writingFreq 100
-nt 20000
+writingFreq 1000
+nt 2e5
+releaseTime 2e5
 fn 1920
-ns 10
+ns 50
 tau 0.002
 d 0.005
 E 3e9
@@ -11,11 +12,11 @@ k 4e6
 nu 0.33
 hZ 0.006
 density 1300
-
+step 5e-7
 
 #Pusher
-vD 0
-pK 4e8
+vD 4e-2
+pK 4e5
 xInit 
 tInit
 

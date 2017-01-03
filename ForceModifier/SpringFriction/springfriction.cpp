@@ -1,6 +1,7 @@
 #include "springfriction.h"
 #include "Node/node.h"
 #include <math.h>
+#include <omp.h>
 
 std::random_device SpringFriction::rd;
 thread_local std::mt19937 SpringFriction::gen(SpringFriction::rd());
@@ -33,6 +34,8 @@ vec3 SpringFriction::getForceModification()
     vec3 offsetVector = neighbor->r()-m_node->r();
     vec3 resultantForce(0, 0, 0);
     m_normalForce = 0;
+
+#pragma omp parallel for
     for (int i = 0; i<m_ns; i++)
     {
         vec3 springPositionOnNode = m_node->r()+offsetVector*(i+0.5)/m_ns*m_coverage;

@@ -35,10 +35,10 @@ int main(int argc, char *argv[])
     DataPacketHandler dataPacketHandler("Output/");
     int nt = int(input->get("nt"));
 
-    mySystem.isLockFrictionSprings(false);
+    mySystem.isLockFrictionSprings(true);
     for (int i = 0; i<nt; i++)
     {
-        mySystem.lattice->step(1e-7);
+        mySystem.lattice->step(input->get("step"));
         if (i%writingFreq == 0)
         {
             myStream << mySystem.lattice->xyzString();
@@ -52,10 +52,11 @@ int main(int argc, char *argv[])
     //nt = 2000;
     for (int i = 0; i<nt; i++)
     {
-        mySystem.lattice->step(1e-7);
+        mySystem.lattice->step(input->get("step"));
         if (i%writingFreq == 0)
         {
             myStream << mySystem.lattice->xyzString();
+            mySystem.dumpData();
             std::cout << static_cast<double>(i)/nt << std::endl;
             dataPacketHandler.step(mySystem.getDataPackets(i, i*1e-7));
         }

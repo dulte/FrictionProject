@@ -87,3 +87,10 @@ vec3 SpringFriction::getForceModification()
     }
     return resultantForce;
 }
+
+std::vector<DataPacket> SpringFriction::getDataPackets(int timestep, double time)
+{
+    std::vector<DataPacket> packetvec = std::vector<DataPacket>();
+    packetvec.push_back(m_numSpringsAttached)
+    return packetvec;
+}

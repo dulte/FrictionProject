@@ -2,7 +2,6 @@
 #include "Vec3/vec3.h"
 #include <memory>
 
-
 class Node;
 
 class ForceModifier

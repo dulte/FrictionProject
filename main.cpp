@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     int writingFreq = int(input->get("writingFreq"));
 
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
-    DataPacketHandler dataPacketHandler("");
+    DataPacketHandler dataPacketHandler("Output/");
     int nt = int(input->get("nt"));
 
     mySystem.isLockFrictionSprings(false);

@@ -139,13 +139,20 @@ void TriangularLattice::populateCantilever(double d, double E, double nu, double
 std::vector<DataPacket> TriangularLattice::getDataPackets(int timestep, double time)
 {
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
+
     DataPacket position_interface_packet = DataPacket(DataPacket::dataId::NODE_POSITION_INTERFACE, timestep, time);
+    DataPacket velocity_interface_packet = DataPacket(DataPacket::dataId::NODE_VELOCITY_INTERFACE, timestep, time);
+    DataPacket num_springs_attached_interface_packet = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
     for (std::shared_ptr<Node> node : bottomNodes)
     {
         position_interface_packet.push_back(node->r().x());
         position_interface_packet.push_back(node->r().y());
+
+        velocity_interface_packet.push_back(node->v().x());
+        velocity_interface_packet.push_back(node->v().y());
     }
     packetvec.push_back(position_interface_packet);
+    packetvec.push_back(velocity_interface_packet);
     return packetvec;
 }
 

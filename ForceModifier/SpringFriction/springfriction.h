@@ -3,10 +3,11 @@
 #include <vector>
 #include "ForceModifier/forcemodifier.h"
 #include "FrictionInfo/frictioninfo.h"
+#include "DataOutput/dumpable.h"
 #include <random>
 
 
-class SpringFriction : public ForceModifier
+class SpringFriction : public ForceModifier, public Dumpable
 {
 public:
     SpringFriction(std::shared_ptr<FrictionInfo>);
@@ -37,4 +38,5 @@ public:
     static thread_local std::mt19937 gen;
 
     std::shared_ptr<FrictionInfo> m_frictionInfo;
+    virtual std::vector<DataPacket> getDataPackets(int timestep, double time) override;
 };

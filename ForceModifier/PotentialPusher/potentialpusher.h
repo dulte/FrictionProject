@@ -2,6 +2,7 @@
 
 #include "ForceModifier/forcemodifier.h"
 #include "Vec3/vec3.h"
+#include "InputManagement/ConfigReader/configreader.h"
 
 class PotentialPusher: public ForceModifier
 {
@@ -14,5 +15,7 @@ protected:
     double m_vD = 0;
     double m_xInit = 0;
     double m_tInit = 0;
+
+     ConfigReader *input = new ConfigReader("config.txt");
 };
 

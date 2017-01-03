@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     int writingFreq = int(input->get("writingFreq"));
 
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
-    DataPacketHandler dataPacketHandler("/Output");
+    DataPacketHandler dataPacketHandler("");
     int nt = int(input->get("nt"));
 
     mySystem.isLockFrictionSprings(false);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
             dataPacketHandler.step(mySystem.getDataPackets(i, i*1e-7));
         }
     }
-//    mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
+    mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
     //nt = 2000;
     for (int i = 0; i<nt; i++)

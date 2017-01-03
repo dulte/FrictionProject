@@ -14,9 +14,9 @@
 
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
-    std::string outFileFolder = "/Output";
+    std::string outFileFolder = "";
     outfile.open(outFileFolder+std::string("testnumsprings.bin"));
-    outfileNormalForces.open(outFileFolder+std::string("normalforces.bin"));
+    outfileNormalForces.open(outFileFolder+std::string("normalforces.txt"));
     outfilePusherForces.open(outFileFolder+std::string("pusherforces.bin"));
 
     lattice = std::make_unique<TriangularLattice>();
@@ -94,12 +94,15 @@ void SidePotentialLoading::dumpData()
         double numSprings = frictionElement->m_numSpringsAttached;
 //        std::cout << numSprings << std::endl;
         outfile.write((char*)&numSprings, sizeof(double));
-        outfileNormalForces.write((char*)&frictionElement->m_normalForce, sizeof(double));
+//        outfileNormalForces.write((char*)&frictionElement->m_normalForce, sizeof(double));
+        outfileNormalForces << frictionElement->m_normalForce << " ";
 
     }
+    outfileNormalForces << "\n";
     double pushForce = 0;
     for (auto & pusherNode : pusherNodes)
     {
+
         pushForce += pusherNode->fPush;
     }
     outfilePusherForces.write((char*)&pushForce, sizeof(double));

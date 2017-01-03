@@ -38,5 +38,9 @@ HEADERS += \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.h \
     Lattice/SquareLattice/squarelattice.h \
     Lattice/TriangularLattice/triangularlattice.h \
-    FrictionInfo/frictioninfo.h
+    FrictionInfo/frictioninfo.h \
+    ForceModifier/PotentialPusher/potentialpusher.h \
+    DataOutput/dumpable.h \
+    DataOutput/datapackethandler.h \
+    DataOutput/datapacket.h
 

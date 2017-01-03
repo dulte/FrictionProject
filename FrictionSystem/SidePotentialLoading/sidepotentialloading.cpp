@@ -75,6 +75,7 @@ void SidePotentialLoading::addPusher(double k, double vD, double tInit)
     {
         std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(k, vD, lattice->leftNodes[j]->r().x(), tInit);
         pusherNodes.push_back(myPusher);
+
         lattice->leftNodes[j]->addModifier(std::move(myPusher));
     }
 }
@@ -104,6 +105,7 @@ void SidePotentialLoading::dumpData()
     {
 
         pushForce += pusherNode->fPush;
+
     }
     outfilePusherForces.write((char*)&pushForce, sizeof(double));
 }

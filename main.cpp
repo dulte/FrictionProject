@@ -34,11 +34,12 @@ int main(int argc, char *argv[])
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
     DataPacketHandler dataPacketHandler("Output/");
     int nt = int(input->get("nt"));
+    int step = int(input->get("step"));
 
     mySystem.isLockFrictionSprings(true);
     for (int i = 0; i<nt; i++)
     {
-        mySystem.lattice->step(input->get("step"));
+        mySystem.lattice->step(step);
         if (i%writingFreq == 0)
         {
             myStream << mySystem.lattice->xyzString();
@@ -52,7 +53,7 @@ int main(int argc, char *argv[])
     //nt = 2000;
     for (int i = 0; i<nt; i++)
     {
-        mySystem.lattice->step(input->get("step"));
+        mySystem.lattice->step(step);
         if (i%writingFreq == 0)
         {
             myStream << mySystem.lattice->xyzString();

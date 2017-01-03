@@ -20,6 +20,7 @@ private:
     std::ofstream outfileNodeTotalEnergyAll;
     std::ofstream outfileNodeTotalForceAll;
     std::ofstream outfilePusherForce;
+    std::ofstream outfileNormalForce;
 };
 
 #endif // DATAPACKETHANDLER_H

@@ -113,5 +113,10 @@ void SidePotentialLoading::dumpData()
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)
 {
     std::vector<DataPacket> packets = lattice->getDataPackets(timestep, time);
+
+    for (auto & frictionElement : frictionElements) {
+        std::vector<DataPacket> packet = frictionElement->getDataPackets(timestep, time);
+        packets.insert(packets.end(), packet.begin(), packet.end());
+    }
     return packets;
 }

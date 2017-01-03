@@ -94,6 +94,11 @@ vec3 SpringFriction::getForceModification()
 std::vector<DataPacket> SpringFriction::getDataPackets(int timestep, double time)
 {
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
-    packetvec.push_back(m_numSpringsAttached)
+    DataPacket numberOfSprings = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
+    DataPacket normalForce = DataPacket(DataPacket::dataId::NORMAL_FORCE, timestep, time);
+    numberOfSprings.push_back(m_numSpringsAttached);
+    normalForce.push_back(m_normalForce);
+    packetvec.push_back(numberOfSprings);
+    packetvec.push_back(normalForce);
     return packetvec;
 }

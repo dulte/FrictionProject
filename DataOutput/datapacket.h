@@ -17,6 +17,7 @@ public:
         NODE_TOTAL_ENERGY_ALL,
         NODE_TOTAL_FORCE_ALL,
         PUSHER_FORCE,
+        NORMAL_FORCE
     };
 
     DataPacket(DataPacket::dataId id, int timeStep, double time);

@@ -4,6 +4,7 @@
 #include <memory>
 #include <vector>
 #include "Lattice/TriangularLattice/triangularlattice.h"
+#include "Lattice/SquareLattice/squarelattice.h"
 #include <fstream>
 
 class SpringFriction;

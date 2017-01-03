@@ -5,12 +5,17 @@
 #define pi 3.14159265358979323
 
 LatticeInfo::LatticeInfo(double E, double nu, double d, double hZ)
-    : m_E(E),
-      m_nu(nu),
-      m_hZ(hZ),
-      m_hY(d/2),
-      m_d(d)
+//    : m_E(E),
+//      m_nu(nu),
+//      m_hZ(hZ),
+//      m_hY(d/2),
+//      m_d(d)
 {
+    m_E = input->get("E");
+    m_nu = input->get("nu");
+    m_d = input->get("d");
+    m_hZ = input->get("hZ");
+    m_hY = m_d/2.0;
 
     m_G = m_E/(2*(1+m_nu));
     m_A = m_hZ*m_hY;

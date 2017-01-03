@@ -10,6 +10,8 @@
 #include "ForceModifier/SpringFriction/springfriction.h"
 #include "FrictionInfo/frictioninfo.h"
 
+#include "Lattice/SquareLattice/squarelattice.h"
+
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
     std::string outFileFolder = "/Output";
@@ -23,6 +25,7 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>();
 
     int numTop = lattice->topNodes.size();
+    std::cout << "Top: " << -topLoadingForce/numTop << endl;
     for (int i = 0; i<numTop; i++)
     {
         std::unique_ptr<ConstantForce> myForce = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce/numTop, 0));

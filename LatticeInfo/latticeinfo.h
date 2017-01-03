@@ -1,4 +1,5 @@
 #pragma once
+#include "InputManagement/ConfigReader/configreader.h"
 
 class LatticeInfo
 {
@@ -11,6 +12,8 @@ public:
     double I()  {return m_I;}
     double A, B, C;
 private:
+
+    ConfigReader *input = new ConfigReader("config.txt");
     double m_kappa_s=0;
     double m_kappa_n=0;
     double m_E=0;

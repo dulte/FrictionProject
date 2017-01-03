@@ -12,6 +12,7 @@
 #include "DataOutput/datapackethandler.h"
 #include <memory>
 #include <time.h>
+#include "InputManagement/ConfigReader/configreader.h"
 
 using namespace std;
 
@@ -24,19 +25,21 @@ int main(int argc, char *argv[])
 
     clock_t start = clock();
     std::ofstream myStream("out.xyz",std::ofstream::out);
+    ConfigReader *input = new ConfigReader("config.txt");
 
-    int nx = 57;
-    int ny = 31;
+    int nx = int(input->get("nx"));
+    int ny = int(input->get("ny"));
+    int writingFreq = int(input->get("writingFreq"));
 
-    SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, 1920);
+    SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, 392000);
     DataPacketHandler dataPacketHandler("/Output");
-    int nt = 1000;
+    int nt = int(input->get("nt"));
 
     mySystem.isLockFrictionSprings(false);
     for (int i = 0; i<nt; i++)
     {
         mySystem.lattice->step(1e-7);
-        if (i%100 == 0)
+        if (i%writingFreq == 0)
         {
             myStream << mySystem.lattice->xyzString();
             mySystem.dumpData();
@@ -46,11 +49,11 @@ int main(int argc, char *argv[])
     }
 //    mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
-    nt = 1000;
+    //nt = 2000;
     for (int i = 0; i<nt; i++)
     {
         mySystem.lattice->step(1e-7);
-        if (i%100 == 0)
+        if (i%writingFreq == 0)
         {
             myStream << mySystem.lattice->xyzString();
             std::cout << static_cast<double>(i)/nt << std::endl;

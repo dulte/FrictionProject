@@ -44,14 +44,14 @@ void Node::updateForcesAndMoments(){
             double d0 = neighbor->d0();
 
             double dij = rDiff.length();
-            double phiToNeighbor = atan2(rDiff[0],rDiff[1]);
+            //double phiToNeighbor = atan2(rDiff[0],rDiff[1]);
             double neighborPhi = neighbor->node()->phi();
-            double phiCorrection = neighbor->phiOffset();
+            double phiCorrection = 0;//neighbor->phiOffset();
 
-            if(phiCorrection > pi)
-            {
-                phiCorrection -= 2*pi;
-            }
+//            if(phiCorrection > pi)
+//            {
+//                phiCorrection -= 2*pi;
+//            }
 
             double phi_ij           = phi()+phiCorrection;
             double phi_ji           = neighborPhi+phiCorrection;
@@ -80,8 +80,9 @@ void Node::updateForcesAndMoments(){
             double fs               = -m_latticeInfo->kappa_s()*0.5*(phi_ij + phi_ji);
             double m                = -m_latticeInfo->kappa_s()*dij*(m_latticeInfo->Phi()/12.0*(phi_ij-phi_ji)+0.5*(2.0/3.0*phi_ij+1.0/3.0*phi_ji));
 
+
             m_moment += m;
-            m_f += rDiff/dij*fn + vec3(-rDiff[0], rDiff[1],0)*fs/dij;
+            m_f += rDiff/dij*fn +vec3(-rDiff[0], rDiff[1],0)*fs/dij;
 
 
 
@@ -91,6 +92,7 @@ void Node::updateForcesAndMoments(){
 
     for (auto & modifier : m_modifiers)
     {
+
         m_f += modifier->getForceModification();
         m_moment += modifier->getMomentModification();
     }

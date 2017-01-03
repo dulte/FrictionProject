@@ -37,3 +37,16 @@ void SquareLattice::populate(int nx, int ny, double d, double E, double nu, doub
 //        qDebug() << node->numNeighbors();
     }
 }
+
+std::vector<DataPacket> SquareLattice::getDataPackets(int timestep, double time)
+{
+    std::vector<DataPacket> packetvec = std::vector<DataPacket>();
+    DataPacket position_interface_packet = DataPacket(DataPacket::dataId::NODE_POSITION_INTERFACE, timestep, time);
+    for (std::shared_ptr<Node> node : bottomNodes)
+    {
+        position_interface_packet.push_back(node->r().x());
+        position_interface_packet.push_back(node->r().y());
+    }
+    packetvec.push_back(position_interface_packet);
+    return packetvec;
+}

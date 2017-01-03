@@ -1,4 +1,5 @@
 #pragma once
+#include "InputManagement/ConfigReader/configreader.h"
 
 class FrictionInfo
 {
@@ -13,4 +14,7 @@ public:
     double ns;
     double nx;
     double tau;
+
+private:
+    ConfigReader *input = new ConfigReader("config.txt");
 };

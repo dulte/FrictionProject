@@ -34,5 +34,9 @@ HEADERS += \
     Vec3/vec3.h \
     LatticeInfo/latticeinfo.h \
     ForceModifier/forcemodifier.h \
-    InputManagement/ConfigReader/configreader.h
+    InputManagement/ConfigReader/configreader.h \
+    FrictionSystem/SidePotentialLoading/sidepotentialloading.h \
+    Lattice/SquareLattice/squarelattice.h \
+    Lattice/TriangularLattice/triangularlattice.h \
+    FrictionInfo/frictioninfo.h
 

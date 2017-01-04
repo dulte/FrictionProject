@@ -1,5 +1,6 @@
 #include "potentialpusher.h"
 #include "Node/node.h"
+#include <iostream>
 
 PotentialPusher::PotentialPusher(double k, double vD, double xInit, double tInit)
       :
@@ -16,6 +17,6 @@ PotentialPusher::PotentialPusher(double k, double vD, double xInit, double tInit
 
 vec3 PotentialPusher::getForceModification(){
     fPush = m_k*(m_xInit + m_vD*(m_node->t() - m_tInit) - m_node->r()[0]);
-
+//    std::cout << m_node->t() << endl;
     return vec3(fPush,0,0);
 }

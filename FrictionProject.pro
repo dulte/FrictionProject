@@ -42,5 +42,6 @@ HEADERS += \
     ForceModifier/PotentialPusher/potentialpusher.h \
     DataOutput/dumpable.h \
     DataOutput/datapackethandler.h \
-    DataOutput/datapacket.h
+    DataOutput/datapacket.h \
+    ForceModifier/SpringFriction/springfriction.h
 

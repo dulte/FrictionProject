@@ -21,7 +21,7 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
 
 //    lattice = std::make_unique<TriangularLattice>();
     lattice = std::make_unique<TriangularLatticeWithGrooves>();
-    lattice->setNumberOfGrooves(3);
+    lattice->setNumberOfGrooves(0);
 
     lattice->populate(nx, ny, d, E, 0.33, 0.006, 1300);
 

@@ -103,7 +103,6 @@ void SidePotentialLoading::dumpData()
     double pushForce = 0;
     for (auto & pusherNode : pusherNodes)
     {
-
         pushForce += pusherNode->fPush;
 
     }

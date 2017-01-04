@@ -34,7 +34,9 @@ int main(int argc, char *argv[])
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
     DataPacketHandler dataPacketHandler("Output/");
     int nt = int(input->get("nt"));
-    int step = int(input->get("step"));
+    double step = (input->get("step"));
+
+
 
     mySystem.isLockFrictionSprings(true);
     for (int i = 0; i<nt; i++)

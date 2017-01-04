@@ -66,7 +66,7 @@ void DataPacketHandler::step(std::vector<DataPacket> packets)
             //std::cout << "Writing normal force" << std::endl;
             outfiles[8]->write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
             break;
-        case default:
+        default:
             std::cerr << "Unknown data packet" << std::endl;
             break;
         }

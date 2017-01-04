@@ -3,6 +3,7 @@
 
 #include "datapacket.h"
 #include <fstream>
+#include <memory>
 
 class DataPacketHandler
 {
@@ -12,15 +13,8 @@ public:
     void step(std::vector<DataPacket>);
 
 private:
-    std::ofstream outfileNodePositionInterface;
-    std::ofstream outfileNodeVelocityInterface;
-    std::ofstream outfileNodeSpringsAttachedInterface;
-    std::ofstream outfileNodePositionAll;
-    std::ofstream outfileNodeVelocityAll;
-    std::ofstream outfileNodeTotalEnergyAll;
-    std::ofstream outfileNodeTotalForceAll;
-    std::ofstream outfilePusherForce;
-    std::ofstream outfileNormalForce;
+    std::vector<std::shared_ptr<std::ofstream>> outfiles;
+    std::vector<std::string> outfileNames;
 };
 
 #endif // DATAPACKETHANDLER_H

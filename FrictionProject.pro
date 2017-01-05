@@ -24,7 +24,8 @@ SOURCES += main.cpp \
     DataOutput/datapackethandler.cpp \
     DataOutput/dumpable.cpp \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp \
-    InputManagement/ConfigReader/configreader.cpp
+    InputManagement/ConfigReader/configreader.cpp \
+    Lattice/TriangularLattice/triangularlatticewithgrooves.cpp
 
 
 HEADERS += \
@@ -43,5 +44,6 @@ HEADERS += \
     DataOutput/dumpable.h \
     DataOutput/datapackethandler.h \
     DataOutput/datapacket.h \
-    ForceModifier/SpringFriction/springfriction.h
+    ForceModifier/SpringFriction/springfriction.h \
+    Lattice/TriangularLattice/triangularlatticewithgrooves.h
 

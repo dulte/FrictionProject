@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <Lattice/TriangularLattice/triangularlattice.h>
 #include "Lattice/SquareLattice/squarelattice.h"
 //#include <QDebug>
@@ -25,6 +26,15 @@ int main(int argc, char *argv[])
 {
 
     clock_t start = clock();
+    std::string outputFolder;
+
+    if (argc > 1){
+        outputFolder = argv[1];
+    }
+    else{
+        outputFolder = "Output/";
+    }
+    std::ofstream myStream("out.xyz",std::ofstream::out);
     ConfigReader *input = new ConfigReader("config.txt");
 
     int nx = int(input->get("nx"));
@@ -32,10 +42,10 @@ int main(int argc, char *argv[])
     int writingFreq = int(input->get("writingFreq"));
 
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
-    DataPacketHandler dataPacketHandler("Output/", input);
+    DataPacketHandler dataPacketHandler(outputFolder, input);
     int nt = int(input->get("nt"));
     double step = (input->get("step"));
-
+    mySystem.dumpParameters();
 
 
     mySystem.isLockFrictionSprings(true);

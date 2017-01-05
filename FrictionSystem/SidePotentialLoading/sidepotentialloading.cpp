@@ -14,8 +14,13 @@
 
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
+    std::string outFileFolder = "";
+    outfileParameters.open(outFileFolder+std::string("parameters.txt"));
 
-    lattice = std::make_unique<TriangularLattice>();
+//    lattice = std::make_unique<TriangularLattice>();
+    lattice = std::make_unique<TriangularLatticeWithGrooves>();
+
+
     lattice->populate(nx, ny, d, E, 0.33, 0.006, 1300);
 
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>();
@@ -62,11 +67,13 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
 
 SidePotentialLoading::~SidePotentialLoading()
 {
+    outfileParameters.close();
+
 }
 
 void SidePotentialLoading::addPusher(double k, double vD, double tInit)
 {
-    for (int j = 2; j<3; j++)
+    for (int j = input->get("pusherStartHeight"); j<input->get("pusherEndHeight"); j++)
     {
         std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(k, vD, lattice->leftNodes[j]->r().x(), tInit);
         pusherNodes.push_back(myPusher);
@@ -83,25 +90,27 @@ void SidePotentialLoading::isLockFrictionSprings(bool isLock)
     }
 }
 
+void SidePotentialLoading::dumpParameters()
+{
+
+    std::vector<string> outputParameters = {"nx","step","nt","grooveHeight","numberOfGrooves","pusherStartHeight","pusherEndHeight"};
+    for (string name: outputParameters){
+        outfileParameters << name << " " << input->get(name) << "\n";
+    }
+
+    outfileParameters << "bottomNodes" << " " << lattice->bottomNodes.size() << "\n";
+
+    outfileParameters.close();
+
+}
+
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)
 {
-    // Get the data packets from the lattice
     std::vector<DataPacket> packets = lattice->getDataPackets(timestep, time);
 
-    // Get the data from the friction elements
     for (auto & frictionElement : frictionElements) {
         std::vector<DataPacket> packet = frictionElement->getDataPackets(timestep, time);
         packets.insert(packets.end(), packet.begin(), packet.end());
     }
-
-    // Get the data packets from the pusher nodes
-    double pushForce = 0;
-    for (auto & pusherNode : pusherNodes){
-        pushForce += pusherNode->fPush;
-    }
-    DataPacket pusherForce = DataPacket(DataPacket::dataId::PUSHER_FORCE, timestep, time);
-    pusherForce.push_back(pushForce);
-    packets.push_back(pusherForce);
-
     return packets;
 }

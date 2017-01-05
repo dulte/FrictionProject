@@ -6,6 +6,7 @@
 #include "Lattice/TriangularLattice/triangularlattice.h"
 #include "Lattice/TriangularLattice/triangularlatticewithgrooves.h"
 #include "Lattice/SquareLattice/squarelattice.h"
+#include "InputManagement/ConfigReader/configreader.h"
 #include <fstream>
 
 class SpringFriction;
@@ -21,13 +22,17 @@ public:
     void addPusher(double k, double vD, double tInit);
     void isLockFrictionSprings(bool);
     void dumpData();
+    void dumpParameters();
     virtual std::vector<DataPacket> getDataPackets(int timestep, double time) override;
+
+    ConfigReader *input = new ConfigReader("config.txt");
 
     std::vector<std::shared_ptr<SpringFriction>> frictionElements;
     std::vector<std::shared_ptr<PotentialPusher>> pusherNodes;
     std::ofstream outfile;
     std::ofstream outfileNormalForces;
     std::ofstream outfilePusherForces;
+    std::ofstream outfileParameters;
 };
 
 #endif // SIDEPOTENTIALLOADING_H

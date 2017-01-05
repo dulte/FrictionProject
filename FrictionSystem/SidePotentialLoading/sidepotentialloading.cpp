@@ -18,10 +18,11 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
     outfile.open(outFileFolder+std::string("testnumsprings.bin"));
     outfileNormalForces.open(outFileFolder+std::string("normalforces.txt"));
     outfilePusherForces.open(outFileFolder+std::string("pusherforces.bin"));
+    outfileParameters.open(outFileFolder+std::string("parameters.txt"));
 
 //    lattice = std::make_unique<TriangularLattice>();
     lattice = std::make_unique<TriangularLatticeWithGrooves>();
-    lattice->setNumberOfGrooves(0);
+
 
     lattice->populate(nx, ny, d, E, 0.33, 0.006, 1300);
 
@@ -70,11 +71,12 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
 SidePotentialLoading::~SidePotentialLoading()
 {
     outfile.close();
+
 }
 
 void SidePotentialLoading::addPusher(double k, double vD, double tInit)
 {
-    for (int j = 2; j<3; j++)
+    for (int j = input->get("pusherStartHeight"); j<input->get("pusherEndHight"); j++)
     {
         std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(k, vD, lattice->leftNodes[j]->r().x(), tInit);
         pusherNodes.push_back(myPusher);
@@ -110,6 +112,20 @@ void SidePotentialLoading::dumpData()
 
     }
     outfilePusherForces.write((char*)&pushForce, sizeof(double));
+}
+
+void SidePotentialLoading::dumpParameters()
+{
+
+    std::vector<string> outputParameters = {"nx","step","nt","grooveHeight","numberOfGrooves","pusherStartHeight","pusherEndHeight"};
+    for (string name: outputParameters){
+        outfileParameters << name << " " << input->get(name) << "\n";
+    }
+
+    outfileParameters << "bottomNodes" << " " << lattice->bottomNodes.size() << "\n";
+
+    outfileParameters.close();
+
 }
 
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)

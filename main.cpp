@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
     DataPacketHandler dataPacketHandler("Output/");
     int nt = int(input->get("nt"));
     double step = (input->get("step"));
+    mySystem.dumpParameters();
 
 
 

@@ -76,7 +76,7 @@ SidePotentialLoading::~SidePotentialLoading()
 
 void SidePotentialLoading::addPusher(double k, double vD, double tInit)
 {
-    for (int j = input->get("pusherStartHeight"); j<input->get("pusherEndHight"); j++)
+    for (int j = input->get("pusherStartHeight"); j<input->get("pusherEndHeight"); j++)
     {
         std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(k, vD, lattice->leftNodes[j]->r().x(), tInit);
         pusherNodes.push_back(myPusher);

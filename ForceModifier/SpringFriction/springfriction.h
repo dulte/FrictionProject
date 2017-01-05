@@ -33,6 +33,7 @@ public:
     bool isLockSprings = false;
     double m_numSpringsAttached = 0;
     double m_normalForce = 0;
+    double m_shearForce = 0;
 
     static std::random_device rd;
     static thread_local std::mt19937 gen;

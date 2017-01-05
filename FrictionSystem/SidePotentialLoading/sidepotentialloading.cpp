@@ -14,10 +14,6 @@
 
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
-    std::string outFileFolder = "";
-    outfile.open(outFileFolder+std::string("testnumsprings.bin"));
-    outfileNormalForces.open(outFileFolder+std::string("normalforces.txt"));
-    outfilePusherForces.open(outFileFolder+std::string("pusherforces.bin"));
 
     lattice = std::make_unique<TriangularLattice>();
     lattice->populate(nx, ny, d, E, 0.33, 0.006, 1300);
@@ -66,7 +62,6 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
 
 SidePotentialLoading::~SidePotentialLoading()
 {
-    outfile.close();
 }
 
 void SidePotentialLoading::addPusher(double k, double vD, double tInit)
@@ -88,34 +83,25 @@ void SidePotentialLoading::isLockFrictionSprings(bool isLock)
     }
 }
 
-void SidePotentialLoading::dumpData()
-{
-    for (auto & frictionElement : frictionElements)
-    {
-        double numSprings = frictionElement->m_numSpringsAttached;
-//        std::cout << numSprings << std::endl;
-        outfile.write((char*)&numSprings, sizeof(double));
-//        outfileNormalForces.write((char*)&frictionElement->m_normalForce, sizeof(double));
-        outfileNormalForces << frictionElement->m_normalForce << " ";
-
-    }
-    outfileNormalForces << "\n";
-    double pushForce = 0;
-    for (auto & pusherNode : pusherNodes)
-    {
-        pushForce += pusherNode->fPush;
-
-    }
-    outfilePusherForces.write((char*)&pushForce, sizeof(double));
-}
-
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)
 {
+    // Get the data packets from the lattice
     std::vector<DataPacket> packets = lattice->getDataPackets(timestep, time);
 
+    // Get the data from the friction elements
     for (auto & frictionElement : frictionElements) {
         std::vector<DataPacket> packet = frictionElement->getDataPackets(timestep, time);
         packets.insert(packets.end(), packet.begin(), packet.end());
     }
+
+    // Get the data packets from the pusher nodes
+    double pushForce = 0;
+    for (auto & pusherNode : pusherNodes){
+        pushForce += pusherNode->fPush;
+    }
+    DataPacket pusherForce = DataPacket(DataPacket::dataId::PUSHER_FORCE, timestep, time);
+    pusherForce.push_back(pushForce);
+    packets.push_back(pusherForce);
+
     return packets;
 }

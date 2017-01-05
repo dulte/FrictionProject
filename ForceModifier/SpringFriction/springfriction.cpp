@@ -44,7 +44,6 @@ vec3 SpringFriction::getForceModification()
         if (springPositionOnNode.y() < 0)
         {
             fn = -springPositionOnNode.y()*m_kNormal;
-            m_normalForce += fn;
             if (m_isConnected[i])
             {
                 ft = -(springPositionOnNode.x()-m_x0[i])*m_k[i]*sqrt(fn/m_fnAvg);
@@ -78,6 +77,8 @@ vec3 SpringFriction::getForceModification()
                 }
             }
             resultantForce += vec3(ft, fn, 0);
+            m_normalForce += fn;
+            m_shearForce += ft;
         }
         else
         {
@@ -96,9 +97,14 @@ std::vector<DataPacket> SpringFriction::getDataPackets(int timestep, double time
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
     DataPacket numberOfSprings = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
     DataPacket normalForce = DataPacket(DataPacket::dataId::NORMAL_FORCE, timestep, time);
+    DataPacket shearForce = DataPacket(DataPacket::dataId::SHEAR_FORCE, timestep, time);
+
     numberOfSprings.push_back(m_numSpringsAttached);
     normalForce.push_back(m_normalForce);
+    shearForce.push_back(m_shearForce);
+
     packetvec.push_back(numberOfSprings);
     packetvec.push_back(normalForce);
+    packetvec.push_back(shearForce);
     return packetvec;
 }

@@ -14,6 +14,7 @@
 #include <time.h>
 #include "InputManagement/ConfigReader/configreader.h"
 
+
 using namespace std;
 
 void cantileverTest(TriangularLattice &);
@@ -24,7 +25,6 @@ int main(int argc, char *argv[])
 {
 
     clock_t start = clock();
-    std::ofstream myStream("out.xyz",std::ofstream::out);
     ConfigReader *input = new ConfigReader("config.txt");
 
     int nx = int(input->get("nx"));
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     int writingFreq = int(input->get("writingFreq"));
 
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
-    DataPacketHandler dataPacketHandler("Output/");
+    DataPacketHandler dataPacketHandler("Output/", input);
     int nt = int(input->get("nt"));
     double step = (input->get("step"));
 
@@ -44,10 +44,9 @@ int main(int argc, char *argv[])
         mySystem.lattice->step(step);
         if (i%writingFreq == 0)
         {
-            myStream << mySystem.lattice->xyzString();
-            mySystem.dumpData();
             std::cout << static_cast<double>(i)/nt << std::endl;
-            dataPacketHandler.step(mySystem.getDataPackets(i, i*1e-7));
+            dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
+            dataPacketHandler.dumpXYZ(mySystem.lattice->xyzString());
         }
     }
     mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
@@ -58,16 +57,12 @@ int main(int argc, char *argv[])
         mySystem.lattice->step(step);
         if (i%writingFreq == 0)
         {
-            myStream << mySystem.lattice->xyzString();
-            mySystem.dumpData();
             std::cout << static_cast<double>(i)/nt << std::endl;
-            dataPacketHandler.step(mySystem.getDataPackets(i, i*1e-7));
+            dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
+            dataPacketHandler.dumpXYZ(mySystem.lattice->xyzString());
         }
     }
 
-    myStream.close();
-
-    cout << "Hello World!" << endl;
     clock_t stop = clock();
     cout << static_cast<double>(stop-start)/CLOCKS_PER_SEC << std::endl;
     return 0;

@@ -18,14 +18,10 @@ public:
     std::shared_ptr<TriangularLattice> lattice;
     void addPusher(double k, double vD, double tInit);
     void isLockFrictionSprings(bool);
-    void dumpData();
     virtual std::vector<DataPacket> getDataPackets(int timestep, double time) override;
 
     std::vector<std::shared_ptr<SpringFriction>> frictionElements;
     std::vector<std::shared_ptr<PotentialPusher>> pusherNodes;
-    std::ofstream outfile;
-    std::ofstream outfileNormalForces;
-    std::ofstream outfilePusherForces;
 };
 
 #endif // SIDEPOTENTIALLOADING_H

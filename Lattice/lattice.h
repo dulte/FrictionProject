@@ -10,7 +10,7 @@ class Node;
 class LatticeInfo;
 
 
-class Lattice : public std::enable_shared_from_this<Lattice>//, public Dumpable
+class Lattice : public std::enable_shared_from_this<Lattice>//public Dumpable
 {
 public:
     Lattice();

@@ -1,7 +1,7 @@
 nx 57
 ny 31
 writingFreq 1000
-nt 2e5
+nt 2e2
 releaseTime 2e5
 fn 1920
 ns 50
@@ -13,10 +13,11 @@ nu 0.33
 hZ 0.006
 density 1300
 step 5e-7
+numberOfGrooves 7
+grooveHeight 3
 
 #Pusher
 vD 4e-2
 pK 4e5
-xInit 
-tInit
-
+pusherStartHeight 20
+pusherEndHeight 21

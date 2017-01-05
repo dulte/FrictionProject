@@ -106,11 +106,23 @@ void SidePotentialLoading::dumpParameters()
 
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)
 {
+    // Get the data packets from the lattice
     std::vector<DataPacket> packets = lattice->getDataPackets(timestep, time);
 
+    // Get the data from the friction elements
     for (auto & frictionElement : frictionElements) {
         std::vector<DataPacket> packet = frictionElement->getDataPackets(timestep, time);
         packets.insert(packets.end(), packet.begin(), packet.end());
     }
+
+    // Get the data packets from the pusher nodes
+    double pushForce = 0;
+    for (auto & pusherNode : pusherNodes){
+        pushForce += pusherNode->fPush;
+    }
+    DataPacket pusherForce = DataPacket(DataPacket::dataId::PUSHER_FORCE, timestep, time);
+    pusherForce.push_back(pushForce);
+    packets.push_back(pusherForce);
+
     return packets;
 }

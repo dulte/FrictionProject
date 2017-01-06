@@ -31,7 +31,7 @@ std::string Lattice::xyzString()
 
 void Lattice::step(double dt)
 {
-    omp_set_num_threads(5);
+    omp_set_num_threads(4);
 
     //for (auto & node : nodes){
     //    node->vvstep1(dt);

@@ -145,6 +145,7 @@ std::vector<DataPacket> TriangularLattice::getDataPackets(int timestep, double t
     DataPacket position_all = DataPacket(DataPacket::dataId::NODE_POSITION_ALL, timestep, time);
     DataPacket velocity_all = DataPacket(DataPacket::dataId::NODE_VELOCITY_ALL, timestep, time);
 
+
     for (std::shared_ptr<Node> node : bottomNodes)
     {
         position_interface_packet.push_back(node->r().x());

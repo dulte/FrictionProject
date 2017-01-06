@@ -93,7 +93,7 @@ void SidePotentialLoading::isLockFrictionSprings(bool isLock)
 void SidePotentialLoading::dumpParameters()
 {
 
-    std::vector<string> outputParameters = {"nx","step","nt","grooveHeight","numberOfGrooves","pusherStartHeight","pusherEndHeight"};
+    std::vector<string> outputParameters = {"nx","step","nt","grooveHeight","grooveSize","pusherStartHeight","pusherEndHeight"};
     for (string name: outputParameters){
         outfileParameters << name << " " << input->get(name) << "\n";
     }

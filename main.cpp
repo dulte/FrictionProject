@@ -44,12 +44,13 @@ int main(int argc, char *argv[])
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
     DataPacketHandler dataPacketHandler(outputFolder, input);
     int nt = int(input->get("nt"));
+    int releaseTime = input->get("releaseTime");
     double step = (input->get("step"));
     mySystem.dumpParameters();
 
 
     mySystem.isLockFrictionSprings(true);
-    for (int i = 0; i<nt; i++)
+    for (int i = 0; i<releaseTime; i++)
     {
         mySystem.lattice->step(step);
         if (i%writingFreq == 0)
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
     mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
     //nt = 2000;
-    for (int i = 0; i<nt; i++)
+    for (int i = releaseTime; i<nt; i++)
     {
         mySystem.lattice->step(step);
         if (i%writingFreq == 0)

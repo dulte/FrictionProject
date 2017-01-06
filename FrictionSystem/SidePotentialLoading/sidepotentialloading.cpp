@@ -26,10 +26,12 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>();
 
     int numTop = lattice->topNodes.size();
+    double normalForceDist = input->get("nx")/double(lattice->bottomNodes.size());
+    std::cout << " noe " << normalForceDist << std::endl;
     std::cout << "Top: " << -topLoadingForce/numTop << endl;
     for (int i = 0; i<numTop; i++)
     {
-        std::unique_ptr<ConstantForce> myForce = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce/numTop, 0));
+        std::unique_ptr<ConstantForce> myForce = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce/numTop*normalForceDist, 0));
         lattice->topNodes[i]->addModifier(std::move(myForce));
     }
 

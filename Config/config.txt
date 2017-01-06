@@ -1,7 +1,6 @@
 nx 57
 ny 31
-writingFreq 1000
-nt 2e2
+nt 2e3
 releaseTime 2e5
 fn 1920
 ns 50
@@ -33,4 +32,17 @@ writeTotalForceAll 0
 writePusherForce 1
 writeNormalForce 1
 writeShearForce 1
-writeXYZ 1
+writeXYZ 0
+
+#Write_data_frequency
+freqNodePositionInterface 1000
+freqNodeVelocityInterface 1000
+freqNodeSpringsAttachedInterface 1000
+freqNodePositionAll 100000
+freqNodeVelocityAll 10000
+freqTotalEnergyAll 10000
+freqTotalForceAll 10000
+freqPusherForce 1000
+freqNormalForce 1000
+freqShearForce 1000
+freqXYZ 1000

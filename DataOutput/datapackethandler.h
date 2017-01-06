@@ -5,14 +5,19 @@
 #include <memory>
 #include "datapacket.h"
 #include "InputManagement/ConfigReader/configreader.h"
+#include "Lattice/TriangularLattice/triangularlattice.h"
+#include "Lattice/TriangularLattice/triangularlatticewithgrooves.h"
+#include "Lattice/SquareLattice/squarelattice.h"
+#include <iostream>
 
+class TriangularLatticeWithGrooves;
 class DataPacketHandler
 {
 public:
     DataPacketHandler(std::string outputfolder, ConfigReader *input);
     ~DataPacketHandler();
     void step(std::vector<DataPacket>);
-    void dumpXYZ(std::string xyz);
+    void dumpXYZ(const std::shared_ptr<TriangularLatticeWithGrooves>& lattice, int timestep);
 
 private:
     ConfigReader *m_input;
@@ -40,6 +45,19 @@ private:
     bool m_writeNormalForce = true;
     bool m_writeShearForce = true;
     bool m_writeXYZ = true;
+
+    int m_freqNodePositionInterface = 1000;
+    int m_freqNodeVelocityInterface = 1000;
+    int m_freqNodeSpringsAttachedInterface = 1000;
+    int m_freqNodePositionAll = 1000;
+    int m_freqNodeVelocityAll = 1000;
+    int m_freqTotalEnergyAll = 1000;
+    int m_freqTotalForceAll = 1000;
+    int m_freqPusherForce = 1000;
+    int m_freqNormalForce = 1000;
+    int m_freqShearForce = 1000;
+    int m_freqXYZ = 1000;
 };
+
 
 #endif // DATAPACKETHANDLER_H

@@ -39,12 +39,13 @@ int main(int argc, char *argv[])
 
     int nx = int(input->get("nx"));
     int ny = int(input->get("ny"));
-    int writingFreq = int(input->get("writingFreq"));
 
     SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
     DataPacketHandler dataPacketHandler(outputFolder, input);
     int nt = int(input->get("nt"));
     double step = (input->get("step"));
+    int writingFreq = nt/10;
+
     mySystem.dumpParameters();
 
 
@@ -53,11 +54,9 @@ int main(int argc, char *argv[])
     {
         mySystem.lattice->step(step);
         if (i%writingFreq == 0)
-        {
             std::cout << static_cast<double>(i)/nt << std::endl;
-            dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
-            dataPacketHandler.dumpXYZ(mySystem.lattice->xyzString());
-        }
+        dataPacketHandler.dumpXYZ(mySystem.lattice, i);
+        dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
     }
     mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
@@ -66,11 +65,10 @@ int main(int argc, char *argv[])
     {
         mySystem.lattice->step(step);
         if (i%writingFreq == 0)
-        {
             std::cout << static_cast<double>(i)/nt << std::endl;
-            dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
-            dataPacketHandler.dumpXYZ(mySystem.lattice->xyzString());
-        }
+
+        dataPacketHandler.dumpXYZ(mySystem.lattice, i);
+        dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
     }
 
     clock_t stop = clock();

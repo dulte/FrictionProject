@@ -2,6 +2,7 @@
 #include <math.h>
 //#include <QDebug>
 #include <sstream>
+#include <memory>
 #include <cmath>
 #include "NodeInfo/nodeinfo.h"
 
@@ -248,22 +249,36 @@ void TriangularLatticeWithGrooves::setGrooveHeight(int hg){
     m_grooveHeight = hg;
 }
 
-std::vector<DataPacket> TriangularLatticeWithGrooves::getDataPackets(int timestep, double time){
+std::vector<DataPacket> TriangularLatticeWithGrooves::getDataPackets(int timestep, double time)
+{
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
 
     DataPacket position_interface_packet = DataPacket(DataPacket::dataId::NODE_POSITION_INTERFACE, timestep, time);
     DataPacket velocity_interface_packet = DataPacket(DataPacket::dataId::NODE_VELOCITY_INTERFACE, timestep, time);
     DataPacket num_springs_attached_interface_packet = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
+    DataPacket position_all = DataPacket(DataPacket::dataId::NODE_POSITION_ALL, timestep, time);
+    DataPacket velocity_all = DataPacket(DataPacket::dataId::NODE_VELOCITY_ALL, timestep, time);
+//    DataPacket energy_all = DataPachet(DataPacket::dataId::NODE_TOTAL_ENERGY_ALL,timestep,time);
+
     for (std::shared_ptr<Node> node : bottomNodes)
     {
         position_interface_packet.push_back(node->r().x());
         position_interface_packet.push_back(node->r().y());
-
         velocity_interface_packet.push_back(node->v().x());
         velocity_interface_packet.push_back(node->v().y());
+
+    }
+
+    for (std::shared_ptr<Node> node : nodes) {
+        position_all.push_back(node->r().x());
+        position_all.push_back(node->r().y());
+        velocity_all.push_back(node->v().x());
+        velocity_all.push_back(node->v().y());
     }
     packetvec.push_back(position_interface_packet);
     packetvec.push_back(velocity_interface_packet);
+    packetvec.push_back(position_all);
+    packetvec.push_back(velocity_all);
     return packetvec;
 }
 

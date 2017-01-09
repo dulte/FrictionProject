@@ -32,7 +32,7 @@ std::string Lattice::xyzString()
 void Lattice::step(double dt)
 {
     omp_set_num_threads(4);
-
+#pragma omp flush(dt)
     //for (auto & node : nodes){
     //    node->vvstep1(dt);
     //}
@@ -40,8 +40,8 @@ void Lattice::step(double dt)
 #pragma omp parallel for
     for (int i = 0; i<nodes.size(); i++)
     {
-        double dt2 = dt;
-        nodes[i]->vvstep1(dt2);
+//        double dt2 = dt;
+        nodes[i]->vvstep1(dt);
     }
 
     m_t += dt*0.5;
@@ -64,8 +64,8 @@ void Lattice::step(double dt)
 #pragma omp parallel for
     for (int i = 0; i<nodes.size(); i++)
     {
-        double dt2 = dt;
-        nodes[i]->vvstep2(dt2);
+//        double dt2 = dt;
+        nodes[i]->vvstep2(dt);
     }
     m_t += dt*0.5;
 }

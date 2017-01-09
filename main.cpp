@@ -14,6 +14,7 @@
 #include <memory>
 #include <time.h>
 #include "InputManagement/ConfigReader/configreader.h"
+#include <omp.h>
 
 
 using namespace std;
@@ -72,8 +73,11 @@ int main(int argc, char *argv[])
         dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
     }
 
+
     clock_t stop = clock();
     cout << static_cast<double>(stop-start)/CLOCKS_PER_SEC << std::endl;
+
+
     return 0;
 }
 

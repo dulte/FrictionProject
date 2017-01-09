@@ -14,8 +14,8 @@
 
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
-    std::string outFileFolder = "";
-    outfileParameters.open(outFileFolder+std::string("parameters.txt"));
+
+
 
 //    lattice = std::make_unique<TriangularLattice>();
     lattice = std::make_unique<TriangularLatticeWithGrooves>();
@@ -94,7 +94,7 @@ void SidePotentialLoading::isLockFrictionSprings(bool isLock)
 
 void SidePotentialLoading::dumpParameters()
 {
-
+    outfileParameters.open(outFileFolder+std::string("parameters.txt"));
     std::vector<string> outputParameters = {"nx","step","nt","grooveHeight","grooveSize","pusherStartHeight","pusherEndHeight"};
     for (string name: outputParameters){
         outfileParameters << name << " " << input->get(name) << "\n";

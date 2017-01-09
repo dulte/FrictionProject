@@ -8,6 +8,7 @@
 #include "Lattice/SquareLattice/squarelattice.h"
 #include "InputManagement/ConfigReader/configreader.h"
 #include <fstream>
+#include <string>
 
 class SpringFriction;
 class PotentialPusher;
@@ -30,6 +31,7 @@ public:
     std::vector<std::shared_ptr<PotentialPusher>> pusherNodes;
 
     std::ofstream outfileParameters;
+    std::string outFileFolder = "";
     
 };
 

@@ -35,6 +35,8 @@ int main(int argc, char *argv[])
     else{
         outputFolder = "Output/";
     }
+
+
     std::ofstream myStream("out.xyz",std::ofstream::out);
     ConfigReader *input = new ConfigReader("config.txt");
 
@@ -48,6 +50,7 @@ int main(int argc, char *argv[])
     double step = (input->get("step"));
     int writingFreq = nt/10;
 
+    mySystem.outFileFolder = outputFolder;
     mySystem.dumpParameters();
 
 

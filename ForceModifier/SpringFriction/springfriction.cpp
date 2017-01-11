@@ -43,6 +43,7 @@ vec3 SpringFriction::getForceModification()
         double ft = 0;
         if (springPositionOnNode.y() < 0)
         {
+
             fn = -springPositionOnNode.y()*m_kNormal;
             if (m_isConnected[i])
             {

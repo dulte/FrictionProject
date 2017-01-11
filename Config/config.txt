@@ -1,7 +1,8 @@
-nx 57
+nx 64
 ny 31
-nt 2e3
-releaseTime 2e5
+writingFreq 100
+nt 10e7
+releaseTime 3e7
 fn 1920
 ns 50
 tau 0.002
@@ -11,15 +12,15 @@ k 4e6
 nu 0.33
 hZ 0.006
 density 1300
-step 5e-7
-numberOfGrooves 7
-grooveHeight 3
+step 2e-7
+grooveSize 0
+grooveHeight 4
 
 #Pusher
-vD 4e-2
+vD 4e-4
 pK 4e5
-pusherStartHeight 20
-pusherEndHeight 21
+pusherStartHeight 4
+pusherEndHeight 5
 
 #Write_data
 writeNodePositionInterface 1
@@ -32,17 +33,17 @@ writeTotalForceAll 0
 writePusherForce 1
 writeNormalForce 1
 writeShearForce 1
-writeXYZ 0
+writeXYZ 1
 
 #Write_data_frequency
-freqNodePositionInterface 1000
+freqNodePositionInterface 100
 freqNodeVelocityInterface 1000
-freqNodeSpringsAttachedInterface 1000
+freqNodeSpringsAttachedInterface 100
 freqNodePositionAll 100000
 freqNodeVelocityAll 10000
 freqTotalEnergyAll 10000
 freqTotalForceAll 10000
-freqPusherForce 1000
-freqNormalForce 1000
-freqShearForce 1000
-freqXYZ 1000
+freqPusherForce 100
+freqNormalForce 100
+freqShearForce 100
+freqXYZ 100

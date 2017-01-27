@@ -1,8 +1,8 @@
 nx 64
 ny 31
 writingFreq 100
-nt 10e7
-releaseTime 3e7
+nt 10e3
+releaseTime 1e3
 fn 1920
 ns 50
 tau 0.002

@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+# import seaborn
 
 
 def readParameters(filename):
@@ -40,6 +41,9 @@ posData = np.fromfile(folder + "node_position_interface.bin")
 shearData = np.fromfile(folder + "shear_force.bin")
 shearData = resizeData(shearData,True)
 
+time = np.linspace(0,parameters["step"]*1000*len(pusherData),len(pusherData))
+
+
 print "pos ", len(posData)
 posData = (posData[1::2]).copy()
 posData.resize(len(posData)/(57.0),57)
@@ -76,25 +80,25 @@ print springPlot
 #
 # springPlot = (springAttachedData+springAttachedData2)/2.0
 
-plt.pcolor(shearData)
-plt.show()
-
-# print normalData.shape
-# print posData.shape
-# print posData
-plt.pcolor(normalData)
-plt.show()
-plt.pcolor(posData-posData[0,:])
-plt.show()
+# plt.pcolor(shearData)
+# plt.show()
+#
+# # print normalData.shape
+# # print posData.shape
+# # print posData
+# plt.pcolor(normalData)
+# plt.show()
+# plt.pcolor(posData-posData[0,:])
+# plt.show()
 
 plt.title("Force on Pusher")
-plt.xlabel("Time")
-plt.ylabel("Force")
-plt.plot(pusherData)
+plt.xlabel("Time [s]")
+plt.ylabel("Force/Fn")
+plt.plot(time,pusherData/1920)
 plt.show()
 # plt.pcolor(springAttachedData2)
 plt.title("Percent of Springs Attached")
 plt.xlabel("Block")
 plt.ylabel("Time")
-plt.pcolor(springPlot)
+plt.pcolormesh(springPlot)
 plt.show()

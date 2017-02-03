@@ -1,0 +1,48 @@
+nx 64 
+ny 31 
+nt 10e7 
+releaseTime 1e7 
+fn 1920 
+ns 50 
+tau 0.002 
+d 0.005 
+E 3e9 
+k 4e6 
+nu 0.33 
+hZ 0.006 
+density 1300 
+step 2e-7 
+grooveHeight 3 
+grooveSize 8 
+
+#Pusher 
+vD 4e-4 
+pK 4e6 
+pusherStartHeight 5 
+pusherEndHeight 6 
+
+#Write_data 
+writeNodePositionInterface 1 
+writeNodeVelocityInterface 1 
+writeNodeSpringsAttachedInterface 1 
+writeNodePositionAll 0 
+writeNodeVelocityAll 0 
+writeTotalEnergyAll 0 
+writeTotalForceAll 0 
+writePusherForce 1 
+writeNormalForce 1 
+writeShearForce 1 
+writeXYZ 0 
+
+#Write_data_frequency 
+freqNodePositionInterface 1000 
+freqNodeVelocityInterface 1000 
+freqNodeSpringsAttachedInterface 1000 
+freqNodePositionAll 100000 
+freqNodeVelocityAll 10000 
+freqTotalEnergyAll 10000 
+freqTotalForceAll 10000 
+freqPusherForce 1000 
+freqNormalForce 1000 
+freqShearForce 1000 
+freqXYZ 1000 

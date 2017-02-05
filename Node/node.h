@@ -40,8 +40,8 @@ public:
     void pertubatePosition(vec3 r);
 
     vec3 & r()           {return m_r;}
-    vec3 v()           {return m_v;}
-    vec3 f()           {return m_f;}
+    vec3 &v()           {return m_v;}
+    vec3 &f()           {return m_f;}
     vec3 r_offset()    {return m_r_offset;}
     double t();
     double phi()            {return m_phi;}

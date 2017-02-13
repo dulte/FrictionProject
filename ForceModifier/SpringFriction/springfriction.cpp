@@ -18,7 +18,7 @@ void SpringFriction::initialize()
 
     for (int i = 0; i<m_ns; i++)
     {
-        m_x0.push_back(m_node->r().x()+(otherR.x()-m_node->r().x())*static_cast<double>(i+0.5)/m_ns*m_coverage);
+        m_x0.push_back(m_node->r().x());//+(otherR.x()-m_node->r().x())*static_cast<double>(i+0.5)/m_ns*m_coverage);
         m_xOffset.push_back(0);
         m_tReattach.push_back(0);
         m_isConnected.push_back(true);
@@ -31,27 +31,36 @@ void SpringFriction::initialize()
 
 vec3 SpringFriction::getForceModification()
 {
-    vec3 offsetVector = neighbor->r()-m_node->r();
+    vec3 offsetVector = vec3();//neighbor->r()-m_node->r();
+
     vec3 resultantForce(0, 0, 0);
     m_normalForce = 0;
 
 #pragma omp parallel for
     for (int i = 0; i<m_ns; i++)
     {
-        vec3 springPositionOnNode = m_node->r()+offsetVector*(i+0.5)/m_ns*m_coverage;
+        vec3 springPositionOnNode = m_node->r();//+offsetVector*(i+0.5)/m_ns*m_coverage;
         double fn = 0;
         double ft = 0;
         if (springPositionOnNode.y() < 0)
         {
 
             fn = -springPositionOnNode.y()*m_kNormal;
+
             if (m_isConnected[i])
             {
                 ft = -(springPositionOnNode.x()-m_x0[i])*m_k[i]*sqrt(fn/m_fnAvg);
+//                std::cout<< "-------------" << std::endl;
+//                std::cout << springPositionOnNode.x() << std::endl;
+//                std::cout << m_x0[i] << std::endl;
+
                 if (fabs(ft) > m_fs[i]*fn/m_fnAvg)
                 {
+
                     if (!isLockSprings)
                     {
+
+
                         m_isConnected[i] = false;
                         ft = ft/fabs(ft)*m_fk[i]*fn/m_fnAvg;
                         m_x0[i] = springPositionOnNode.x()+ft/m_k[i]*sqrt(m_fnAvg/fn);
@@ -73,7 +82,7 @@ vec3 SpringFriction::getForceModification()
                 if (m_tReattach[i] < m_node->t())
                 {
                     m_isConnected[i] = true;
-                    m_x0[i] = m_node->r().x()+(neighbor->r().x()-m_node->r().x())*static_cast<double>(i+0.5)/m_ns*m_coverage;
+                    m_x0[i] = m_node->r().x();//+(neighbor->r().x()-m_node->r().x())*static_cast<double>(i+0.5)/m_ns*m_coverage;
                     m_numSpringsAttached ++;
                 }
             }
@@ -90,6 +99,7 @@ vec3 SpringFriction::getForceModification()
             }
         }
     }
+
     return resultantForce;
 }
 

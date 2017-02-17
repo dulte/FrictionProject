@@ -47,23 +47,9 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
     std::cout << numBottom << std::endl;
     for (int i = 0; i<numBottom; i++)
     {
-        if (i > 0)
-        {
             std::shared_ptr<SpringFriction> mySpringFriction = std::make_shared<SpringFriction>(frictionInfo);
-            mySpringFriction->neighbor = lattice->bottomNodes[i-1];
             frictionElements.push_back(mySpringFriction);
             lattice->bottomNodes[i]->addModifier(std::move(mySpringFriction));
-        }
-
-        if (i < (numBottom - 1))
-        {
-            std::shared_ptr<SpringFriction> mySpringFriction = std::make_shared<SpringFriction>(frictionInfo);
-            mySpringFriction->neighbor = lattice->bottomNodes[i+1];
-            frictionElements.push_back(mySpringFriction);
-            lattice->bottomNodes[i]->addModifier(std::move(mySpringFriction));
-        }
-
-
     }
 
     for (auto & node : lattice->nodes)

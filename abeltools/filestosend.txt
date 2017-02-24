@@ -1,0 +1,11 @@
+main.cpp
+Lattice/
+Node/
+NodeInfo/
+Vec3/
+LatticeInfo/
+ForceModifier/
+FrictionInfo/
+DataOutput/
+FrictionSystem/
+InputManagement/

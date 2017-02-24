@@ -97,6 +97,19 @@ class Analyzer:
         plt.title("Shear force")
         plt.show()
 
+    def getReducedSpringAttachments(self):
+        return np.sum(self.readAndResize('node_springs_attached_interface.bin'))
+
+    def plotFrontVelocities(self):
+        data = self.getReducedSpringAttachments()
+        v = np.zeros(len(data) - 2)
+        h = abs(data[-1] - data[0])/(float(len(data)))
+        for i in range(1,len(data) -1):
+            v[i-1] = (data[i+1] - data[i-1])/(2.0*h)
+
+        del data
+        return np.abs(v)
+
     def makePlots(self):
         self.normalForce = self.readAndResize('normal_force.bin')
         self.plotNormalForce()

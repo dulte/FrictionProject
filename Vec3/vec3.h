@@ -13,13 +13,13 @@ public:
     double &operator[](int index){return componants[index];}
     //double &operator*(vec3 a,vec3 b){return a(0)*b(0) + a(1)*b(1) + a(2)*b(2);}
 
-    vec3 &operator-=(vec3 rhs);
-    vec3 &operator+=(vec3 rhs);
-    vec3 &operator*=(double c);
-    vec3 &operator/=(double c);
-    vec3 &operator/=(vec3 rhs);
-    vec3 &operator=(vec3 rhs);
-    vec3 &operator=(double s);
+    vec3 &operator-=(const vec3 &rhs);
+    vec3 &operator+=(const vec3 &rhs);
+    vec3 &operator*=(const double &c);
+    vec3 &operator/=(const double &c);
+    vec3 &operator/=(const vec3 &rhs);
+    vec3 &operator=(const vec3 &rhs);
+    vec3 &operator=(const double &s);
 
     void normalize();
 

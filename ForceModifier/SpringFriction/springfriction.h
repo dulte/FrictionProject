@@ -16,7 +16,6 @@ public:
     vec3 getForceModification();
     //void fileOutputAction(std::shared_ptr<H5::H5File>);
 
-    std::shared_ptr<Node> neighbor;
 
     std::vector<double> m_x0; // Acual position of node connection point
     std::vector<double> m_xOffset; // Offset from node center position

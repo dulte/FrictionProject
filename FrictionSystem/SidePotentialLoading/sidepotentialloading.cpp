@@ -1,5 +1,6 @@
 #include "sidepotentialloading.h"
 #include <iostream>
+#include <cmath>
 
 
 #include <ForceModifier/ConstantForce/constantforce.h>
@@ -9,13 +10,20 @@
 #include <ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.h>
 #include "ForceModifier/SpringFriction/springfriction.h"
 #include "FrictionInfo/frictioninfo.h"
+#include "InputManagement/ConfigReader/configreader.h"
 
 #include "Lattice/SquareLattice/squarelattice.h"
 
+
+#define pi 3.14159265358979323
+
 SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, double k, double topLoadingForce)
 {
-
-
+    ConfigReader *dataInput = new ConfigReader("config.txt");
+    double density = dataInput->get("density");
+    double hZ = dataInput->get("hZ");
+    double mass = density*d*d*hZ/4.0 * pi;
+    double eta = sqrt(0.1*mass*k);
 
 //    lattice = std::make_unique<TriangularLattice>();
     lattice = std::make_unique<TriangularLatticeWithGrooves>();
@@ -39,28 +47,14 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
     std::cout << numBottom << std::endl;
     for (int i = 0; i<numBottom; i++)
     {
-        if (i > 0)
-        {
             std::shared_ptr<SpringFriction> mySpringFriction = std::make_shared<SpringFriction>(frictionInfo);
-            mySpringFriction->neighbor = lattice->bottomNodes[i-1];
             frictionElements.push_back(mySpringFriction);
             lattice->bottomNodes[i]->addModifier(std::move(mySpringFriction));
-        }
-
-        if (i < (numBottom - 1))
-        {
-            std::shared_ptr<SpringFriction> mySpringFriction = std::make_shared<SpringFriction>(frictionInfo);
-            mySpringFriction->neighbor = lattice->bottomNodes[i+1];
-            frictionElements.push_back(mySpringFriction);
-            lattice->bottomNodes[i]->addModifier(std::move(mySpringFriction));
-        }
-
-
     }
 
     for (auto & node : lattice->nodes)
     {
-        std::unique_ptr<RelativeVelocityDamper> myDamper = std::make_unique<RelativeVelocityDamper>(20.0);
+        std::unique_ptr<RelativeVelocityDamper> myDamper = std::make_unique<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(myDamper));
         std::unique_ptr<AbsoluteOmegaDamper> myOmegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(myOmegaDamper));

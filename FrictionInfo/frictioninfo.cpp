@@ -1,10 +1,7 @@
 #include "frictioninfo.h"
-
 FrictionInfo::FrictionInfo()
 {
-//    ns = 10;
-//    nx = 57;
-//    double Fn = 1920;
+
 
     ns = input->get("ns");
     nx = input->get("nx");
@@ -19,6 +16,5 @@ FrictionInfo::FrictionInfo()
     fk = fs*0.4;
 
     fnAvg = Fn/ns/nx;
-    //tau = 0.002;
     kNormal = 4e6/ns;
 }

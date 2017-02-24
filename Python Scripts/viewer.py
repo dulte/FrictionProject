@@ -1,4 +1,4 @@
-import numpy as np
+pimport numpy as np
 import matplotlib.pyplot as plt
 # import seaborn
 

@@ -1,8 +1,13 @@
+from __future__ import division, absolute_import
+from __future__ import print_function, unicode_literals
 import numpy as np
 import matplotlib.pyplot as plt
 import argparse
 import os
 import sys
+from string import Formatter
+from operator import attrgetter
+
 
 class DataReader:
     """ Reads and converts the raw data into a manageable form """
@@ -13,13 +18,14 @@ class DataReader:
         self.params = parameters
 
     def read(self, filename):
-        np.fromfile(os.path.join(self.folder, filename))
+        return np.fromfile(os.path.join(self.folder, filename))
 
     def resize(self, array, everySecondElement=False, start=0):
         if everySecondElement:
             array = array[start::2]
-        array.resize(len(array)/(self.params["bottomNodes"])-1,
-                     self.params["bottomNodes"])-1
+        return np.resize(array, (len(array)/(self.params["bottomNodes"]-1),
+                                 self.params["bottomNodes"]-1))
+
 
 class Analyzer:
     def __init__(self, folder=os.getcwd()):
@@ -32,18 +38,16 @@ class Analyzer:
         sys.stdout.write("done.\n")
         self.datareader = DataReader(self.parameters, self.folder)
 
-        self.readAll()
-
     def readAll(self):
-        self.normalForce = self.readAndResize('normal_force.bin')
-        self.pusherForce = self.readAndResize('pusher_force.bin')
-        self.positionInterface = self.readAndResize('node_position_interface.bin')
+        #self.normalForce = self.readAndResize('normal_force.bin')
+        #self.pusherForce = self.readAndResize('pusher_force.bin')
+        #self.positionInterface = self.readAndResize('node_position_interface.bin')
         self.attachedSprings = self.readAndResize('node_springs_attached_interface.bin')
-        self.shearForce = self.readAndResize('shear_force.bin')
+        #self.shearForce = self.readAndResize('shear_force.bin')
 
     def readAndResize(self, filename, start=0):
         data = self.read(filename)
-        return self.datareader(data, everySecondElement=True, start=start)
+        return self.datareader.resize(data, everySecondElement=True, start=start)
 
     def read(self, filename):
         sys.stdout.write("Reading {}...".format(filename))
@@ -66,36 +70,74 @@ class Analyzer:
                     print(valErr)
 
     def plotNormalForce(self):
-        plt.pcolor(self.normalForce)
+        plt.pcolormesh(self.normalForce)
         plt.title("Normal force")
         plt.show()
 
     def plotPusherForce(self):
-        plt.pcolor(self.pusherForce)
+        plt.pcolormesh(self.pusherForce)
         plt.title("Force on pusher")
         plt.show()
 
     def plotPositionInterface(self):
         pos = self.positionInterface - self.positionInterface[0, :]
-        plt.pcolor(pos)
+        plt.pcolormesh(pos)
         plt.title("Relative position of the interface")
         plt.show()
 
     def plotAttachedSprings(self):
-        plt.pcolor(self.attachedSprings)
+        plt.pcolormesh(self.attachedSprings)
         plt.title("Percent of attached springs")
         plt.xlabel("Block")
         plt.ylabel("Time")
         plt.show()
 
     def plotShearForce(self):
-        plt.pcolor(self.shearForce)
+        plt.pcolormesh(self.shearForce)
         plt.title("Shear force")
         plt.show()
 
+    def makePlots(self):
+        self.normalForce = self.readAndResize('normal_force.bin')
+        self.plotNormalForce()
+        del self.normalForce
+        self.pusherForce = self.readAndResize('pusher_force.bin')
+        self.plotPusherForce()
+        del self.pusherForce
+        self.positionInterface = self.readAndResize('node_position_interface.bin')
+        self.plotPositionInterface()
+        del self.positionInterface
+        self.attachedSprings = self.readAndResize('node_springs_attached_interface.bin')
+        self.plotAttachedSprings()
+        del self.attachedSprings
+        self.shearForce = self.readAndResize('shear_force.bin')
+        self.plotShearForce()
+        del self.shearForce
+
+
+class SortingHelpFormatter(argparse.RawTextHelpFormatter):
+    """ Custom formatter for argparse help """
+    def add_arguments(self, actions):
+        actions = sorted(actions, key=attrgetter('option_strings'))
+        super(SortingHelpFormatter, self).add_arguments(actions)
+
+######################
+#  GLOBAL FUNCTIONS  #
+######################
+
+
+def getArgs():
+    parser = argparse.ArgumentParser(description=("Creates plots from data "
+                                                  "created for FrictionProject"),
+                                     formatter_class=SortingHelpFormatter)
+    parser.add_argument('dir', nargs='?', default="Output")
+    args = parser.parse_args()
+    return args
+
 if __name__ == '__main__':
-    analyser = Analyzer('../Output')
-    analyser.plotNormalForce()
-    analyser.plotPusherforce()
-    analyser.plotPositionInterface()
-    analyser.AttachedSprings()
+    args = getArgs()
+    analyser = Analyzer(args.dir)
+    #analyser.plotNormalForce()
+    #analyser.plotPusherforce()
+    #analyser.plotPositionInterface()
+    analyser.plotAttachedSprings()

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import argparse
 import os
 import sys
+import re
 from string import Formatter
 from operator import attrgetter
 
@@ -23,27 +24,29 @@ class DataReader:
     def resize(self, array, everySecondElement=False, start=0):
         if everySecondElement:
             array = array[start::2]
-        return np.resize(array, (len(array)/(self.params["bottomNodes"]-1),
-                                 self.params["bottomNodes"]-1))
+        return np.resize(array, (len(array) / (self.params["bottomNodes"] - 1),
+                                 self.params["bottomNodes"] - 1))
 
 
 class Analyzer:
-    def __init__(self, folder=os.getcwd()):
+
+    def __init__(self, folder=os.getcwd(), savepath='plots'):
         "Read all available files in the folder"
-        print(folder)
         self.folder = os.path.abspath(folder)
-        print(self.folder)
         sys.stdout.write("Reading parameters...")
         self.readParameters()
         sys.stdout.write("done.\n")
         self.datareader = DataReader(self.parameters, self.folder)
+        self.savepath = savepath
 
     def readAll(self):
-        #self.normalForce = self.readAndResize('normal_force.bin')
-        #self.pusherForce = self.readAndResize('pusher_force.bin')
-        #self.positionInterface = self.readAndResize('node_position_interface.bin')
-        self.attachedSprings = self.readAndResize('node_springs_attached_interface.bin')
-        #self.shearForce = self.readAndResize('shear_force.bin')
+        self.normalForce = self.readAndResize('normal_force.bin')
+        self.pusherForce = self.readAndResize('pusher_force.bin')
+        self.positionInterface = self.readAndResize(
+            'node_position_interface.bin')
+        self.attachedSprings = self.readAndResize(
+            'node_springs_attached_interface.bin')
+        self.shearForce = self.readAndResize('shear_force.bin')
 
     def readAndResize(self, filename, start=0):
         data = self.read(filename)
@@ -69,33 +72,48 @@ class Analyzer:
                 except ValueError as valErr:
                     print(valErr)
 
-    def plotNormalForce(self):
+    def plotNormalForce(self, show=False, save=True):
         plt.pcolormesh(self.normalForce)
         plt.title("Normal force")
-        plt.show()
+        if show:
+            plt.show()
+        if save:
+            plt.savefig(os.path.join(self.savepath, 'plotNormalForce.png'), dpi=1200)
 
-    def plotPusherForce(self):
-        plt.pcolormesh(self.pusherForce)
+    def plotPusherForce(self, show=False, save=True):
+        plt.plot(self.pusherForce)
         plt.title("Force on pusher")
-        plt.show()
+        if show:
+            plt.show()
+        if save:
+            plt.savefig(os.path.join(self.savepath, 'plotPusherForce.png'), dpi=1200)
 
-    def plotPositionInterface(self):
+    def plotPositionInterface(self, show=False, save=True):
         pos = self.positionInterface - self.positionInterface[0, :]
         plt.pcolormesh(pos)
         plt.title("Relative position of the interface")
-        plt.show()
+        if show:
+            plt.show()
+        if save:
+            plt.savefig(os.path.join(self.savepath, 'plotPositionInterface.png'), dpi=1200)
 
-    def plotAttachedSprings(self):
+    def plotAttachedSprings(self, show=False, save=True):
         plt.pcolormesh(self.attachedSprings)
         plt.title("Percent of attached springs")
         plt.xlabel("Block")
         plt.ylabel("Time")
-        plt.show()
+        if show:
+            plt.show()
+        if save:
+            plt.savefig(os.path.join(self.savepath, 'plotAttachedSprings.png'), dpi=1200)
 
-    def plotShearForce(self):
+    def plotShearForce(self, show=False, save=True):
         plt.pcolormesh(self.shearForce)
         plt.title("Shear force")
-        plt.show()
+        if show:
+            plt.show()
+        if save:
+            plt.savefig(os.path.join(self.savepath, 'plotShearForce.png'), dpi=1200)
 
     def makePlots(self):
         self.normalForce = self.readAndResize('normal_force.bin')
@@ -104,10 +122,12 @@ class Analyzer:
         self.pusherForce = self.readAndResize('pusher_force.bin')
         self.plotPusherForce()
         del self.pusherForce
-        self.positionInterface = self.readAndResize('node_position_interface.bin')
+        self.positionInterface = self.readAndResize(
+            'node_position_interface.bin')
         self.plotPositionInterface()
         del self.positionInterface
-        self.attachedSprings = self.readAndResize('node_springs_attached_interface.bin')
+        self.attachedSprings = self.readAndResize(
+            'node_springs_attached_interface.bin')
         self.plotAttachedSprings()
         del self.attachedSprings
         self.shearForce = self.readAndResize('shear_force.bin')
@@ -117,9 +137,39 @@ class Analyzer:
 
 class SortingHelpFormatter(argparse.RawTextHelpFormatter):
     """ Custom formatter for argparse help """
+
     def add_arguments(self, actions):
         actions = sorted(actions, key=attrgetter('option_strings'))
         super(SortingHelpFormatter, self).add_arguments(actions)
+
+
+class Globbler:
+    def __init__(self, path):
+        "docstring"
+        self.path = path
+        self.cwd = os.getcwd()
+        self.savepath = os.path.join(self.cwd, 'plots')
+
+    def walk(self):
+        namePattern = re.compile("grooveHeight\d+-grooveSize\d+")
+        for root, dirs, files in os.walk(self.path, topdown=False):
+            outputDirs = (os.path.join(root, name) for name in dirs
+                          if 'Output' in name)
+            for path in outputDirs:
+                match = re.search(namePattern, path)
+                if match is not None:
+                    savepath = os.path.join(self.savepath, match.group(0))
+                    self.makePlotDir(savepath)
+                    analyzer = Analyzer(path, savepath=savepath)
+                    analyzer.makePlots()
+
+    def makePlotDir(self, path):
+        if not os.path.exists(path):
+            print("Making plot directory")
+            os.makedirs(path)
+        else:
+            print("Plot directory already exists. Skipping")
+
 
 ######################
 #  GLOBAL FUNCTIONS  #
@@ -134,10 +184,10 @@ def getArgs():
     args = parser.parse_args()
     return args
 
+
 if __name__ == '__main__':
     args = getArgs()
-    analyser = Analyzer(args.dir)
-    #analyser.plotNormalForce()
-    #analyser.plotPusherforce()
-    #analyser.plotPositionInterface()
-    analyser.plotAttachedSprings()
+    glob = Globbler(args.dir)
+    glob.walk()
+    #analyser = Analyzer(args.dir)
+

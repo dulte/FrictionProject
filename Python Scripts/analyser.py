@@ -65,12 +65,9 @@ class Analyzer:
                 words = line.split()
                 # Convert the parameter to either int or float
                 try:
-                    if float(words[1]) - int(words[1]) == 0:
-                        self.parameters[words[0]] = int(words[1])
-                    else:
-                        self.parameters[words[0]] = float(words[1])
+                    self.parameters[words[0]] = int(words[1])
                 except ValueError as valErr:
-                    print(valErr)
+                    self.parameters[words[0]] = float(words[1])
 
     def plotNormalForce(self, show=False, save=True):
         plt.pcolormesh(self.normalForce)
@@ -121,12 +118,12 @@ class Analyzer:
     def plotFrontVelocities(self):
         data = self.getReducedSpringAttachments()
         v = np.zeros(len(data) - 2)
-        h = abs(data[-1] - data[0])/(float(len(data)))
+        h = self.parameters["dt"]*100.
         for i in range(1,len(data) -1):
             v[i-1] = (data[i+1] - data[i-1])/(2.0*h)
 
         del data
-        return np.abs(v)
+        return np.abs(v)*0.005*50
 
     def makePlots(self):
         self.normalForce = self.readAndResize('normal_force.bin')
@@ -203,4 +200,3 @@ if __name__ == '__main__':
     glob = Globbler(args.dir)
     glob.walk()
     #analyser = Analyzer(args.dir)
-

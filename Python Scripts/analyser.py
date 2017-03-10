@@ -8,6 +8,7 @@ import sys
 import re
 from string import Formatter
 from operator import attrgetter
+from mpl_toolkits.mplot3d import Axes3D
 
 
 class DataReader:
@@ -24,7 +25,7 @@ class DataReader:
     def resize(self, array, everySecondElement=False, start=0):
         if everySecondElement:
             array = array[start::2]
-        return np.resize(array, (len(array) / (self.params["bottomNodes"] - 1),
+        return np.reshape(array, (len(array) / (self.params["bottomNodes"] - 1),
                                  self.params["bottomNodes"] - 1))
 
 
@@ -125,11 +126,21 @@ class Analyzer:
         del data
         return np.abs(v)*0.005*50
 
+
+    def getStaticFrictionCoefficient(self):
+        self.pusherForce = self.read('pusher_force.bin')
+        staticCoefficiant = np.max(self.pusherForce)
+        del self.pusherForce
+        return staticCoefficiant
+
+    def getGrooveDim(self):
+        return self.parameters["grooveHeight"], self.parameters["grooveSize"]
+
     def makePlots(self):
         self.normalForce = self.readAndResize('normal_force.bin')
         self.plotNormalForce()
         del self.normalForce
-        self.pusherForce = self.readAndResize('pusher_force.bin')
+        self.pusherForce = self.read('pusher_force.bin')
         self.plotPusherForce()
         del self.pusherForce
         self.positionInterface = self.readAndResize(
@@ -160,8 +171,9 @@ class Globbler:
         self.cwd = os.getcwd()
         self.savepath = os.path.join(self.cwd, 'plots')
 
-    def walk(self):
-        namePattern = re.compile("grooveHeight\d+-grooveSize\d+")
+    def walk(self, pattern, className):
+        namePattern = re.compile(pattern)
+        instanceList = []
         for root, dirs, files in os.walk(self.path, topdown=False):
             outputDirs = (os.path.join(root, name) for name in dirs
                           if 'Output' in name)
@@ -170,8 +182,10 @@ class Globbler:
                 if match is not None:
                     savepath = os.path.join(self.savepath, match.group(0))
                     self.makePlotDir(savepath)
-                    analyzer = Analyzer(path, savepath=savepath)
-                    analyzer.makePlots()
+                    analyzer = className(path, savepath = savepath)#Analyzer(path, savepath=savepath)
+                    instanceList.append(analyzer)
+
+        return instanceList
 
     def makePlotDir(self, path):
         if not os.path.exists(path):
@@ -179,6 +193,67 @@ class Globbler:
             os.makedirs(path)
         else:
             print("Plot directory already exists. Skipping")
+
+
+
+class Compare:
+    def __init__(self,instanceList):
+        self.instanceList = instanceList
+
+
+
+    def makeStaticCoeffArray(self):
+        self.staticCoefficiantArray = np.zeros([len(self.instanceList),3])
+        for i in range(len(self.instanceList)):
+            self.staticCoefficiantArray[i,0] = self.instanceList[i].getStaticFrictionCoefficient()
+            self.staticCoefficiantArray[i,1] = self.instanceList[i].getGrooveDim()[0]
+            self.staticCoefficiantArray[i,2] = self.instanceList[i].getGrooveDim()[1]
+
+
+
+
+    def plotCoeffHeight(self):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArray()
+
+        plt.plot(self.staticCoefficiantArray[:,1],self.staticCoefficiantArray[:,0])
+        plt.show()
+
+    def plotCoeffSize(self):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArray()
+
+        plt.plot(self.staticCoefficiantArray[:,2],self.staticCoefficiantArray[:,0])
+        plt.show()
+
+    def plotCoeff3D(self):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArray()
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='3d')
+
+        ax.scatter(self.staticCoefficiantArray[:,2],self.staticCoefficiantArray[:,1],self.staticCoefficiantArray[:,0])
+        ax.set_xlabel("Size")
+        ax.set_ylabel("Height")
+        ax.set_zlabel(r"$\mu_s$")
+
+        plt.show()
+
+    def printStaticCoeffArray(self):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArray()
+        print(self.staticCoefficiantArray)
+
+    def plotPushers(self):
+
+        for i in self.instanceList:
+            plt.plot(i.read('pusher_force.bin'), label= "size: %g, height: %g"%(i.getGrooveDim()[1],i.getGrooveDim()[0]))
+
+        plt.legend()
+        plt.show()
+
+
 
 
 ######################
@@ -198,5 +273,12 @@ def getArgs():
 if __name__ == '__main__':
     args = getArgs()
     glob = Globbler(args.dir)
-    glob.walk()
+
+    pattern = "grooveHeight\d+-grooveSize\d+"
+    instanceList = glob.walk(pattern, Analyzer)
+    comp = Compare(instanceList)
+    comp.makeStaticCoeffArray()
+    comp.printStaticCoeffArray()
+    comp.plotCoeff3D()
+    comp.plotPushers()
     #analyser = Analyzer(args.dir)

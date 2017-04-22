@@ -39,7 +39,9 @@ SidePotentialLoading::SidePotentialLoading(int nx, int ny, double d, double E, d
     std::cout << "Top: " << -topLoadingForce/numTop << endl;
     for (int i = 0; i<numTop; i++)
     {
-        std::unique_ptr<ConstantForce> myForce = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce/numTop*normalForceDist, 0));
+        std::unique_ptr<ConstantForce> myForce = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce, 0));
+//        std::unique_ptr<ConstantForce> myForce = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce/numTop*normalForceDist, 0));
+
         lattice->topNodes[i]->addModifier(std::move(myForce));
     }
 

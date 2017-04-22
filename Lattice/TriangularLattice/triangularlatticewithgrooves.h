@@ -17,6 +17,7 @@ public:
     TriangularLatticeWithGrooves();
 
     void populate(int nx, int ny, double d, double E, double nu, double hZ, double density) override;
+    void populateSymmetric(int nx, int ny, double d, double E, double nu, double hZ, double density);
     void populateWithUnitCell(double d, double E, double nu, double hZ, double density);
     void populateCantilever(double d, double E, double nu, double hZ, double density);
     void setGrooveHeight(int hg);
@@ -28,6 +29,7 @@ public:
     int m_grooveHeight = input->get("grooveHeight");
     int m_nx;
     int m_ny;
+
 };
 
 #endif // TRIANGULARLATTICEWITHGROOVES_H

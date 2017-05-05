@@ -1,20 +1,18 @@
 #pragma once
-#include "InputManagement/ConfigReader/configreader.h"
+#include <memory>
+#include "InputManagement/Parameters/parameters.h"
 
 class FrictionInfo
 {
 public:
-    FrictionInfo();
+  FrictionInfo(std::shared_ptr<Parameters> spParameters);
 
-    double k;
-    double fs;
-    double fk;
-    double fnAvg;
-    double kNormal;
-    double ns;
-    double nx;
-    double tau;
-
-private:
-    ConfigReader *input = new ConfigReader("config.txt");
+    double m_k;
+    double m_fs;
+    double m_fk;
+    double m_fnAvg;
+    double m_kNormal;
+    double m_ns;
+    double m_nx;
+    double m_tau;
 };

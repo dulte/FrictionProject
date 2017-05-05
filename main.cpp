@@ -1,8 +1,8 @@
+// TODO: Write a function to dump all relevant parameters to a file
 #include <iostream>
 #include <string>
-#include <Lattice/TriangularLattice/triangularlattice.h>
+#include "Lattice/TriangularLattice/triangularlattice.h"
 #include "Lattice/SquareLattice/squarelattice.h"
-//#include <QDebug>
 #include <fstream>
 #include "ForceModifier/ConstantForce/constantforce.h"
 #include "ForceModifier/PotentialSurface/potentialsurface.h"
@@ -13,15 +13,15 @@
 #include "DataOutput/datapackethandler.h"
 #include <memory>
 #include <time.h>
-#include "InputManagement/ConfigReader/configreader.h"
 #include <omp.h>
-
+#include "InputManagement/Parameters/parameters.h"
 
 using namespace std;
 
 void cantileverTest(TriangularLattice &);
 void bulkWave(TriangularLattice &);
 void bulkStretch(TriangularLattice &);
+double getTime(const clock_t &);
 
 int main(int argc, char *argv[])
 {
@@ -36,35 +36,33 @@ int main(int argc, char *argv[])
         outputFolder = "Output/";
     }
 
+    // Get all of the configuration parameters
+    std::cout << "Reading configuration parameters at " << getTime(start) << std::endl;
+    std::shared_ptr<Parameters> spParameters = std::make_shared<Parameters>("Config/config.txt");
 
-    std::ofstream myStream("out.xyz",std::ofstream::out);
-    ConfigReader *input = new ConfigReader("config.txt");
+    int    nt          = spParameters->m_nt;
+    int    releaseTime = spParameters->m_releaseTime;
+    double step        = spParameters->m_step;
+    int    writingFreq = nt/10;
 
-    int nx = int(input->get("nx"));
-    int ny = int(input->get("ny"));
+    SidePotentialLoading mySystem(spParameters);
+    DataPacketHandler    dataPacketHandler(outputFolder, spParameters);
 
-    SidePotentialLoading mySystem(nx, ny, 0.005, 3e9, 4e6, input->get("fn"));
-    DataPacketHandler dataPacketHandler(outputFolder, input);
-    int nt = int(input->get("nt"));
-    int releaseTime = input->get("releaseTime");
-    double step = (input->get("step"));
-    int writingFreq = nt/10;
-
-    mySystem.outFileFolder = outputFolder;
-    mySystem.dumpParameters();
-
-
+    std::cout<<releaseTime<<std::endl;
     mySystem.isLockFrictionSprings(true);
+    std :: cout << "Starting the model with springs locked at " << getTime(start) << std::endl;
     for (int i = 0; i<releaseTime; i++)
     {
         mySystem.lattice->step(step);
-        if (i%writingFreq == 0)
+        if (writingFreq != 0 && i%writingFreq == 0)
             std::cout << static_cast<double>(i)/nt << std::endl;
         dataPacketHandler.dumpXYZ(mySystem.lattice, i);
         dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
     }
-    mySystem.addPusher(4e6, 4e-4, mySystem.lattice->t());
+
+    mySystem.addPusher(mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
+    std::cout << "Unlocking springs at " << getTime(start) << std::endl;
     //nt = 2000;
     for (int i = releaseTime; i<nt; i++)
     {
@@ -76,12 +74,14 @@ int main(int argc, char *argv[])
         dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
     }
 
-
-    clock_t stop = clock();
-    cout << static_cast<double>(stop-start)/CLOCKS_PER_SEC << std::endl;
-
+    std::cout << "Simulation complete at " << getTime(start) << std::endl;
 
     return 0;
+}
+
+double getTime(const clock_t &start){
+   clock_t now = clock();
+   return static_cast<double>(now-start)/CLOCKS_PER_SEC;
 }
 
 void cantileverTest(TriangularLattice & lattice)

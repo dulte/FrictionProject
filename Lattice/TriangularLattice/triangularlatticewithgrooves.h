@@ -6,7 +6,7 @@
 #include "DataOutput/dumpable.h"
 #include "Node/node.h"
 #include "LatticeInfo/latticeinfo.h"
-#include "InputManagement/ConfigReader/configreader.h"
+#include "DriverBeam/driverbeam.h"
 
 class LatticeInfo;
 
@@ -16,17 +16,16 @@ class TriangularLatticeWithGrooves : public Lattice
 public:
     TriangularLatticeWithGrooves();
 
+    void populate(int nx, int ny, double d, double E, double nu, double hZ, double density, int grooveSize, int grooveHeight);
     void populate(int nx, int ny, double d, double E, double nu, double hZ, double density) override;
-    void populateSymmetric(int nx, int ny, double d, double E, double nu, double hZ, double density);
+    void populateSymmetric(int nx , int ny, double d, double E, double nu, double hZ, double density);
     void populateWithUnitCell(double d, double E, double nu, double hZ, double density);
     void populateCantilever(double d, double E, double nu, double hZ, double density);
-    void setGrooveHeight(int hg);
-
-    ConfigReader *input = new ConfigReader("config.txt");
 
     virtual std::vector<DataPacket> getDataPackets(int timestep, double time) override;
-
-    int m_grooveHeight = input->get("grooveHeight");
+ private:
+    int m_grooveSize;
+    int m_grooveHeight;
     int m_nx;
     int m_ny;
 

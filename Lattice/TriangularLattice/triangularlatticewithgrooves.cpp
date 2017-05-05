@@ -1,12 +1,10 @@
-#include "triangularlatticewithgrooves.h"
 #include <math.h>
-//#include <QDebug>
 #include <sstream>
 #include <memory>
 #include <cmath>
+#include <iostream>
+#include "triangularlatticewithgrooves.h"
 #include "NodeInfo/nodeinfo.h"
-
-
 
 #define pi 3.14159265358979323
 
@@ -16,120 +14,77 @@ TriangularLatticeWithGrooves::TriangularLatticeWithGrooves()
 }
 
 void TriangularLatticeWithGrooves::populate(int nx, int ny, double d, double E, double nu, double hZ, double density){
-    m_nx = nx;
-    m_ny = ny;
-    latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
-    int grooveLength = input->get("grooveSize");
-    int restLength;
-    int backRest;
+  std::cerr << "You probably meant the other populate" << std::endl;
+  throw;
+};
 
-    if (grooveLength != 0){
-        restLength = m_nx%(2*int(grooveLength));
-        backRest = std::ceil(restLength/2.0);
+void TriangularLatticeWithGrooves::populate(int nx, int ny, double d, double E, double nu, double hZ, double density, int grooveSize, int grooveHeight){
+    m_nx           = nx;
+    m_ny           = ny;
+    m_grooveSize   = grooveSize;
+    m_grooveHeight = grooveHeight;
+    latticeInfo    = std::make_shared<LatticeInfo>(E, nu, d, hZ);
+    int restLength = 0;
 
+    if (m_grooveSize != 0){
+        restLength = m_nx%(2*int(m_grooveSize));
     }
-
 
     for (int j = 0; j<ny; j++)
     {
         for (int i = 0; i<nx; i++)
         {
-
-//            double rx = i*d+(j%2)*d*cos(pi/3);
-//            double ry = j*d*sin(pi/3);
-//            vec3 pos(rx, ry,0);
-//            std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
-//            nodes.push_back(newNode);
-            if (grooveLength != 0){
+            if (m_grooveSize != 0){
                 if (j < m_grooveHeight)
                 {
-//                    if (((int(i-backRest)/int((grooveLength)))%2 == 1) || (i<backRest) || (i> m_nx - backRest)){
-//                        double rx = i*d+(j%2)*d*cos(pi/3);
-//                        double ry = j*d*sin(pi/3);
-//                        vec3 pos(rx, ry,0);
-//                        std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
-//                        nodes.push_back(newNode);
-
-//                        bottomNodes.push_back(newNode);
-
-//                        if (i == 0)
-//                        {
-//                            leftNodes.push_back(newNode);
-//                        }
-//                    }
-
-                    if ((((int(i-1)/int((grooveLength)))%2 == 0) || (i > m_nx -restLength)) && !(i == 0 && j%2 == 0)){
+                    if ((((int(i-1)/int((m_grooveSize)))%2 == 0) || (i > m_nx -restLength)) && !(i == 0 && j%2 == 0)){
                         double rx = i*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
-
-
-
                         if (j == 0){
                             bottomNodes.push_back(newNode);
                         }
-
-
                         if (i == 0)
                         {
                             leftNodes.push_back(newNode);
                         }
                     }
-
-                    else if ((j%2 == 1) && ((i+1-1)%(2*grooveLength) == 0)){
+                    else if ((j%2 == 1) && ((i+1-1)%(2*m_grooveSize) == 0)){
                         double rx = i*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
-
-
-
                         if (j == 0){
                             bottomNodes.push_back(newNode);
                         }
-
-
                         if (i == 0)
                         {
                             leftNodes.push_back(newNode);
                         }
-
                     }
-
-
-
                 }
-
                 else{
                     double rx = i*d+(j%2)*d*cos(pi/3);
                     double ry = j*d*sin(pi/3);
                     vec3 pos(rx, ry,0);
                     std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                     nodes.push_back(newNode);
-
-
                     if (j == 0){
                         bottomNodes.push_back(newNode);
                     }
-
                     if (j == ny-1)
                     {
-
-
                         topNodes.push_back(newNode);
                     }
                     if (i == 0)
                     {
-
-
                         leftNodes.push_back(newNode);
                     }
                 }
             }
-
             else{
                 double rx = i*d+(j%2)*d*cos(pi/3);
                 double ry = j*d*sin(pi/3);
@@ -151,27 +106,6 @@ void TriangularLatticeWithGrooves::populate(int nx, int ny, double d, double E, 
             }
         }
     }
-
-    // Make right part for system to be symmetric
-    /*
-    for(int j = 0; j<ny; j+=2)
-    {
-        int i = nx;
-        double rx = i*d+(j%2)*d*cos(pi/3);
-        double ry = j*d*sin(pi/3);
-        vec3 pos(rx, ry,0);
-        std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
-        nodes.push_back(newNode);
-        if (j == 0)
-        {
-            bottomNodes.push_back(newNode);
-        }
-        if (j == ny-1)
-        {
-            topNodes.push_back(newNode);
-        }
-    }
-    */
 
     for (auto & node : nodes)
     {
@@ -187,31 +121,28 @@ void TriangularLatticeWithGrooves::populate(int nx, int ny, double d, double E, 
 }
 
 void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, double E, double nu, double hZ, double density){
+  std::cerr << "populateSymmetric() should not be used" << std::endl;
     m_nx = nx;
     m_ny = ny;
     latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
-    int grooveLength = input->get("grooveSize");
+    int m_grooveSize = 0;
     int restLength;
-    int backRest;
 
-    if (grooveLength != 0){
-        restLength = m_nx%(2*int(grooveLength));
-        backRest = std::ceil(restLength/2.0);
-
+    if (m_grooveSize != 0){
+        restLength = m_nx%(2*int(m_grooveSize));
     }
-
 
     for (int j = 0; j<ny; j++)
     {
         for (int i = 0; i<nx; i++)
         {
 
-            if (grooveLength != 0){
+            if (m_grooveSize != 0){
                 if (j < m_grooveHeight)
                 {
 //
 
-                    if ((((int(i-1)/int((grooveLength)))%2 == 0) || (i > m_nx -restLength)) && !(i == 0 && j%2 == 0)){
+                    if ((((int(i-1)/int((m_grooveSize)))%2 == 0) || (i > m_nx -restLength)) && !(i == 0 && j%2 == 0)){
                         double rx = i*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
@@ -231,58 +162,40 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                         }
                     }
 
-                    else if ((j%2 == 1) && ((i+1-1)%(2*grooveLength) == 0)){
+                    else if ((j%2 == 1) && ((i+1-1)%(2*m_grooveSize) == 0)){
                         double rx = i*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
-
-
-
                         if (j == 0){
                             bottomNodes.push_back(newNode);
                         }
-
-
                         if (i == 0)
                         {
                             leftNodes.push_back(newNode);
                         }
-
                     }
-
-
-
                 }
-
                 else{
                     double rx = i*d+(j%2)*d*cos(pi/3);
                     double ry = j*d*sin(pi/3);
                     vec3 pos(rx, ry,0);
                     std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                     nodes.push_back(newNode);
-
-
                     if (j == 0){
                         bottomNodes.push_back(newNode);
                     }
-
                     if (j == ny-1)
                     {
-
-
                         topNodes.push_back(newNode);
                     }
                     if (i == 0)
                     {
-
-
                         leftNodes.push_back(newNode);
                     }
                 }
             }
-
             else{
                 double rx = i*d+(j%2)*d*cos(pi/3);
                 double ry = j*d*sin(pi/3);
@@ -304,8 +217,6 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
             }
         }
     }
-
-
 
     for (auto & node : nodes)
     {
@@ -377,11 +288,6 @@ void TriangularLatticeWithGrooves::populateCantilever(double d, double E, double
     }
 }
 
-
-
-void TriangularLatticeWithGrooves::setGrooveHeight(int hg){
-    m_grooveHeight = hg;
-}
 
 std::vector<DataPacket> TriangularLatticeWithGrooves::getDataPackets(int timestep, double time)
 {

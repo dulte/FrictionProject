@@ -1,20 +1,16 @@
 #include "frictioninfo.h"
-FrictionInfo::FrictionInfo()
+FrictionInfo::FrictionInfo(std::shared_ptr<Parameters> spParameters)
 {
+  m_k       = spParameters->m_k;
+  m_ns      = spParameters->m_ns;
+  m_nx      = spParameters->m_nx;
+  m_tau     = spParameters->m_tau;
+  double Fn = spParameters->m_fn;
 
-
-    ns = input->get("ns");
-    nx = input->get("nx");
-    double Fn = input->get("fn");
-    tau = input->get("tau");
-
-
-
-    fs = Fn/nx/ns*0.4;
-    k = fs/1e-6;
-
-    fk = fs*0.4;
-
-    fnAvg = Fn/ns/nx;
-    kNormal = 4e6/ns;
+  //TODO: Loads of magic numbers
+  m_fs      = Fn/m_nx/m_ns*0.4;
+  m_k       = m_fs/1e-6; // Hvorfor settes k på nytt her?
+  m_fk      = m_fs*0.4;
+  m_fnAvg   = Fn/m_ns/m_nx;
+  m_kNormal = 4e6/m_ns;
 }

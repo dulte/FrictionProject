@@ -1,32 +1,32 @@
 #include "datapackethandler.h"
 #include <iostream>
 
-DataPacketHandler::DataPacketHandler(std::string outputFolder, ConfigReader *input)
+DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<Parameters> pParameters)
 {
-    m_input = input;
-    m_writeNodePositionInterface = m_input->get("writeNodePositionInterface") == 1;
-    m_writeNodeVelocityInterface = m_input->get("writeNodeVelocityInterface") == 1;
-    m_writeNodeSpringsAttachedInterface = m_input->get("writeNodeSpringsAttachedInterface") == 1;
-    m_writeNodePositionAll = m_input->get("writeNodePositionAll") == 1;
-    m_writeNodeVelocityAll = m_input->get("writeNodeVelocityAll") == 1;
-    m_writeTotalEnergyAll = m_input->get("writeTotalEnergyAll") == 1;
-    m_writeTotalForceAll = m_input->get("writeTotalForceAll") == 1;
-    m_writePusherForce = m_input->get("writePusherForce") == 1;
-    m_writeNormalForce = m_input->get("writeNormalForce") == 1;
-    m_writeShearForce = m_input->get("writeShearForce") == 1;
-    m_writeXYZ = m_input->get("writeXYZ") == 1;
+    m_pParameters                        = pParameters; // Copy
+    m_writeNodePositionInterface        = m_pParameters->m_writeNodePositionInterface;
+    m_writeNodeVelocityInterface        = m_pParameters->m_writeNodeVelocityInterface;
+    m_writeNodeSpringsAttachedInterface = m_pParameters->m_writeNodeSpringsAttachedInterface;
+    m_writeNodePositionAll              = m_pParameters->m_writeNodePositionAll;
+    m_writeNodeVelocityAll              = m_pParameters->m_writeNodeVelocityAll;
+    m_writeTotalEnergyAll               = m_pParameters->m_writeTotalEnergyAll;
+    m_writeTotalForceAll                = m_pParameters->m_writeTotalForceAll;
+    m_writePusherForce                  = m_pParameters->m_writePusherForce;
+    m_writeNormalForce                  = m_pParameters->m_writeNormalForce;
+    m_writeShearForce                   = m_pParameters->m_writeShearForce;
+    m_writeXYZ                          = m_pParameters->m_writeXYZ;
 
-    m_freqNodePositionInterface = int(m_input->get("freqNodePositionInterface"));
-    m_freqNodeVelocityInterface = int(m_input->get("freqNodeVelocityInterface"));
-    m_freqNodeSpringsAttachedInterface = int(m_input->get("freqNodeSpringsAttachedInterface"));
-    m_freqNodePositionAll = int(m_input->get("freqNodePositionAll"));
-    m_freqNodeVelocityAll = int(m_input->get("freqNodeVelocityAll"));
-    m_freqTotalEnergyAll = int(m_input->get("freqTotalEnergyAll"));
-    m_freqTotalForceAll = int(m_input->get("freqTotalForceAll"));
-    m_freqPusherForce = int(m_input->get("freqPusherForce"));
-    m_freqNormalForce = int(m_input->get("freqNormalForce"));
-    m_freqShearForce = int(m_input->get("freqShearForce"));
-    m_freqXYZ = int(m_input->get("freqXYZ"));
+    m_freqNodePositionInterface         = m_pParameters->m_freqNodePositionInterface;
+    m_freqNodeVelocityInterface         = m_pParameters->m_freqNodeVelocityInterface;
+    m_freqNodeSpringsAttachedInterface  = m_pParameters->m_freqNodeSpringsAttachedInterface;
+    m_freqNodePositionAll               = m_pParameters->m_freqNodePositionAll;
+    m_freqNodeVelocityAll               = m_pParameters->m_freqNodeVelocityAll;
+    m_freqTotalEnergyAll                = m_pParameters->m_freqTotalEnergyAll;
+    m_freqTotalForceAll                 = m_pParameters->m_freqTotalForceAll;
+    m_freqPusherForce                   = m_pParameters->m_freqPusherForce;
+    m_freqNormalForce                   = m_pParameters->m_freqNormalForce;
+    m_freqShearForce                    = m_pParameters->m_freqShearForce;
+    m_freqXYZ                           = m_pParameters->m_freqXYZ;
 
     if (outputFolder.back() != '/') {
         std::cerr << "Forgot final '/'" << std::endl;
@@ -57,7 +57,7 @@ DataPacketHandler::~DataPacketHandler()
     m_ofPusherForce.close();
     m_ofNormalForce.close();
     m_ofShearForce.close();
-    m_ofXYZ.close();    
+    m_ofXYZ.close();
 }
 
 void DataPacketHandler::step(std::vector<DataPacket> packets)

@@ -19,7 +19,7 @@ public:
     void populateCantilever(double d, double E, double nu, double hZ, double density);
 
     virtual std::vector<DataPacket> getDataPackets(int timetep, double time) override;
-
+ private:
     int m_nx;
     int m_ny;
 };

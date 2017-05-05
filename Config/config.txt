@@ -1,8 +1,8 @@
 nx 64
 ny 31
 writingFreq 100
-nt 10e3
-releaseTime 1e3
+nt 5e4
+releaseTime 1e2
 fn 1920
 ns 50
 tau 0.002
@@ -13,26 +13,26 @@ nu 0.33
 hZ 0.006
 density 1300
 step 2e-7
-grooveSize 0
+grooveSize 10
 grooveHeight 4
 
 #Pusher
-vD 4e-4
+vD 4e1
 pK 4e5
 pusherStartHeight 4
 pusherEndHeight 5
 
 #Write_data
-writeNodePositionInterface 1
-writeNodeVelocityInterface 1
-writeNodeSpringsAttachedInterface 1
+writeNodePositionInterface 0
+writeNodeVelocityInterface 0
+writeNodeSpringsAttachedInterface 0
 writeNodePositionAll 0
 writeNodeVelocityAll 0
 writeTotalEnergyAll 0
 writeTotalForceAll 0
-writePusherForce 1
-writeNormalForce 1
-writeShearForce 1
+writePusherForce 0
+writeNormalForce 0
+writeShearForce 0
 writeXYZ 1
 
 #Write_data_frequency

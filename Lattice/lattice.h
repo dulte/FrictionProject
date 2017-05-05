@@ -19,7 +19,7 @@ public:
     std::vector<std::shared_ptr<Node>> bottomNodes;
     std::vector<std::shared_ptr<Node>> topNodes;
     std::vector<std::shared_ptr<Node>> leftNodes;
-    std::shared_ptr<LatticeInfo> latticeInfo;
+    std::shared_ptr<LatticeInfo>       latticeInfo;
 
     double t() {return m_t;}
 

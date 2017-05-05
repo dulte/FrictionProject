@@ -2,12 +2,13 @@
 
 #include "ForceModifier/forcemodifier.h"
 #include "Vec3/vec3.h"
-#include "InputManagement/ConfigReader/configreader.h"
+#include "InputManagement/Parameters/parameters.h"
+#include "Node/node.h"
 
 class PotentialPusher: public ForceModifier
 {
 public:
-    PotentialPusher(double k, double vD, double xInit, double tInit);
+  PotentialPusher(double k, double vD, double xInit, double tInit);
     vec3 getForceModification() override;
     double fPush;
 
@@ -16,7 +17,5 @@ protected:
     double m_vD = 0;
     double m_xInit = 0;
     double m_tInit = 0;
-
-    ConfigReader *input = new ConfigReader("config.txt");
 };
 

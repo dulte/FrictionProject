@@ -9,7 +9,7 @@ QMAKE_LFLAGS +=  -fopenmp
 QMAKE_CXXFLAGS_RELEASE -= -O1
 QMAKE_CXXFLAGS_RELEASE -= -O2
 QMAKE_CXXFLAGS_RELEASE *= -O3
-
+QMAKE_MAC_SDK = macosx10.11
 
 
 SOURCES += main.cpp \
@@ -34,6 +34,7 @@ SOURCES += main.cpp \
     DataOutput/dumpable.cpp \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp \
     InputManagement/ConfigReader/configreader.cpp \
+    InputManagement/Parameters/parameters.cpp \
     Lattice/TriangularLattice/triangularlatticewithgrooves.cpp
 
 
@@ -45,6 +46,7 @@ HEADERS += \
     LatticeInfo/latticeinfo.h \
     ForceModifier/forcemodifier.h \
     InputManagement/ConfigReader/configreader.h \
+    InputManagement/Parameters/parameters.h \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.h \
     Lattice/SquareLattice/squarelattice.h \
     Lattice/TriangularLattice/triangularlattice.h \

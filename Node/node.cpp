@@ -73,21 +73,13 @@ void Node::updateForcesAndMoments(){
 //                exit(1);
 //                m_r.print();
             }
-
-
-
             double fn               = m_latticeInfo->kappa_n()*(dij-d0);
             double fs               = -m_latticeInfo->kappa_s()*0.5*(phi_ij + phi_ji);
             double m                = -m_latticeInfo->kappa_s()*dij*(m_latticeInfo->Phi()/12.0*(phi_ij-phi_ji)+0.5*(2.0/3.0*phi_ij+1.0/3.0*phi_ji));
 
-
             m_moment += m;
             m_f += rDiff/dij*fn +vec3(-rDiff[0], rDiff[1],0)*fs/dij;
-
-
-
         }
-
     }
 
     for (auto & modifier : m_modifiers)
@@ -173,6 +165,3 @@ void Node::isSetForce(bool isSetForce)
 {
     m_isSetForce = isSetForce;
 }
-
-
-

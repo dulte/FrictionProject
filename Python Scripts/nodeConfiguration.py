@@ -1,4 +1,5 @@
 import numpy as np
+import argparse
 
 
 class nodeConfiguration:
@@ -47,6 +48,8 @@ class nodeConfiguration:
         grooveSize = self.parameters["grooveSize"]
         grooveHeight = self.parameters["grooveHeight"]
 
+        self.bottomNodes = []
+
         if not(self.parameters["grooveHeight"] == 0 or self.parameters["grooveSize"] == 0):
             bottomNodes = []
             nodes = 0
@@ -83,28 +86,37 @@ class nodeConfiguration:
             midBatch = int(np.floor(batches/2.0))
             batchesFromTheMid = 0
             placeOnSide = 1
+            restsPlaced = 1
+
             while (restBlanks > 0 or restNodes > 0):
-                if(midBatch - batchesFromTheMid) <= 0 or (midBatch + batchesFromTheMid) >= len(bottomNodes) - 1:
+                if(midBatch - batchesFromTheMid) <= 0 or (midBatch + batchesFromTheMid) >= batches - 1:
                     batchesFromTheMid = 0
-                    placeOnSide = 1
+                    placeOnSide = -1
 
                 if restBlanks > 0:
                     bottomNodes[midBatch + placeOnSide*batchesFromTheMid].insert(-1,0)
                     restBlanks -=1
                 if restNodes > 0:
-                    bottomNodes[midBatch + placeOnSide*batchesFromTheMid].insert(1,1)
+                    bottomNodes[midBatch + placeOnSide*batchesFromTheMid].insert(0,1)
                     restNodes -=1
 
-                batchesFromTheMid += 1
+                restsPlaced += 1
+                batchesFromTheMid = batchesFromTheMid +  restsPlaced%2
                 placeOnSide *= -1
+
+
 
 
             print bottomNodes
             bottomNodes = [l for sublist in bottomNodes for l in sublist]
 
+            self.bottomNodes = bottomNodes
+
             print bottomNodes
             print len(bottomNodes)
             print restBlanks,restNodes
+
+
 
             for i in range(int(nx)):
                 for j in range(int(ny)):
@@ -142,14 +154,38 @@ class nodeConfiguration:
                         f.write(str(self.nodePositionX[j,i]) + " " + str(self.nodePositionY[j,i]) + "\n")
 
 
+    def makeBottomNodesText(self, binaryFilePath, binaryFileName):
 
+        outFile = binaryFilePath + binaryFileName
+
+        try:
+            np.savetxt(outFile, np.array([len(self.bottomNodes)] + self.bottomNodes), fmt = "%i")
+        except:
+            print "something went wrong when writing to text file"
 
 
 
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description = "string giving the path of the files")
+
+    parser.add_argument('path',type=str,help="Path of the files")
+    parser.add_argument('configFile',type=str,help="Name of the config file")
+    parser.add_argument('outputFile',type=str,help="Name of the output file")
+    arg = parser.parse_args()
+
+
+    path = arg.path
+    print path
+
+    exit()
+
+
     path = "/home/daniel/Dokumenter/Skole/FrictionProject/build-FrictionProject-Desktop_Qt_5_7_0_GCC_64bit-Release/"
     fileName = "config.txt"
+    textFile = "bottomNodesConfig.txt"
     nodes = nodeConfiguration(path, fileName)
     nodes.configurateNodesEqual()
     nodes.makeXYZ()
+    nodes.makeBottomNodesText(path, textFile)

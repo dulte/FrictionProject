@@ -3,7 +3,7 @@ CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS+= -fopenmp
+QMAKE_CXXFLAGS+= -fopenmp -g
 QMAKE_LFLAGS +=  -fopenmp
 
 QMAKE_CXXFLAGS_RELEASE -= -O1
@@ -33,9 +33,10 @@ SOURCES += main.cpp \
     DataOutput/datapackethandler.cpp \
     DataOutput/dumpable.cpp \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp \
-    InputManagement/ConfigReader/configreader.cpp \
     InputManagement/Parameters/parameters.cpp \
-    Lattice/TriangularLattice/triangularlatticewithgrooves.cpp
+    Lattice/TriangularLattice/triangularlatticewithgrooves.cpp \
+    DriverBeam/driverbeam.cpp \
+    Lattice/simplelattice.cpp
 
 
 HEADERS += \
@@ -56,5 +57,6 @@ HEADERS += \
     DataOutput/datapackethandler.h \
     DataOutput/datapacket.h \
     ForceModifier/SpringFriction/springfriction.h \
-    Lattice/TriangularLattice/triangularlatticewithgrooves.h
-
+    Lattice/TriangularLattice/triangularlatticewithgrooves.h \
+    DriverBeam/driverbeam.h \
+    Lattice/simplelattice.h

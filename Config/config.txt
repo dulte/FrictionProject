@@ -1,3 +1,9 @@
+# This is the configuration file
+# Comments start with '#'
+# Only the first two words are processed.
+# The first word is the parameter name, the second is its value.
+
+# Simulation parameters
 nx 64
 ny 31
 writingFreq 100
@@ -13,14 +19,19 @@ nu 0.33
 hZ 0.006
 density 1300
 step 2e-7
-grooveSize 10
-grooveHeight 4
+grooveSize 2 
+grooveHeight 2
 
 #Pusher
 vD 4e1
 pK 4e5
 pusherStartHeight 4
 pusherEndHeight 5
+
+#Driver Beam
+driverSprings_k 4
+attachmentSprings_k 4
+driverForce 1
 
 #Write_data
 writeNodePositionInterface 0

@@ -3,7 +3,7 @@
 
 DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<Parameters> pParameters)
 {
-    m_pParameters                        = pParameters; // Copy
+    m_pParameters                       = pParameters; // Copy
     m_writeNodePositionInterface        = m_pParameters->m_writeNodePositionInterface;
     m_writeNodeVelocityInterface        = m_pParameters->m_writeNodeVelocityInterface;
     m_writeNodeSpringsAttachedInterface = m_pParameters->m_writeNodeSpringsAttachedInterface;
@@ -117,12 +117,11 @@ void DataPacketHandler::step(std::vector<DataPacket> packets)
         else{
             std::cerr << "Unknown data packet sent" << std::endl;
         }
-            
     }
 }
 
-void DataPacketHandler::dumpXYZ(const std::shared_ptr<TriangularLatticeWithGrooves>& lattice, int timestep){
+void DataPacketHandler::dumpXYZ(const SidePotentialLoading& system, int timestep){
     if (m_writeXYZ && timestep%m_freqXYZ == 0){
-        m_ofXYZ << lattice->xyzString();
+        m_ofXYZ << system.xyzString();
     }
 }

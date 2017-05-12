@@ -1,36 +1,34 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include "ForceModifier/SpringFriction/springfriction.h"
-#include "InputManagement/Parameters/parameters.h"
-#include "Node/node.h"
-#include "LatticeInfo/latticeinfo.h"
-#include "Lattice/lattice.h"
-
+#include "Lattice/simplelattice.h"
 #define pi 3.14159265358979323
 
 class SpringFriction;
-class Node;
-class LatticeInfo;
 class Lattice;
+class Node;
+class Parameters;
 
-class DriverBeam
+class DriverBeam: public SimpleLattice// , public std::enable_shared_from_this<DriverBeam>
 {
 public :
     explicit DriverBeam(std::shared_ptr<Parameters> spParameters,
                         std::shared_ptr<Lattice>    spLattice);
     ~DriverBeam();
 
-    void step(double dt);
     void construct(std::shared_ptr<Parameters> spParameters);
+    std::vector<DataPacket> getDataPackets(int, double) override;
 
-protected :
     // The top nodes of to lattice to which the attachment nodes are attached
     std::vector<std::shared_ptr<Node> > m_latticeNodes;
     // Nodes connecting the driver nodes to the top nodes of the lattice.
     std::vector<std::shared_ptr<Node> > m_attachmentNodes;
     // The driver nodes pushing/pulling/driving the entire system
     std::vector<std::shared_ptr<Node> > m_driverNodes;
+
+protected :
 
     // Read from spParameters
     const unsigned int m_nx;

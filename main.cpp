@@ -43,35 +43,45 @@ int main(int argc, char *argv[])
     int    nt          = spParameters->m_nt;
     int    releaseTime = spParameters->m_releaseTime;
     double step        = spParameters->m_step;
-    int    writingFreq = nt/10;
+
+    // For the progress output
+    float progress     = 0;
+    float prevProgress = 0;
 
     SidePotentialLoading mySystem(spParameters);
     DataPacketHandler    dataPacketHandler(outputFolder, spParameters);
 
-    std::cout<<releaseTime<<std::endl;
     mySystem.isLockFrictionSprings(true);
     std :: cout << "Starting the model with springs locked at " << getTime(start) << std::endl;
     for (int i = 0; i<releaseTime; i++)
     {
-        mySystem.lattice->step(step);
-        if (writingFreq != 0 && i%writingFreq == 0)
-            std::cout << static_cast<double>(i)/nt << std::endl;
-        dataPacketHandler.dumpXYZ(mySystem.lattice, i);
+        mySystem.step(step);
+        dataPacketHandler.dumpXYZ(mySystem, i);
         dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
+
+        if (progress >= prevProgress){
+            std::cout << 100*progress << "% completed" << std::endl;
+            prevProgress += 0.1;
+        }
+        progress = static_cast<double>(i)/releaseTime;
     }
 
     mySystem.addPusher(mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
     std::cout << "Unlocking springs at " << getTime(start) << std::endl;
-    //nt = 2000;
+    prevProgress = 0;
+    progress = 0;
     for (int i = releaseTime; i<nt; i++)
     {
-        mySystem.lattice->step(step);
-        if (i%writingFreq == 0)
-            std::cout << static_cast<double>(i)/nt << std::endl;
-
-        dataPacketHandler.dumpXYZ(mySystem.lattice, i);
+        mySystem.step(step);
+        dataPacketHandler.dumpXYZ(mySystem, i);
         dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
+
+        if (progress >= prevProgress){
+            std::cout << 100*progress << "% completed" << std::endl;
+            prevProgress += 0.1;
+        }
+        progress = static_cast<double>(i-releaseTime)/(nt-releaseTime);
     }
 
     std::cout << "Simulation complete at " << getTime(start) << std::endl;

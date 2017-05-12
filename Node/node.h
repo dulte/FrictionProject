@@ -1,18 +1,16 @@
 #pragma once
-#include "Lattice/lattice.h"
 #include "NodeInfo/nodeinfo.h"
 #include "Vec3/vec3.h"
 #include "ForceModifier/forcemodifier.h"
 
 #include <memory>
 #include <vector>
-#include <memory>
 
 using namespace std;
 
 class NodeInfo;
-class Lattice;
 class LatticeInfo;
+class SimpleLattice;
 
 class Node : public std::enable_shared_from_this<Node>
 {
@@ -39,12 +37,12 @@ public:
     double  moment()          {return m_moment;}
     double  mass()            {return m_mass;}
     double  momentOfInertia() {return m_momentOfInertia;}
+    double  numNeighbors()    {return neighborInfo.size();}
     const   std::vector<std::unique_ptr<NodeInfo>> & getNeighborInfo() const {return neighborInfo;}
-    double  numNeighbors()   {return neighborInfo.size();}
     void    addModifier(std::shared_ptr<ForceModifier> modifier);
     void    clearModifiers();
     void    isSetForce(bool);
-    void    setLattice(std::shared_ptr<Lattice> lattice) {m_lattice = lattice;}
+    void    setLattice(std::shared_ptr<SimpleLattice> lattice) {m_lattice = lattice;}
 
 protected:
     vec3   m_r;
@@ -57,8 +55,8 @@ protected:
     double m_moment;
     double m_momentOfInertia;
     bool   m_isSetForce;
-    std::shared_ptr<LatticeInfo> m_latticeInfo;
-    std::shared_ptr<Lattice>     m_lattice;
+    std::shared_ptr<LatticeInfo>                m_latticeInfo;
+    std::shared_ptr<SimpleLattice>              m_lattice;
 
     std::vector<std::unique_ptr<NodeInfo>>      neighborInfo;
     std::vector<std::shared_ptr<ForceModifier>> m_modifiers;

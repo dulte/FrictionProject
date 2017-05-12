@@ -19,6 +19,8 @@ public:
         PUSHER_FORCE,
         NORMAL_FORCE,
         SHEAR_FORCE,
+        BEAM_POSITION,
+        BEAM_VELOCITY
     };
 
     DataPacket(DataPacket::dataId id, int timeStep, double time);

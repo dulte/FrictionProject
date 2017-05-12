@@ -8,6 +8,7 @@
 #include "Lattice/TriangularLattice/triangularlattice.h"
 #include "Lattice/TriangularLattice/triangularlatticewithgrooves.h"
 #include "Lattice/SquareLattice/squarelattice.h"
+#include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
 #include <iostream>
 #include "InputManagement/Parameters/parameters.h"
 
@@ -18,7 +19,7 @@ public:
   DataPacketHandler(std::string outputfolder, std::shared_ptr<Parameters> pParameters);
     ~DataPacketHandler();
     void step(std::vector<DataPacket> packets);
-    void dumpXYZ(const std::shared_ptr<TriangularLatticeWithGrooves>& lattice, int timestep);
+    void dumpXYZ(const SidePotentialLoading& system, int timestep);
 
 private:
     std::shared_ptr<Parameters> m_pParameters;

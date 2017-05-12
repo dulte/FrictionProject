@@ -10,7 +10,6 @@
 
 class LatticeInfo;
 
-
 class TriangularLatticeWithGrooves : public Lattice
 {
 public:

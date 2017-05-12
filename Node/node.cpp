@@ -1,5 +1,5 @@
 #include "node.h"
-#include "Lattice/lattice.h"
+#include "Lattice/simplelattice.h"
 #include "NodeInfo/nodeinfo.h"
 #include "LatticeInfo/latticeinfo.h"
 #include "Vec3/vec3.h"
@@ -8,15 +8,8 @@
 #include <vector>
 #include <memory>
 #include <cmath>
-#include <iostream>
 
 #define pi 3.14159265358979323
-
-
-
-using namespace std;
-
-
 
 Node::Node(vec3 r, double mass, double momentOfInertia, shared_ptr<LatticeInfo> latticeInfo):
     m_r(r),
@@ -44,27 +37,13 @@ void Node::updateForcesAndMoments(){
             double d0 = neighbor->d0();
 
             double dij = rDiff.length();
-            //double phiToNeighbor = atan2(rDiff[0],rDiff[1]);
             double neighborPhi = neighbor->node()->phi();
             double phiCorrection = 0;//neighbor->phiOffset();
 
-//            if(phiCorrection > pi)
-//            {
-//                phiCorrection -= 2*pi;
-//            }
 
             double phi_ij           = phi()+phiCorrection;
             double phi_ji           = neighborPhi+phiCorrection;
 
-//            if (phi_ij >pi/2)
-//            {
-//                cout << "phi_ij " << phi_ij << endl;
-//            }
-
-//            if (phi_ji > pi/2)
-//            {
-//                cout <<"phi_ji "<< phi_ji << endl;
-//            }
 
             if (phi_ij + phi_ji > pi)
             {

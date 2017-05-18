@@ -1,8 +1,10 @@
 #include <memory>
+#include <iostream>
 #include <cmath>
 #include "driverbeam.h"
 #include "InputManagement/Parameters/parameters.h"
 #include "Lattice/lattice.h"
+#include "ForceModifier/PotentialPusher/potentialpusher.h"
 
 DriverBeam::DriverBeam(std::shared_ptr<Parameters>  spParameters,
                        std::shared_ptr<Lattice>     spLattice):
@@ -11,6 +13,7 @@ DriverBeam::DriverBeam(std::shared_ptr<Parameters>  spParameters,
     m_driverSprings_k(spParameters->m_driverSprings_k),
     m_attachmentSprings_k(spParameters->m_attachmentSprings_k),
     m_driverForce(spParameters->m_driverForce),
+    m_driverVD(spParameters->m_driverVD),
     m_lattice(spLattice),
     m_latticeNodes(spLattice->topNodes)
 {
@@ -57,6 +60,16 @@ void DriverBeam::construct(std::shared_ptr<Parameters> spParameters){
         m_driverNodes[i]->setLattice(m_lattice->shared_from_this());
         m_driverNodes[i]->connectToNode(m_attachmentNodes[i]);
     }
+}
+
+std::vector<std::shared_ptr<PotentialPusher>> DriverBeam::addDriverForce(double tInit){
+    std::vector<std::shared_ptr<PotentialPusher>> pusherNodes;
+    for (auto & node : m_driverNodes){
+        std::shared_ptr<PotentialPusher> pusher = std::make_shared<PotentialPusher>(m_driverSprings_k, m_driverVD, node->r().x(), tInit);
+        pusherNodes.push_back(pusher);
+        node->addModifier(std::move(pusher));
+    }
+    return pusherNodes;
 }
 
 std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){

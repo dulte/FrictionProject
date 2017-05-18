@@ -7,7 +7,7 @@
 nx 64
 ny 31
 writingFreq 100
-nt 5e4
+nt 5e5
 releaseTime 1e2
 fn 1920
 ns 50
@@ -29,9 +29,10 @@ pusherStartHeight 4
 pusherEndHeight 5
 
 #Driver Beam
-driverSprings_k 4
-attachmentSprings_k 4
+driverSprings_k 1e6
+attachmentSprings_k 1e6
 driverForce 1
+driverVD 4e1
 
 #Write_data
 writeNodePositionInterface 0

@@ -10,8 +10,9 @@ class SpringFriction;
 class Lattice;
 class Node;
 class Parameters;
+class PotentialPusher;
 
-class DriverBeam: public SimpleLattice// , public std::enable_shared_from_this<DriverBeam>
+class DriverBeam: public SimpleLattice
 {
 public :
     explicit DriverBeam(std::shared_ptr<Parameters> spParameters,
@@ -20,6 +21,7 @@ public :
 
     void construct(std::shared_ptr<Parameters> spParameters);
     std::vector<DataPacket> getDataPackets(int, double) override;
+    std::vector<std::shared_ptr<PotentialPusher>> addDriverForce(double);
 
     // The top nodes of to lattice to which the attachment nodes are attached
     std::vector<std::shared_ptr<Node> > m_latticeNodes;
@@ -36,6 +38,7 @@ protected :
     const double       m_driverSprings_k;
     const double       m_attachmentSprings_k;
     const double       m_driverForce;
+    const double       m_driverVD;
 
     // Not read from spParameters
     const int offset = 1;

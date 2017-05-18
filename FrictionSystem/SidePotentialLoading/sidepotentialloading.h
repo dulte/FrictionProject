@@ -20,7 +20,11 @@ public:
     SidePotentialLoading(std::shared_ptr<Parameters> spParameters);
     ~SidePotentialLoading();
     std::shared_ptr<TriangularLatticeWithGrooves> lattice;
+    // Add pusher force to the driver beam
+    void addDriverForce(double);
+    // Add the pusher nodes as described by pusherStartHeight and pusherEndHeight
     void addPusher(double tInit);
+    // Un/lock springs
     void isLockFrictionSprings(bool);
     // Call the lattice and driverbeam's step
     void step(double);

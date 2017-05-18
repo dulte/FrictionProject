@@ -79,19 +79,20 @@ SidePotentialLoading::~SidePotentialLoading()
     outfileParameters.close();
 }
 
+void SidePotentialLoading::addDriverForce(double tInit){
+    auto newPusherNodes = m_driverBeam->addDriverForce(tInit);
+    pusherNodes.insert(std::end(pusherNodes), std::begin(newPusherNodes), std::end(newPusherNodes));
+}
+
 void SidePotentialLoading::addPusher(double tInit)
 {
-    for (auto & node : m_driverBeam->m_driverNodes){
-        std::shared_ptr<PotentialPusher> pusher = std::make_shared<PotentialPusher>(m_k, m_vD, node->r().x(), tInit);
-        pusherNodes.push_back(pusher);
-    }
-    // for (int j = m_pusherStartHeight; j < m_pusherEndHeight; j++)
-    // {
-    //     std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(m_k, m_vD, lattice->leftNodes[j]->r().x(), tInit);
-    //     pusherNodes.push_back(myPusher);
+    for (int j = m_pusherStartHeight; j < m_pusherEndHeight; j++)
+    {
+        std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(m_k, m_vD, lattice->leftNodes[j]->r().x(), tInit);
+        pusherNodes.push_back(myPusher);
 
-    //     lattice->leftNodes[j]->addModifier(std::move(myPusher));
-    // }
+        lattice->leftNodes[j]->addModifier(std::move(myPusher));
+    }
 }
 
 void SidePotentialLoading::isLockFrictionSprings(bool isLock)

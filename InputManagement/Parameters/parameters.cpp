@@ -2,6 +2,11 @@
 #define PARAMETERS_CPP
 
 #include "parameters.h"
+#include <iostream>
+#include <iterator>
+#include <fstream>
+#include <sstream>
+#include <vector>
 
 Parameters::Parameters(std::string filenameConfig){
     readParameters(filenameConfig);
@@ -171,6 +176,9 @@ void Parameters::readParameters(std::string filenameConfig){
         } else if (tokens[0] == "driverForce") {
             m_driverForce = atof(tokens[1].c_str());
             m_bdriverForce = 1;
+        } else if (tokens[0] == "driverVD") {
+            m_driverVD = atof(tokens[1].c_str());
+            m_bdriverVD = 1;
         } else if (tokens[0][0] == '\n' || tokens[0][0] == '#') {
             continue;
         } else {
@@ -315,6 +323,9 @@ void Parameters::checkThatAllParametersAreSet(){
     } else if (!m_bdriverForce) {
         std::cerr << "The parameter driverForce is not set" << std::endl;
         throw std::runtime_error("The parameter driverForce is not set");
+    } else if (!m_bdriverVD) {
+        std::cerr << "The parameter driverVD is not set" << std::endl;
+        throw std::runtime_error("The parameter VD is not set");
     } else if (!m_bfreqXYZ) {
         std::cerr << "The parameter freqXYZ is not set" << std::endl;
         throw std::runtime_error("The parameter freqXYZ is not set");

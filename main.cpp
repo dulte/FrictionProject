@@ -66,7 +66,7 @@ int main(int argc, char *argv[])
         progress = static_cast<double>(i)/releaseTime;
     }
 
-    mySystem.addPusher(mySystem.lattice->t());
+    mySystem.addDriverForce(mySystem.lattice->t());
     mySystem.isLockFrictionSprings(false);
     std::cout << "Unlocking springs at " << getTime(start) << std::endl;
     prevProgress = 0;

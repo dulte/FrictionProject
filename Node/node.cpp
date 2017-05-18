@@ -44,14 +44,14 @@ void Node::updateForcesAndMoments(){
             double phi_ij           = phi()+phiCorrection;
             double phi_ji           = neighborPhi+phiCorrection;
 
-
-            if (phi_ij + phi_ji > pi)
-            {
+            // TODO: Remove legacy code?
+            // if (phi_ij + phi_ji > pi)
+            // {
 //                cout << "Something went wrong, and block i deformed" << endl;
 //                cout << phi_ij+phi_ji << endl;
 //                exit(1);
-//                m_r.print();
-            }
+// //                m_r.print();
+//             }
             double fn               = m_latticeInfo->kappa_n()*(dij-d0);
             double fs               = -m_latticeInfo->kappa_s()*0.5*(phi_ij + phi_ji);
             double m                = -m_latticeInfo->kappa_s()*dij*(m_latticeInfo->Phi()/12.0*(phi_ij-phi_ji)+0.5*(2.0/3.0*phi_ij+1.0/3.0*phi_ji));
@@ -63,7 +63,6 @@ void Node::updateForcesAndMoments(){
 
     for (auto & modifier : m_modifiers)
     {
-
         m_f += modifier->getForceModification();
         m_moment += modifier->getMomentModification();
     }

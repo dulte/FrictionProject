@@ -21,7 +21,7 @@ public:
     std::vector<std::shared_ptr<Node>> nodes;
     std::shared_ptr<LatticeInfo>       latticeInfo;
 
-    double t() {return m_t;}
+    double  t() {return m_t;}
     virtual void step(double dt);
     virtual std::vector<DataPacket> getDataPackets(int, double) = 0;
 protected:

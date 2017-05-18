@@ -7,7 +7,7 @@
 nx 64
 ny 31
 writingFreq 100
-nt 5e5
+nt 5e4
 releaseTime 1e2
 fn 1920
 ns 50

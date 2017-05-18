@@ -53,12 +53,22 @@ void DriverBeam::construct(std::shared_ptr<Parameters> spParameters){
 
     // Connect the attachment to the top nodes of the lattice
     // and the driver nodes to the attachment nodes
-    for (size_t i = 0; i < m_nx; i++) {
+    for (auto & node : nodes){
         // TODO: Make shared_from_this from DriverBeam
-        m_attachmentNodes[i]->setLattice(m_lattice->shared_from_this());
-        m_attachmentNodes[i]->connectToNode(m_latticeNodes[i]);
-        m_driverNodes[i]->setLattice(m_lattice->shared_from_this());
-        m_driverNodes[i]->connectToNode(m_attachmentNodes[i]);
+        node->setLattice(m_lattice->shared_from_this());
+        for (auto & node2 : nodes){
+            if (node->distanceTo(*node2) < d*1.01 && node->distanceTo(node2) > d*0.01)
+                node->connectToNode(node2);
+        }
+    }
+    // Connect the attachmentNodes to the lattice and vice versa
+    for (auto & node : m_attachmentNodes) {
+        for (auto & node2 : m_latticeNodes) {
+            if (node->distanceTo(*node2) < d*1.01 && node->distanceTo(node2) > d*0.01){
+                node->connectToNode(node2);
+                node2->connectToNode(node);
+            }
+        }
     }
 }
 

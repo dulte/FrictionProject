@@ -125,7 +125,6 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
 
 
     string bottomNodeConfigTextFile = "bottomNodesConfig.txt";
-
     vector<int> bottomNodeConfig;
 
     ifstream in{bottomNodeConfigTextFile};
@@ -149,8 +148,6 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
     latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
     int m_grooveSize = 0;
     int restLength;
-    int backRest;
-
 
 
     for (int j = 0; j<ny; j++)
@@ -161,26 +158,16 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
             if (m_grooveSize != 0){
                 if (j < m_grooveHeight)
                 {
-//
-
                     if (bottomNodeConfig[i] == 1){
                         double rx = i*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
-
-
-
-                        if (j == 0){
+                        if (j == 0)
                             bottomNodes.push_back(newNode);
-                        }
-
-
                         if (i == 0)
-                        {
                             leftNodes.push_back(newNode);
-                        }
                     }
 
                     if((bottomNodeConfig[i] == 0 && bottomNodeConfig[i+1] == 1) && j%2 == 1){
@@ -199,29 +186,18 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                     }
 
                     if(j%2 == 1 && i == 0){
-
                         double rx = (i-1)*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
 
-
-
-                        if (j == 0){
+                        if (j == 0)
                             bottomNodes.push_back(newNode);
-                        }
-
 
                         if (i == 0)
-                        {
                             leftNodes.push_back(newNode);
-                        }
                     }
-
-
-
-
                 }
                 else{
                     double rx = i*d+(j%2)*d*cos(pi/3);
@@ -229,17 +205,12 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                     vec3 pos(rx, ry,0);
                     std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                     nodes.push_back(newNode);
-                    if (j == 0){
+                    if (j == 0)
                         bottomNodes.push_back(newNode);
-                    }
                     if (j == ny-1)
-                    {
                         topNodes.push_back(newNode);
-                    }
                     if (i == 0)
-                    {
                         leftNodes.push_back(newNode);
-                    }
                 }
             }
             else{
@@ -249,17 +220,11 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                 std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                 nodes.push_back(newNode);
                 if (j == 0)
-                {
                     bottomNodes.push_back(newNode);
-                }
                 if (j == ny-1)
-                {
                     topNodes.push_back(newNode);
-                }
                 if (i == 0)
-                {
                     leftNodes.push_back(newNode);
-                }
             }
         }
     }
@@ -270,9 +235,7 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
         for (auto & node2: nodes)
         {
             if (node->distanceTo(*node2) < d*1.01 && node->distanceTo(*node2) > d*0.01)
-            {
                 node->connectToNode(node2);
-            }
         }
     }
 }

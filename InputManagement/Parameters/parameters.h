@@ -44,6 +44,7 @@ public:
     double m_attachmentSprings_k;
     double m_driverVD;
     double m_driverForce;
+    double m_straightener_k;
 
     // Writer Frequencies
     int    m_writeNodePositionInterface;
@@ -105,6 +106,7 @@ private:
     bool m_battachmentSprings_k               = 0;
     bool m_bdriverVD                          = 0;
     bool m_bdriverForce                       = 0;
+    bool m_bstraightener_k                    = 0;
 
     // Writer Frequencies
     bool m_bwriteNodePositionInterface        = 0;

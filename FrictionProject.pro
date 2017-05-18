@@ -36,7 +36,8 @@ SOURCES += main.cpp \
     InputManagement/Parameters/parameters.cpp \
     Lattice/TriangularLattice/triangularlatticewithgrooves.cpp \
     DriverBeam/driverbeam.cpp \
-    Lattice/simplelattice.cpp
+    Lattice/simplelattice.cpp \
+    ForceModifier/StraightenerForce/straightenerforce.cpp
 
 
 HEADERS += \
@@ -59,4 +60,5 @@ HEADERS += \
     ForceModifier/SpringFriction/springfriction.h \
     Lattice/TriangularLattice/triangularlatticewithgrooves.h \
     DriverBeam/driverbeam.h \
-    Lattice/simplelattice.h
+    Lattice/simplelattice.h \
+    ForceModifier/StraightenerForce/straightenerforce.h

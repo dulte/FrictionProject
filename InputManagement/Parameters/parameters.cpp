@@ -179,6 +179,10 @@ void Parameters::readParameters(std::string filenameConfig){
         } else if (tokens[0] == "driverVD") {
             m_driverVD = atof(tokens[1].c_str());
             m_bdriverVD = 1;
+        } else if (tokens[0] == "straightenerK") {
+            m_straightener_k = atof(tokens[1].c_str());
+            m_bstraightener_k = 1;
+
         } else if (tokens[0][0] == '\n' || tokens[0][0] == '#') {
             continue;
         } else {
@@ -329,6 +333,10 @@ void Parameters::checkThatAllParametersAreSet(){
     } else if (!m_bfreqXYZ) {
         std::cerr << "The parameter freqXYZ is not set" << std::endl;
         throw std::runtime_error("The parameter freqXYZ is not set");
+    }
+    else if (!m_bstraightener_k) {
+        std::cerr << "The parameter straightenerK is not set" << std::endl;
+        throw std::runtime_error("The parameter straightenerK is not set");
     }
 }
 

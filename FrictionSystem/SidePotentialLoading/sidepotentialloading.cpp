@@ -6,6 +6,7 @@
 #include <ForceModifier/RelativeVelocityDamper/relativevelocitydamper.h>
 #include <ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.h>
 #include "ForceModifier/SpringFriction/springfriction.h"
+#include "ForceModifier/StraightenerForce/straightenerforce.h"
 #include "FrictionInfo/frictioninfo.h"
 #include "Lattice/SquareLattice/squarelattice.h"
 #include "sidepotentialloading.h"
@@ -71,6 +72,8 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> spParamet
         // TODO: Why is there a magic number 1e-5 here?
         std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(omegaDamper));
+        std::unique_ptr<StraightenerForce> straightenerForce = std::make_unique<StraightenerForce>(m_driverBeam->m_attachmentNodes,spParameters);
+        node->addModifier(std::move(straightenerForce));
     }
 }
 

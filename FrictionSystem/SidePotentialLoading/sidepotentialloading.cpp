@@ -44,12 +44,14 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> spParamet
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(spParameters);
     m_driverBeam = std::make_unique<DriverBeam>(spParameters, lattice);
 
-    for (auto & node : lattice->topNodes)
+    // Add top loading force
+    for (auto & node :m_driverBeam->m_attachmentNodes)
     {
         std::unique_ptr<ConstantForce> force = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce, 0));
         node->addModifier(std::move(force));
     }
 
+    // Add dampening force
     for (auto & node : lattice->bottomNodes)
     {
             std::shared_ptr<SpringFriction> springFriction = std::make_shared<SpringFriction>(frictionInfo);
@@ -72,6 +74,8 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> spParamet
         // TODO: Why is there a magic number 1e-5 here?
         std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(omegaDamper));
+    }
+    for (auto & node : m_driverBeam->m_attachmentNodes){
         std::unique_ptr<StraightenerForce> straightenerForce = std::make_unique<StraightenerForce>(m_driverBeam->m_attachmentNodes,spParameters);
         node->addModifier(std::move(straightenerForce));
     }

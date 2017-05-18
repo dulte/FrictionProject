@@ -33,6 +33,7 @@ driverSprings_k 1e6
 attachmentSprings_k 1e6
 driverForce 1
 driverVD 4e1
+straightenerK 4e7
 
 #Write_data
 writeNodePositionInterface 0

@@ -1,4 +1,5 @@
 // TODO: Write a function to dump all relevant parameters to a file
+// TODO: Legg til overdempning før fjærene slippes slik oscilliasjonen dør ut
 #include <iostream>
 #include <string>
 #include "Lattice/TriangularLattice/triangularlattice.h"

@@ -2,13 +2,11 @@
 
 #include "ForceModifier/forcemodifier.h"
 #include "Vec3/vec3.h"
-#include "InputManagement/Parameters/parameters.h"
-#include "Node/node.h"
 
 class PotentialPusher: public ForceModifier
 {
 public:
-  PotentialPusher(double k, double vD, double xInit, double tInit);
+    PotentialPusher(double k, double vD, double xInit, double tInit);
     vec3 getForceModification() override;
     double fPush;
 

@@ -3,60 +3,65 @@
 # Only the first two words are processed.
 # The first word is the parameter name, the second is its value.
 
-# Simulation parameters
-nx 64
-ny 31
-writingFreq 100
-nt 5e4
-releaseTime 1e2
-fn 1920
-ns 50
-tau 0.002
-d 0.005
-E 3e9
-k 4e6
-nu 0.33
-hZ 0.006
-density 1300
-step 2e-7
-grooveSize 2 
-grooveHeight 2
+#Simulation parameters
+nx                   64    # Number of nodes in the x direction
+ny                   31    # Number of nodes in the y direction
+writingFreq          100   # Useless??
+nt                   5e4   # Total number of time steps 
+releaseTime          1e2   # Number of steps before the springs are released 
+fn                   1920 
+ns                   50
+tau                  0.002
+d                    0.005
+E                    3e9   # Youngs modul
+k                    4e6
+nu                   0.33
+hZ                   0.006
+density              1300
+step                 2e-7  # Time step [s]
+
+# Grooves
+grooveSize           5
+grooveHeight         4
+
+#Filenames
+latticefilename      Config/lattice.txt
 
 #Pusher
-vD 4e1
-pK 4e5
-pusherStartHeight 4
-pusherEndHeight 5
+vD                   4e1
+pK                   4e5
+pusherStartHeight    4
+pusherEndHeight      5
 
 #Driver Beam
-driverSprings_k 1e6
-attachmentSprings_k 1e6
-driverForce 1
-driverVD 4e1
-straightenerK 4e7
+driverSprings_k      1e6
+attachmentSprings_k  1e6
+driverForce          1    # Gjør ingenting 
+driverVD             4e-4
+straightenerK        4e7
 
 #Write_data
-writeNodePositionInterface 0
-writeNodeVelocityInterface 0
+writeNodePositionInterface        0
+writeNodeVelocityInterface        0
 writeNodeSpringsAttachedInterface 0
-writeNodePositionAll 0
-writeNodeVelocityAll 0
-writeTotalEnergyAll 0
-writeTotalForceAll 0
-writePusherForce 0
-writeNormalForce 0
-writeShearForce 0
-writeXYZ 1
+writeNodePositionAll              0
+writeNodeVelocityAll              0
+writeTotalEnergyAll               0
+writeTotalForceAll                0
+writePusherForce                  0
+writeNormalForce                  0
+writeShearForce                   0
+writeXYZ                          1
 
 #Write_data_frequency
-freqNodePositionInterface 100
-freqNodeVelocityInterface 1000
+freqNodePositionInterface        100
+freqNodeVelocityInterface        1000
 freqNodeSpringsAttachedInterface 100
-freqNodePositionAll 100000
-freqNodeVelocityAll 10000
-freqTotalEnergyAll 10000
-freqTotalForceAll 10000
-freqPusherForce 100
-freqNormalForce 100
-freqShearForce 100
-freqXYZ 100
+freqNodePositionAll              100000
+freqNodeVelocityAll              10000
+freqTotalEnergyAll               10000
+freqTotalForceAll                10000
+freqPusherForce                  100
+freqNormalForce                  100
+freqShearForce                   100
+freqXYZ                          100

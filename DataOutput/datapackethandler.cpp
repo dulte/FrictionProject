@@ -32,17 +32,17 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
         std::cerr << "Forgot final '/'" << std::endl;
         outputFolder += '/';
     }
-    m_ofNodePositionInterface.open(outputFolder + "/node_position_interface.bin", std::ios::out | std::ios::binary);
-    m_ofNodeVelocityInterface.open(outputFolder + "/node_velocity_interface.bin", std::ios::out | std::ios::binary);
+    m_ofNodePositionInterface.open(outputFolder        + "/node_position_interface.bin",         std::ios::out | std::ios::binary);
+    m_ofNodeVelocityInterface.open(outputFolder        + "/node_velocity_interface.bin",         std::ios::out | std::ios::binary);
     m_ofNodeSpringsAttachedInterface.open(outputFolder + "/node_springs_attached_interface.bin", std::ios::out | std::ios::binary);
-    m_ofNodePositionAll.open(outputFolder + "/node_position_all.bin", std::ios::out | std::ios::binary);
-    m_ofNodeVelocityAll.open(outputFolder + "/node_velocity_all.bin", std::ios::out | std::ios::binary);
-    m_ofTotalEnergyAll.open(outputFolder + "/node_total_energy_all.bin", std::ios::out | std::ios::binary);
-    m_ofTotalForceAll.open(outputFolder + "/node_total_force_all.bin", std::ios::out | std::ios::binary);
-    m_ofPusherForce.open(outputFolder + "/pusher_force.bin", std::ios::out | std::ios::binary);
-    m_ofNormalForce.open(outputFolder + "/normal_force.bin", std::ios::out | std::ios::binary);
-    m_ofShearForce.open(outputFolder + "/shear_force.bin", std::ios::out | std::ios::binary);
-    m_ofXYZ.open(outputFolder + "/positions.xyz", std::ofstream::out);
+    m_ofNodePositionAll.open(outputFolder              + "/node_position_all.bin",               std::ios::out | std::ios::binary);
+    m_ofNodeVelocityAll.open(outputFolder              + "/node_velocity_all.bin",               std::ios::out | std::ios::binary);
+    m_ofTotalEnergyAll.open(outputFolder               + "/node_total_energy_all.bin",           std::ios::out | std::ios::binary);
+    m_ofTotalForceAll.open(outputFolder                + "/node_total_force_all.bin",            std::ios::out | std::ios::binary);
+    m_ofPusherForce.open(outputFolder                  + "/pusher_force.bin",                    std::ios::out | std::ios::binary);
+    m_ofNormalForce.open(outputFolder                  + "/normal_force.bin",                    std::ios::out | std::ios::binary);
+    m_ofShearForce.open(outputFolder                   + "/shear_force.bin",                     std::ios::out | std::ios::binary);
+    m_ofXYZ.open(outputFolder                          + "/positions.xyz",                       std::ofstream::out);
 }
 
 DataPacketHandler::~DataPacketHandler()

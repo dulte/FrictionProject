@@ -14,7 +14,7 @@ class TriangularLattice : public Lattice
 public:
     TriangularLattice();
 
-    void populate(int nx, int ny, double d, double E, double nu, double hZ, double density) override;
+    void populate(int nx, int ny, double d, double E, double nu, double hZ, double density);
     void populateWithUnitCell(double d, double E, double nu, double hZ, double density);
     void populateCantilever(double d, double E, double nu, double hZ, double density);
 

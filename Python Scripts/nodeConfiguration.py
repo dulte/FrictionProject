@@ -1,13 +1,13 @@
+#!/bin/python3
 import numpy as np
 import os
 import argparse
 
 
 class nodeConfiguration:
-    def __init__(self, configPath, configFileName):
+    def __init__(self, configPath):
 
         self.configPath = configPath
-        self.fileName = configFileName
         self.parameters = {}
         self.readConfig()
         self.nodePositionX = np.zeros((self.parameters["ny"],
@@ -17,24 +17,42 @@ class nodeConfiguration:
         self.indicateBlankNode = -1
 
     def readConfig(self):
-        with open(self.configPath + self.fileName) as f:
-            for line in f:
-                words = line.split()
-                try:
-                    if words[0] == "d":
-                        self.parameters["d"] = float(words[1])
-                    elif words[0] == "grooveSize":
-                        self.parameters["grooveSize"] = int(words[1])
-                    elif words[0] == "grooveHeight":
-                        self.parameters["grooveHeight"] = int(words[1])
-                    elif words[0] == "nx":
-                        self.parameters["nx"] = int(words[1])
-                    elif words[0] == "ny":
-                        self.parameters["ny"] = int(words[1])
-                except:
-                    pass
+        """ Read the parameters from the config file
+
+            Each line is split into tokens (words). If the first token
+            is not a comment and there are two tokens, the first token
+            is used as a key to the value of the second token
+
+            Can be written neatly as a single dict comprehension, but
+            this might be difficult to read for some, and is thus avoided.
+        """
+        with open(self.configPath) as infile:
+            for line in infile:
+                tokens = line.split()
+                if len(tokens) < 2:
+                    continue
+
+                if tokens[0][0] != "#":
+                    self.parameters[tokens[0]] = eval(tokens[1])
+        self.checkConfig()
+
+    def checkConfig(self):
+        """ Runs tests on each parameter to determine if its value is valid
+
+        """
+        try:
+            assert self.parameters["grooveSize"] >= 0
+            assert self.parameters["grooveHeight"] >= 0
+            assert self.parameters["nx"] >= 0
+            assert self.parameters["ny"] >= 0
+        except KeyError as keyErr:
+            print("Missing Parameter: ", keyErr)
+            raise keyErr
 
     def configurateNodesEqual(self):
+        """ I am a magic elf doing magic stuff
+
+        """
         d = self.parameters["d"]
         nx = self.parameters["nx"]
         ny = self.parameters["ny"]
@@ -70,10 +88,10 @@ class nodeConfiguration:
             restNodes = restLength // 2 + restLength % 2
             batches = len(bottomNodes)
 
-            print(bottomNodes)
-            print(nodes)
-            print(batches)
-            print(restBlanks, restNodes)
+            # print(bottomNodes)
+            # print(nodes)
+            # print(batches)
+            # print(restBlanks, restNodes)
 
             midBatch = int(np.floor(batches / 2.0))
             batchesFromTheMid = 0
@@ -99,17 +117,17 @@ class nodeConfiguration:
                 batchesFromTheMid = batchesFromTheMid + restsPlaced % 2
                 placeOnSide *= -1
 
-            print(bottomNodes)
+            # print(bottomNodes)
             bottomNodes = [l for sublist in bottomNodes for l in sublist]
 
             self.bottomNodes = bottomNodes
 
-            print(bottomNodes)
-            print(len(bottomNodes))
-            print(restBlanks, restNodes)
+            # print(bottomNodes)
+            # print(len(bottomNodes))
+            # print(restBlanks, restNodes)
 
-            for i in range(int(nx)):
-                for j in range(int(ny)):
+            for i in range(nx):
+                for j in range(ny):
                     if j < grooveHeight:
                         if bottomNodes[i] == 1:
                             self.nodePositionX[j, i] = i * d + (
@@ -124,23 +142,24 @@ class nodeConfiguration:
                             j, i] = i * d + (j % 2) * d * np.cos(np.pi / 3.)
                         self.nodePositionY[j, i] = j * d * np.sin(np.pi / 3.)
         else:
-            for i in range(int(nx)):
-                for j in range(int(ny)):
+            for i in range(nx):
+                for j in range(ny):
                     self.nodePositionX[
                         j, i] = i * d + (j % 2) * d * np.cos(np.pi / 3.)
                     self.nodePositionY[j, i] = j * d * np.sin(np.pi / 3.)
 
     def makeXYZ(self):
-        nx = int(self.parameters["nx"])
-        ny = int(self.parameters["ny"])
+        nx = self.parameters["nx"]
+        ny = self.parameters["ny"]
+        d  = self.parameters["d"]
 
         numNodes = np.sum(self.nodePositionX >= 0)
 
-        with open("nodes.xyz", "wr") as f:
+        with open("nodes.xyz", "w") as f:
             f.write(str(numNodes) + "\n")
-            f.write("comment \n")
-            for i in range(int(nx)):
-                for j in range(int(ny)):
+            f.write("{} {} {} \n".format(nx, ny, d))
+            for i in range(nx):
+                for j in range(ny):
                     if not (self.nodePositionX[j, i] == self.indicateBlankNode
                             or
                             self.nodePositionY[j, i] == self.indicateBlankNode):
@@ -148,13 +167,11 @@ class nodeConfiguration:
                             str(self.nodePositionX[j, i]) + " " +
                             str(self.nodePositionY[j, i]) + "\n")
 
-    def makeBottomNodesText(self, binaryFilePath, binaryFileName):
-        outFile = binaryFilePath + binaryFileName
+    def makeBottomNodesText(self, outputPath):
         try:
-            np.savetxt(
-                outFile,
-                np.array([len(self.bottomNodes)] + self.bottomNodes),
-                fmt="%i")
+            np.savetxt(outputPath,
+                       np.array([len(self.bottomNodes)] + self.bottomNodes),
+                       fmt="%i")
         except:
             print("something went wrong when writing to text file")
 
@@ -164,14 +181,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="string giving the path of the files")
 
-    parser.add_argument('--path', type=str, help="Path of the files", default="../Config")
-    parser.add_argument('--configFile', type=str, help="Name of the config file", default="config.txt")
-    parser.add_argument('--outputFile', type=str, help="Name of the output file", default="bottomNodesConfig.txt")
-    arg = parser.parse_args()
+    parser.add_argument('--config', type=os.path.realpath,
+                        help="Path of the config file",
+                        default="../Config/config.txt")
+    parser.add_argument('--output', type=os.path.realpath,
+                        help="Path of the output file",
+                        default="../Config/bottomNodesConfig.txt")
+    args = parser.parse_args()
 
-    path = os.path.realpath(arg.path)
-
-    nodes = nodeConfiguration(path, f)
+    nodes = nodeConfiguration(args.config)
     nodes.configurateNodesEqual()
     nodes.makeXYZ()
-    nodes.makeBottomNodesText(path, textFile)
+    nodes.makeBottomNodesText(args.output)

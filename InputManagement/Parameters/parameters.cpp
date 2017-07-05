@@ -39,150 +39,153 @@ void Parameters::readParameters(std::string filenameConfig){
           // Empty line, continue
           continue;
         } else if (tokens[0] == "nx") {
-            m_nx = static_cast<int>(atof(tokens[1].c_str()));
+            m_nx = std::stoi(tokens[1]);
             m_bnx = 1;
         } else if (tokens[0] == "ny") {
-            m_ny = static_cast<int>(atof(tokens[1].c_str()));
+            m_ny = std::stoi(tokens[1]);
             m_bny = 1;
         } else  if (tokens[0] == "writingFreq") {
-            m_writingFreq = static_cast<int>(atof(tokens[1].c_str()));
+            // Integers written in e-notation need to be read as double and converted to int
+            m_writingFreq = static_cast<int>(std::stod(tokens[1]));
             m_bwritingFreq = 1;
         } else  if (tokens[0] == "nt") {
-          m_nt = static_cast<int>(atof(tokens[1].c_str()));
+            m_nt = std::stod(tokens[1]);
             m_bnt = 1;
         } else  if (tokens[0] == "releaseTime") {
-            m_releaseTime = static_cast<int>(atof(tokens[1].c_str()));
+            m_releaseTime = static_cast<int>(std::stoi(tokens[1]));
             m_breleaseTime = 1;
         } else  if (tokens[0] == "fn") {
-            m_fn = atof(tokens[1].c_str());
+            m_fn = std::stod(tokens[1]);
             m_bfn = 1;
         } else  if (tokens[0] == "ns") {
-            m_ns = atof(tokens[1].c_str());
+            m_ns = std::stod(tokens[1]);
             m_bns = 1;
         } else  if (tokens[0] == "tau") {
-            m_tau = atof(tokens[1].c_str());
+            m_tau = std::stod(tokens[1]);
             m_btau = 1;
         } else  if (tokens[0] == "d") {
-            m_d = atof(tokens[1].c_str());
+            m_d = std::stod(tokens[1]);
             m_bd = 1;
         } else  if (tokens[0] == "E") {
-            m_E = atof(tokens[1].c_str());
+            m_E = std::stod(tokens[1]);
             m_bE = 1;
         } else  if (tokens[0] == "k") {
-            m_k = atof(tokens[1].c_str());
+            m_k = std::stod(tokens[1]);
             m_bk = 1;
         } else  if (tokens[0] == "nu") {
-            m_nu = atof(tokens[1].c_str());
+            m_nu = std::stod(tokens[1]);
             m_bnu = 1;
         } else  if (tokens[0] == "hZ") {
-            m_hZ = atof(tokens[1].c_str());
+            m_hZ = std::stod(tokens[1]);
             m_bhZ = 1;
         } else  if (tokens[0] == "density") {
-            m_density = atof(tokens[1].c_str());
+            m_density = std::stod(tokens[1]);
             m_bdensity = 1;
         } else  if (tokens[0] == "step") {
-            m_step = atof(tokens[1].c_str());
+            m_step = std::stod(tokens[1]);
             m_bstep = 1;
         } else  if (tokens[0] == "grooveSize") {
-            m_grooveSize = static_cast<int>(atof(tokens[1].c_str()));
+            m_grooveSize = std::stoi(tokens[1]);
             m_bgrooveSize = 1;
         } else  if (tokens[0] == "grooveHeight") {
-            m_grooveHeight = static_cast<int>(atof(tokens[1].c_str()));
+            m_grooveHeight = std::stoi(tokens[1]);
             m_bgrooveHeight = 1;
         } else  if (tokens[0] == "vD") {
-            m_vD = atof(tokens[1].c_str());
+            m_vD = std::stod(tokens[1]);
             m_bvD = 1;
         } else  if (tokens[0] == "pK") {
-            m_pK = atof(tokens[1].c_str());
+            m_pK = std::stod(tokens[1]);
             m_bpK = 1;
         } else  if (tokens[0] == "pusherStartHeight") {
-            m_pusherStartHeight = static_cast<int>(atof(tokens[1].c_str()));
+            m_pusherStartHeight = std::stoi(tokens[1]);
             m_bpusherStartHeight = 1;
         } else  if (tokens[0] == "pusherEndHeight") {
-            m_pusherEndHeight = static_cast<int>(atof(tokens[1].c_str()));
+            m_pusherEndHeight = std::stoi(tokens[1]);
             m_bpusherEndHeight = 1;
         } else  if (tokens[0] == "writeNodePositionInterface") {
-            m_writeNodePositionInterface = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeNodePositionInterface = std::stoi(tokens[1]);
             m_bwriteNodePositionInterface = 1;
         } else  if (tokens[0] == "writeNodeVelocityInterface") {
-            m_writeNodeVelocityInterface = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeNodeVelocityInterface = std::stoi(tokens[1]);
             m_bwriteNodeVelocityInterface = 1;
         } else  if (tokens[0] == "writeNodeSpringsAttachedInterface") {
-            m_writeNodeSpringsAttachedInterface = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeNodeSpringsAttachedInterface = std::stoi(tokens[1]);
             m_bwriteNodeSpringsAttachedInterface = 1;
         } else  if (tokens[0] == "writeNodePositionAll") {
-            m_writeNodePositionAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeNodePositionAll = std::stoi(tokens[1]);
             m_bwriteNodePositionAll = 1;
         } else  if (tokens[0] == "writeNodeVelocityAll") {
-            m_writeNodeVelocityAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeNodeVelocityAll = std::stoi(tokens[1]);
             m_bwriteNodeVelocityAll = 1;
         } else  if (tokens[0] == "writeTotalEnergyAll") {
-            m_writeTotalEnergyAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeTotalEnergyAll = std::stoi(tokens[1]);
             m_bwriteTotalEnergyAll = 1;
         } else  if (tokens[0] == "writeTotalForceAll") {
-            m_writeTotalForceAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeTotalForceAll = std::stoi(tokens[1]);
             m_bwriteTotalForceAll = 1;
         } else  if (tokens[0] == "writePusherForce") {
-            m_writePusherForce = static_cast<int>(atof(tokens[1].c_str()));
+            m_writePusherForce = std::stoi(tokens[1]);
             m_bwritePusherForce = 1;
         } else  if (tokens[0] == "writeNormalForce") {
-            m_writeNormalForce = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeNormalForce = std::stoi(tokens[1]);
             m_bwriteNormalForce = 1;
         } else  if (tokens[0] == "writeShearForce") {
-            m_writeShearForce = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeShearForce = std::stoi(tokens[1]);
             m_bwriteShearForce = 1;
         } else  if (tokens[0] == "writeXYZ") {
-            m_writeXYZ = static_cast<int>(atof(tokens[1].c_str()));
+            m_writeXYZ = std::stoi(tokens[1]);
             m_bwriteXYZ = 1;
         } else  if (tokens[0] == "freqNodePositionInterface") {
-            m_freqNodePositionInterface = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqNodePositionInterface = std::stoi(tokens[1]);
             m_bfreqNodePositionInterface = 1;
         } else  if (tokens[0] == "freqNodeVelocityInterface") {
-            m_freqNodeVelocityInterface = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqNodeVelocityInterface = std::stoi(tokens[1]);
             m_bfreqNodeVelocityInterface = 1;
         } else  if (tokens[0] == "freqNodeSpringsAttachedInterface") {
-            m_freqNodeSpringsAttachedInterface = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqNodeSpringsAttachedInterface = std::stoi(tokens[1]);
             m_bfreqNodeSpringsAttachedInterface = 1;
         } else  if (tokens[0] == "freqNodePositionAll") {
-            m_freqNodePositionAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqNodePositionAll = std::stoi(tokens[1]);
             m_bfreqNodePositionAll = 1;
         } else  if (tokens[0] == "freqNodeVelocityAll") {
-            m_freqNodeVelocityAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqNodeVelocityAll = std::stoi(tokens[1]);
             m_bfreqNodeVelocityAll = 1;
         } else  if (tokens[0] == "freqTotalEnergyAll") {
-            m_freqTotalEnergyAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqTotalEnergyAll = std::stoi(tokens[1]);
             m_bfreqTotalEnergyAll = 1;
         } else  if (tokens[0] == "freqTotalForceAll") {
-            m_freqTotalForceAll = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqTotalForceAll = std::stoi(tokens[1]);
             m_bfreqTotalForceAll = 1;
         } else  if (tokens[0] == "freqPusherForce") {
-            m_freqPusherForce = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqPusherForce = std::stoi(tokens[1]);
             m_bfreqPusherForce = 1;
         } else  if (tokens[0] == "freqNormalForce") {
-            m_freqNormalForce = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqNormalForce = std::stoi(tokens[1]);
             m_bfreqNormalForce = 1;
         } else  if (tokens[0] == "freqShearForce") {
-            m_freqShearForce = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqShearForce = std::stoi(tokens[1]);
             m_bfreqShearForce = 1;
         } else  if (tokens[0] == "freqXYZ") {
-            m_freqXYZ = static_cast<int>(atof(tokens[1].c_str()));
+            m_freqXYZ = std::stoi(tokens[1]);
             m_bfreqXYZ = 1;
         } else if (tokens[0] == "driverSprings_k") {
-            m_driverSprings_k = atof(tokens[1].c_str());
+            m_driverSprings_k = std::stod(tokens[1]);
             m_bdriverSprings_k = 1;
         } else if (tokens[0] == "attachmentSprings_k") {
-            m_attachmentSprings_k = atof(tokens[1].c_str());
+            m_attachmentSprings_k = std::stod(tokens[1]);
             m_battachmentSprings_k = 1;
         } else if (tokens[0] == "driverForce") {
-            m_driverForce = atof(tokens[1].c_str());
+            m_driverForce = std::stod(tokens[1]);
             m_bdriverForce = 1;
         } else if (tokens[0] == "driverVD") {
-            m_driverVD = atof(tokens[1].c_str());
+            m_driverVD = std::stod(tokens[1]);
             m_bdriverVD = 1;
         } else if (tokens[0] == "straightenerK") {
-            m_straightener_k = atof(tokens[1].c_str());
+            m_straightener_k = std::stod(tokens[1]);
             m_bstraightener_k = 1;
-
+        } else if (tokens[0] == "latticefilename") {
+            m_latticeFilename = tokens[1];
+            m_blatticeFilename = 1;
         } else if (tokens[0][0] == '\n' || tokens[0][0] == '#') {
             continue;
         } else {
@@ -337,6 +340,8 @@ void Parameters::checkThatAllParametersAreSet(){
     else if (!m_bstraightener_k) {
         std::cerr << "The parameter straightenerK is not set" << std::endl;
         throw std::runtime_error("The parameter straightenerK is not set");
+    } else if (!m_blatticeFilename) {
+        throw std::runtime_error("The parameteter latticefilename is not set");
     }
 }
 

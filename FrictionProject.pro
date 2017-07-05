@@ -8,7 +8,7 @@ QMAKE_LFLAGS +=  -fopenmp
 
 QMAKE_CXXFLAGS_RELEASE -= -O1
 QMAKE_CXXFLAGS_RELEASE -= -O2
-QMAKE_CXXFLAGS_RELEASE *= -O3
+# QMAKE_CXXFLAGS_RELEASE *= -O3
 QMAKE_MAC_SDK = macosx10.11
 
 
@@ -27,17 +27,16 @@ SOURCES += main.cpp \
     ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.cpp \
     ForceModifier/SpringFriction/springfriction.cpp \
     FrictionInfo/frictioninfo.cpp \
-    Lattice/SquareLattice/squarelattice.cpp \
-    Lattice/TriangularLattice/triangularlattice.cpp \
     DataOutput/datapacket.cpp \
     DataOutput/datapackethandler.cpp \
     DataOutput/dumpable.cpp \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp \
     InputManagement/Parameters/parameters.cpp \
-    Lattice/TriangularLattice/triangularlatticewithgrooves.cpp \
     DriverBeam/driverbeam.cpp \
     Lattice/simplelattice.cpp \
-    ForceModifier/StraightenerForce/straightenerforce.cpp
+    # ForceModifier/StraightenerForce/straightenerforce.cpp \
+    Lattice/UnstructuredLattice/unstructuredlattice.cpp \
+    InputManagement/LatticeScanner/latticescanner.cpp
 
 
 HEADERS += \
@@ -50,15 +49,14 @@ HEADERS += \
     InputManagement/ConfigReader/configreader.h \
     InputManagement/Parameters/parameters.h \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.h \
-    Lattice/SquareLattice/squarelattice.h \
-    Lattice/TriangularLattice/triangularlattice.h \
     FrictionInfo/frictioninfo.h \
     ForceModifier/PotentialPusher/potentialpusher.h \
     DataOutput/dumpable.h \
     DataOutput/datapackethandler.h \
     DataOutput/datapacket.h \
     ForceModifier/SpringFriction/springfriction.h \
-    Lattice/TriangularLattice/triangularlatticewithgrooves.h \
     DriverBeam/driverbeam.h \
     Lattice/simplelattice.h \
-    ForceModifier/StraightenerForce/straightenerforce.h
+    # ForceModifier/StraightenerForce/straightenerforce.h \
+    Lattice/UnstructuredLattice/unstructuredlattice.h \
+    InputManagment/LatticeScanner/latticescanner.h

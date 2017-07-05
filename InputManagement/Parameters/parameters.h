@@ -12,7 +12,7 @@ public:
     void readParameters(std::string filenameConfig);
     void checkThatAllParametersAreSet();
 
-    // Si  mulation Parameters
+    // Simulation Parameters
     int    m_nx;
     int    m_ny;
     int    m_writingFreq;
@@ -29,6 +29,9 @@ public:
     double m_density;
     double m_step;
 
+    // Filenames
+    std::string m_latticeFilename;
+
     // Grooves
     int    m_grooveSize;
     int    m_grooveHeight;
@@ -39,7 +42,7 @@ public:
     int    m_pusherStartHeight;
     int    m_pusherEndHeight;
 
-    // Bea m
+    // Beam
     double m_driverSprings_k;
     double m_attachmentSprings_k;
     double m_driverVD;
@@ -90,6 +93,9 @@ private:
     bool m_bhZ                                = 0;
     bool m_bdensity                           = 0;
     bool m_bstep                              = 0;
+
+    // Filenames
+    bool m_blatticeFilename                   = 0;
 
     // Grooves
     bool m_bgrooveSize                        = 0;

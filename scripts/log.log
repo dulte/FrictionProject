@@ -1,0 +1,54 @@
+2017-07-10 12:39:08,275 - DEBUG    - Updating Jobfile dictionary with: {'obname': 'adolf'}
+2017-07-10 12:39:08,275 - WARNING  - Non-standard keyword: obname
+2017-07-10 12:39:08,275 - DEBUG    - Creating jobfile: #!/bin/sh
+# Job name:
+#SBATCH --job-name=bob
+#
+# Project: 
+#SBATCH --account=uio
+# Wall time limit#SBTACH --time=0:0:24
+#
+# Max memory usage per task:
+#SBATCH --mem-per-cpu3600M
+#SBATCH --cpus-per-task=16
+#
+
+# Set up the job environment
+source /cluster/bin/jobsetup
+# Remove any previously load modules
+module purge
+# Exit on any errors after this point
+set -o errexit
+# Copy files to work directory
+mkdir $SCRATCH/files
+cp $SUBMITDIR/* $SCRATCH/files
+# Mark outfiles for automatic copying to $SUBMITDIR
+chkfile files/
+cd $SCRATCH/files
+./talys < bird > duck
+2017-07-10 12:39:08,275 - DEBUG    - Creating jobfile: #!/bin/sh
+# Job name:
+#SBATCH --job-name=bob
+#
+# Project: 
+#SBATCH --account=uio
+# Wall time limit#SBTACH --time=0:0:24
+#
+# Max memory usage per task:
+#SBATCH --mem-per-cpu3600M
+#SBATCH --cpus-per-task=16
+#
+
+# Set up the job environment
+source /cluster/bin/jobsetup
+# Remove any previously load modules
+module purge
+# Exit on any errors after this point
+set -o errexit
+# Copy files to work directory
+mkdir $SCRATCH/files
+cp $SUBMITDIR/* $SCRATCH/files
+# Mark outfiles for automatic copying to $SUBMITDIR
+chkfile files/
+cd $SCRATCH/files
+./talys < bird > duck

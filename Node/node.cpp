@@ -27,11 +27,11 @@ Node::Node(vec3 r, double mass, double momentOfInertia, shared_ptr<LatticeInfo> 
 }
 
 void Node::updateForcesAndMoments(){
+    // Reset all forces
     m_f = 0;
     m_moment = 0;
 
     if (!m_isSetForce){
-
         for (auto & neighbor : neighborInfo){
             vec3 rDiff = neighbor->node()->r() - r();
             double d0 = neighbor->d0();
@@ -63,7 +63,7 @@ void Node::updateForcesAndMoments(){
 
     for (auto & modifier : m_modifiers)
     {
-        m_f += modifier->getForceModification();
+        m_f      += modifier->getForceModification();
         m_moment += modifier->getMomentModification();
     }
 }
@@ -72,25 +72,25 @@ void Node::updateForcesAndMoments(){
 void Node::step(double dt)
 {
     m_omega = m_omega + (m_moment/m_momentOfInertia)*dt;
-    m_phi = m_phi + m_omega*dt;
-    m_v = m_v + (m_f/m_mass)*dt;
-    m_r = m_r + m_v*dt;
+    m_phi   = m_phi + m_omega*dt;
+    m_v     = m_v + (m_f/m_mass)*dt;
+    m_r     = m_r + m_v*dt;
 }
 
 void Node::vvstep1(double dt)
 {
     m_omega += (m_moment/m_momentOfInertia)*0.5*dt;
-    m_phi += m_omega*dt;
-    m_v += (m_f/m_mass)*0.5*dt;
-    m_r += m_v*dt;
+    m_phi   += m_omega*dt;
+    m_v     += (m_f/m_mass)*0.5*dt;
+    m_r     += m_v*dt;
 }
 
 void Node::vvstep2(double dt)
 {
     m_omega += (m_moment/m_momentOfInertia)*0.5*dt;
-    m_phi += m_omega*dt;
-    m_v += (m_f/m_mass)*0.5*dt;
-    m_r += m_v*dt;
+    m_phi   += m_omega*dt;
+    m_v     += (m_f/m_mass)*0.5*dt;
+    m_r     += m_v*dt;
 }
 
 bool Node::connectToNode(std::shared_ptr<Node> other)
@@ -99,6 +99,14 @@ bool Node::connectToNode(std::shared_ptr<Node> other)
     double phiDiff = atan2(rDiff[1], rDiff[0]);
     double d0 = rDiff.length();
     neighborInfo.push_back(std::make_unique<NodeInfo>(other, d0, phiDiff));
+    return true;
+}
+
+bool Node::connectToNode(std::shared_ptr<Node> other, double distance)
+{
+    vec3 rDiff = other->r()-r();
+    double phiDiff = atan2(rDiff[1], rDiff[0]);
+    neighborInfo.push_back(std::make_unique<NodeInfo>(other, distance, phiDiff));
     return true;
 }
 
@@ -142,4 +150,8 @@ void Node::clearModifiers()
 void Node::isSetForce(bool isSetForce)
 {
     m_isSetForce = isSetForce;
+}
+
+void Node::forcePosition(const vec3 &r){
+    m_r = r;
 }

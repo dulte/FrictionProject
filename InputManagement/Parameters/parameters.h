@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 class Parameters{
 public:
@@ -11,8 +12,11 @@ public:
     ~Parameters();
     void readParameters(std::string filenameConfig);
     void checkThatAllParametersAreSet();
+    int dumpParameters();
 
-    // Si  mulation Parameters
+    std::string m_dumpFilename = "paramdump.txt";
+
+    // Simulation Parameters
     int    m_nx;
     int    m_ny;
     int    m_writingFreq;
@@ -29,6 +33,9 @@ public:
     double m_density;
     double m_step;
 
+    // Filenames
+    std::string m_latticeFilename;
+
     // Grooves
     int    m_grooveSize;
     int    m_grooveHeight;
@@ -39,12 +46,10 @@ public:
     int    m_pusherStartHeight;
     int    m_pusherEndHeight;
 
-    // Bea m
-    double m_driverSprings_k;
-    double m_attachmentSprings_k;
-    double m_driverVD;
-    double m_driverForce;
-    double m_straightener_k;
+    // Beam
+    double m_beamMass;
+    double m_beamAngle;
+    int    m_beamRotTime;
 
     // Writer Frequencies
     int    m_writeNodePositionInterface;
@@ -91,6 +96,9 @@ private:
     bool m_bdensity                           = 0;
     bool m_bstep                              = 0;
 
+    // Filenames
+    bool m_blatticeFilename                   = 0;
+
     // Grooves
     bool m_bgrooveSize                        = 0;
     bool m_bgrooveHeight                      = 0;
@@ -102,11 +110,9 @@ private:
     bool m_bpusherEndHeight                   = 0;
 
     // Beam
-    bool m_bdriverSprings_k                   = 0;
-    bool m_battachmentSprings_k               = 0;
-    bool m_bdriverVD                          = 0;
-    bool m_bdriverForce                       = 0;
-    bool m_bstraightener_k                    = 0;
+    bool m_bbeamMass                          = 0;
+    bool m_bbeamAngle                         = 0;
+    bool m_bbeamRotTime                       = 0;
 
     // Writer Frequencies
     bool m_bwriteNodePositionInterface        = 0;

@@ -8,9 +8,9 @@ public:
     vec3(double a, double b,double c);
 
 
-    double componants[3];
-    double &operator()(int index){return componants[index];}
-    double &operator[](int index){return componants[index];}
+    double components[3];
+    double &operator()(int index){return components[index];}
+    double &operator[](int index){return components[index];}
     //double &operator*(vec3 a,vec3 b){return a(0)*b(0) + a(1)*b(1) + a(2)*b(2);}
 
     vec3 &operator-=(const vec3 &rhs);
@@ -25,15 +25,15 @@ public:
 
     void print();
 
-    double x() {return componants[0];}
-    double y() {return componants[1];}
-    double z() {return componants[2];}
+    double x() {return components[0];}
+    double y() {return components[1];}
+    double z() {return components[2];}
 
     double lengthSquared();
     double length();
 
     vec3 randint(int min, int max);
-
+    double cross2d(const vec3 &other);
 };
 
 inline vec3 operator-(vec3 lhs, vec3 rhs){

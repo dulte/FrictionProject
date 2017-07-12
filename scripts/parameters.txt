@@ -2,10 +2,10 @@
 # Comments start with '#'
 # Only the first two words are processed.
 # The first word is the parameter name, the second is its value.
-
+¤global x; x = 5
 #Simulation parameters
-nx                   64    # Number of nodes in the x direction
-ny                   31    # Number of nodes in the y direction
+nx                   [64, 78, 31, 22]    # Number of nodes in the x direction
+ny                   [x**i for i in range(5)]    # Number of nodes in the y direction
 writingFreq          100   # Useless??
 nt                   5e5  # Total number of time steps 
 releaseTime          1e4   # Number of steps before the springs are released 
@@ -34,9 +34,11 @@ pusherStartHeight    4
 pusherEndHeight      5
 
 #Driver Beam
-beamMass             1
-beamAngle            0   # The final angle of the beam [degrees, anticlockwise]
-beamRotTime          1e2 # Number of steps for the beam to rotate from 0 to beamAngle
+driverSprings_k      4e6
+attachmentSprings_k  1e6
+driverForce          1    # Gjør ingenting 
+driverVD             4e1     #4e-4
+straightenerK        4e7
 
 #Write_data
 writeNodePositionInterface        0

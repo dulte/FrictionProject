@@ -22,6 +22,7 @@ public:
     void    vvstep1(double dt);
     void    vvstep2(double dt);
     bool    connectToNode(std::shared_ptr<Node> other);
+    bool    connectToNode(std::shared_ptr<Node> other, double distance);
     double  distanceTo(Node & other);
     double  distanceTo(std::shared_ptr<Node> other);
     void    setPhi(double phi);
@@ -43,6 +44,7 @@ public:
     void    clearModifiers();
     void    isSetForce(bool);
     void    setLattice(std::shared_ptr<SimpleLattice> lattice) {m_lattice = lattice;}
+    void    forcePosition(const vec3 &r);
 
 protected:
     vec3   m_r;

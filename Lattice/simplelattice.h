@@ -22,7 +22,7 @@ public:
     std::shared_ptr<LatticeInfo>       latticeInfo;
 
     double  t() {return m_t;}
-    virtual void step(double dt);
+    virtual void step(double dt) = 0;
     virtual std::vector<DataPacket> getDataPackets(int, double) = 0;
 protected:
     double m_t = 0; // Simulation time

@@ -3,7 +3,6 @@
 #include <iostream>
 #include <memory>
 #include <cmath>
-#include <iostream>
 #include "triangularlatticewithgrooves.h"
 #include "NodeInfo/nodeinfo.h"
 
@@ -121,11 +120,13 @@ void TriangularLatticeWithGrooves::populate(int nx, int ny, double d, double E, 
     }
 }
 
-void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, double E, double nu, double hZ, double density){
-
-
-    string bottomNodeConfigTextFile = "bottomNodesConfig.txt";
-
+void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, double E, double nu, double hZ, double density, int grooveSize, int grooveHeight){
+    m_nx           = nx;
+    m_ny           = ny;
+    m_grooveSize   = grooveSize;
+    m_grooveHeight = grooveHeight;
+    latticeInfo    = std::make_shared<LatticeInfo>(E, nu, d, hZ);
+    string bottomNodeConfigTextFile = "Config/bottomNodesConfig.txt";
     vector<int> bottomNodeConfig;
 
     ifstream in{bottomNodeConfigTextFile};
@@ -136,51 +137,37 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
 
     if(numLines != nx){
         cout << "number of lines in the bottomNodeConfigText does not match nx" << endl;
+        cout << numLines << " vs " << nx << endl;
     }
 
     for( int i = 0; i < numLines; i++){
         in >> current;
-        bottomNodeConfig.emplace_back(current);
+        bottomNodeConfig.push_back(current);
     }
     in.close();
 
-    m_nx = nx;
-    m_ny = ny;
     latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
-    int m_grooveSize = 0;
-    int restLength;
-    int backRest;
-
-
+    // int m_grooveSize = 0;
 
     for (int j = 0; j<ny; j++)
     {
         for (int i = 0; i<nx; i++)
         {
-
             if (m_grooveSize != 0){
+                cout << j << " " << i << endl;
                 if (j < m_grooveHeight)
                 {
-//
-
+                    cout << bottomNodeConfig[i] << endl;
                     if (bottomNodeConfig[i] == 1){
                         double rx = i*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
-
-
-
-                        if (j == 0){
+                        if (j == 0)
                             bottomNodes.push_back(newNode);
-                        }
-
-
                         if (i == 0)
-                        {
                             leftNodes.push_back(newNode);
-                        }
                     }
 
                     if((bottomNodeConfig[i] == 0 && bottomNodeConfig[i+1] == 1) && j%2 == 1){
@@ -199,29 +186,18 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                     }
 
                     if(j%2 == 1 && i == 0){
-
                         double rx = (i-1)*d+(j%2)*d*cos(pi/3);
                         double ry = j*d*sin(pi/3);
                         vec3 pos(rx, ry,0);
                         std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                         nodes.push_back(newNode);
 
-
-
-                        if (j == 0){
+                        if (j == 0)
                             bottomNodes.push_back(newNode);
-                        }
-
 
                         if (i == 0)
-                        {
                             leftNodes.push_back(newNode);
-                        }
                     }
-
-
-
-
                 }
                 else{
                     double rx = i*d+(j%2)*d*cos(pi/3);
@@ -229,17 +205,12 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                     vec3 pos(rx, ry,0);
                     std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                     nodes.push_back(newNode);
-                    if (j == 0){
+                    if (j == 0)
                         bottomNodes.push_back(newNode);
-                    }
                     if (j == ny-1)
-                    {
                         topNodes.push_back(newNode);
-                    }
                     if (i == 0)
-                    {
                         leftNodes.push_back(newNode);
-                    }
                 }
             }
             else{
@@ -249,17 +220,11 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
                 std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
                 nodes.push_back(newNode);
                 if (j == 0)
-                {
                     bottomNodes.push_back(newNode);
-                }
                 if (j == ny-1)
-                {
                     topNodes.push_back(newNode);
-                }
                 if (i == 0)
-                {
                     leftNodes.push_back(newNode);
-                }
             }
         }
     }
@@ -270,9 +235,7 @@ void TriangularLatticeWithGrooves::populateSymmetric(int nx, int ny, double d, d
         for (auto & node2: nodes)
         {
             if (node->distanceTo(*node2) < d*1.01 && node->distanceTo(*node2) > d*0.01)
-            {
                 node->connectToNode(node2);
-            }
         }
     }
 }
@@ -367,5 +330,3 @@ std::vector<DataPacket> TriangularLatticeWithGrooves::getDataPackets(int timeste
     packetvec.push_back(velocity_all);
     return packetvec;
 }
-
-

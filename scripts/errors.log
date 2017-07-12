@@ -1,0 +1,306 @@
+2017-07-09 13:28:30,195 -   File "./klyngeslynger.py", line 138, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 47, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 20, in parse
+    with open(self.filename, 'r') as infile:
+
+2017-07-09 13:28:30,195 - FileNotFoundError: [Errno 2] No such file or directory: 'parameters.tx'
+2017-07-09 13:32:06,512 -   File "./klyngeslynger.py", line 141, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 49, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 26, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 25, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 33, in parseLines
+    tokens = lines.split(delimiter=delimiter)
+
+2017-07-09 13:32:06,512 - AttributeError: 'filter' object has no attribute 'split'
+2017-07-09 13:33:57,699 -   File "./klyngeslynger.py", line 140, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 48, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 25, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 24, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 32, in parseLines
+    tokens = lines.split(delimiter=delimiter)
+
+2017-07-09 13:33:57,699 - AttributeError: 'list' object has no attribute 'split'
+2017-07-09 13:34:13,763 -   File "./klyngeslynger.py", line 140, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 48, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 25, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 24, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 32, in parseLines
+    tokens = line.split(delimiter=delimiter)
+
+2017-07-09 13:34:13,763 - TypeError: 'delimiter' is an invalid keyword argument for this function
+2017-07-09 13:34:49,415 -   File "./klyngeslynger.py", line 140, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 48, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 25, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 24, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 32, in parseLines
+    tokens = line.split(delimiter)
+
+2017-07-09 13:34:49,415 - ValueError: empty separator
+2017-07-09 13:35:04,707 -   File "./klyngeslynger.py", line 140, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 48, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 25, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 24, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 33, in parseLines
+    yield tokens[0], eval(tokens[1])
+  File "<string>", line 1, in <module>
+
+2017-07-09 13:35:04,707 - NameError: name 'This' is not defined
+2017-07-09 13:35:24,777 -   File "./klyngeslynger.py", line 141, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 49, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 25, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 24, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 34, in parseLines
+    yield tokens[0], eval(tokens[1])
+  File "<string>", line 1, in <module>
+
+2017-07-09 13:35:24,777 - NameError: name 'This' is not defined
+2017-07-09 13:35:41,920 -   File "./klyngeslynger.py", line 141, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 49, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 25, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 24, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 34, in parseLines
+    yield tokens[0], eval(tokens[1])
+
+2017-07-09 13:35:41,920 - IndexError: list index out of range
+2017-07-09 13:36:27,422 -   File "./klyngeslynger.py", line 142, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 50, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 27, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 26, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 35, in parseLines
+    yield tokens[0], eval(tokens[1])
+  File "<string>", line 1, in <module>
+
+2017-07-09 13:36:27,423 - NameError: name 'This' is not defined
+2017-07-09 13:36:42,138 -   File "./klyngeslynger.py", line 143, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 51, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 27, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 26, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 36, in parseLines
+    yield tokens[0], eval(tokens[1])
+  File "<string>", line 1, in <module>
+
+2017-07-09 13:36:42,138 - NameError: name 'This' is not defined
+2017-07-09 13:37:04,677 -   File "./klyngeslynger.py", line 143, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 51, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 27, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 26, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 36, in parseLines
+    yield tokens[0], eval(tokens[1])
+  File "<string>", line 1, in <module>
+
+2017-07-09 13:37:04,677 - NameError: name 'This' is not defined
+2017-07-09 13:38:08,155 -   File "./klyngeslynger.py", line 145, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 53, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 29, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 28, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 38, in parseLines
+    yield tokens[0], eval(tokens[1])
+
+2017-07-09 13:38:08,155 - SyntaxError: unexpected EOF while parsing (<string>, line 0)
+2017-07-09 13:38:34,531 -   File "./klyngeslynger.py", line 145, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 53, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 29, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 28, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 38, in parseLines
+    yield tokens[0], eval(tokens[1])
+
+2017-07-09 13:38:34,531 - SyntaxError: unexpected EOF while parsing (<string>, line 0)
+2017-07-09 13:40:45,804 -   File "./klyngeslynger.py", line 146, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 54, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 30, in parse
+    delimiter)}
+  File "./klyngeslynger.py", line 29, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines,
+  File "./klyngeslynger.py", line 39, in parseLines
+    yield tokens[0], eval(tokens[1])
+  File "<string>", line 1, in <module>
+
+2017-07-09 13:40:45,805 - NameError: name 'Config' is not defined
+2017-07-09 14:08:00,930 -   File "./klyngeslynger.py", line 170, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 78, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 28, in parse
+    [exec(line) for line in lines if lines.startswith(self.metachar)]
+  File "./klyngeslynger.py", line 28, in <listcomp>
+    [exec(line) for line in lines if lines.startswith(self.metachar)]
+
+2017-07-09 14:08:00,930 - AttributeError: 'list' object has no attribute 'startswith'
+2017-07-09 14:12:20,452 -   File "./klyngeslynger.py", line 176, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 84, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 37, in parse
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 37, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 53, in parseLines
+    value = self.handleExpression(line[line.find(value[0]):])
+  File "./klyngeslynger.py", line 64, in handleExpression
+    print(x)
+
+2017-07-09 14:12:20,452 - NameError: name 'x' is not defined
+2017-07-09 14:12:47,693 -   File "./klyngeslynger.py", line 176, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 84, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 37, in parse
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 37, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 53, in parseLines
+    value = self.handleExpression(line[line.find(value[0]):])
+  File "./klyngeslynger.py", line 64, in handleExpression
+    print(x)
+
+2017-07-09 14:12:47,693 - NameError: name 'x' is not defined
+2017-07-09 14:16:05,532 -   File "./klyngeslynger.py", line 176, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 84, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 37, in parse
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 37, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 53, in parseLines
+    value = self.handleExpression(line[line.find(value[0]):])
+  File "./klyngeslynger.py", line 64, in handleExpression
+    print(x)
+
+2017-07-09 14:16:05,532 - NameError: name 'x' is not defined
+2017-07-09 14:16:16,363 -   File "./klyngeslynger.py", line 176, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeslynger.py", line 84, in __init__
+    parameters = parser.parse()
+  File "./klyngeslynger.py", line 37, in parse
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 37, in <dictcomp>
+    parameters = {key: value for key, value in self.parseLines(lines)}
+  File "./klyngeslynger.py", line 53, in parseLines
+    value = self.handleExpression(line[line.find(value[0]):])
+  File "./klyngeslynger.py", line 63, in handleExpression
+    exec(line)
+
+2017-07-09 14:16:16,363 - SyntaxError: invalid syntax (<string>, line 1)
+2017-07-09 19:04:43,136 -   File "./klyngeslynger.py", line 188, in <module>
+    jobr.run()
+  File "./klyngeslynger.py", line 130, in run
+    for keys, values in self.iterables():
+  File "./klyngeslynger.py", line 136, in iterables
+    for key, value in self.parameters:
+
+2017-07-09 19:04:43,136 - AttributeError: 'JobRunner' object has no attribute 'parameters'
+2017-07-09 19:05:34,930 -   File "./klyngeslynger.py", line 188, in <module>
+    jobr.run()
+  File "./klyngeslynger.py", line 130, in run
+    for keys, values in self.iterables():
+  File "./klyngeslynger.py", line 137, in iterables
+    if (not isinstance(value, types.StringTypes) and
+
+2017-07-09 19:05:34,930 - AttributeError: module 'types' has no attribute 'StringTypes'
+2017-07-09 19:06:41,623 -   File "./klyngeslynger.py", line 187, in <module>
+    jobr.run()
+  File "./klyngeslynger.py", line 129, in run
+    for keys, values in self.iterables():
+  File "./klyngeslynger.py", line 135, in iterables
+    for key, value in self.parameters:
+
+2017-07-09 19:06:41,624 - ValueError: too many values to unpack (expected 2)
+2017-07-09 19:13:55,573 -   File "./klyngeslynger.py", line 205, in <module>
+    jobr.run()
+  File "./klyngeslynger.py", line 129, in run
+    self.makeConfigFile()
+  File "./klyngeslynger.py", line 136, in makeConfigFile
+    for k, v in self.nonIterables()])
+  File "./klyngeslynger.py", line 136, in <listcomp>
+    for k, v in self.nonIterables()])
+
+2017-07-09 19:13:55,573 - ValueError: too many values to unpack (expected 2)
+2017-07-10 10:59:45,471 -   File "./klyngeyngler.py", line 215, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeyngler.py", line 92, in __init__
+    self.parameters = parser.parse()
+  File "./klyngeyngler.py", line 25, in parse
+    with open(self.filename, 'r') as infile:
+
+2017-07-10 10:59:45,472 - TypeError: expected str, bytes or os.PathLike object, not NoneType
+2017-07-10 12:11:05,280 - CRITICAL -   File "./klyngeyngler.py", line 282, in <module>
+    print(jobf.makeJobfile())
+  File "./klyngeyngler.py", line 108, in makeJobfile
+    script += self.makeEnvironment()
+  File "./klyngeyngler.py", line 121, in makeEnvironment
+    for module in self.modules:
+
+2017-07-10 12:11:05,281 - CRITICAL - AttributeError: 'Jobfile' object has no attribute 'modules'
+2017-07-10 12:11:19,681 - CRITICAL -   File "./klyngeyngler.py", line 283, in <module>
+    print(jobf.makeJobfile())
+  File "./klyngeyngler.py", line 109, in makeJobfile
+    script += self.makeEnvironment()
+  File "./klyngeyngler.py", line 131, in makeEnvironment
+    ).format(**self.__dict__)
+
+2017-07-10 12:11:19,681 - CRITICAL - KeyError: 'submit'
+2017-07-10 12:12:14,595 - CRITICAL -   File "./klyngeyngler.py", line 283, in <module>
+    print(jobf.makeJobfile())
+  File "./klyngeyngler.py", line 109, in makeJobfile
+    script += self.makeEnvironment()
+  File "./klyngeyngler.py", line 136, in makeEnvironment
+    env += './{executeable}'.format(**self.__dict__)
+
+2017-07-10 12:12:14,595 - CRITICAL - KeyError: 'executeable'
+2017-07-10 12:38:24,190 - CRITICAL -   File "./klyngeyngler.py", line 284, in <module>
+    jobf = Jobfile(obname='adolf')
+
+2017-07-10 12:38:24,191 - CRITICAL - TypeError: __init__() missing 2 required positional arguments: 'executable' and 'argument'

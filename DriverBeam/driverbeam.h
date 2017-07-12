@@ -11,36 +11,47 @@ class Lattice;
 class Node;
 class Parameters;
 class PotentialPusher;
+class vec3;
 
-class DriverBeam: public SimpleLattice
+class DriverBeam : public SimpleLattice
 {
 public :
-    explicit DriverBeam(std::shared_ptr<Parameters> spParameters,
-                        std::shared_ptr<Lattice>    spLattice);
-    ~DriverBeam();
+    DriverBeam(std::shared_ptr<Parameters>);
+    virtual ~DriverBeam();
 
-    void construct(std::shared_ptr<Parameters> spParameters);
-    std::vector<DataPacket> getDataPackets(int, double) override;
-    std::vector<std::shared_ptr<PotentialPusher>> addDriverForce(double);
+    void attachToLattice(std::shared_ptr<Lattice>);
+    void step(double dt) override;
+    std::vector<DataPacket> getDataPackets(int timestep, double time) override;
+    void startDriving(){m_velocity = m_vD;};
+    void stealTopNodes(std::shared_ptr<Lattice>);
+    void checkRotation(int i); //TODO: This is a stupid solution
 
     // The top nodes of to lattice to which the attachment nodes are attached
-    std::vector<std::shared_ptr<Node> > m_latticeNodes;
-    // Nodes connecting the driver nodes to the top nodes of the lattice.
-    std::vector<std::shared_ptr<Node> > m_attachmentNodes;
-    // The driver nodes pushing/pulling/driving the entire system
-    std::vector<std::shared_ptr<Node> > m_driverNodes;
+    std::vector<std::shared_ptr<Node> > m_topNodes;
 
 protected :
-
-    // Read from spParameters
+    // Read from parameters
     const unsigned int m_nx;
     const unsigned int m_ny;
-    const double       m_driverSprings_k;
-    const double       m_attachmentSprings_k;
-    const double       m_driverForce;
-    const double       m_driverVD;
+    const double       m_k;
+    const double       m_vD;              // Velocity of the beam
+    const double       m_mass;
+    const double       m_momentOfInertia;
+    const double       m_angle;           // Wanted angle
+    const int          m_rotTime;         // Time it takes for the beam to go from 0 to angle
+    // Not read from parameters
+    double             m_phiStep;         // Change in angle required to reach angle after rotTime
+    double             m_omega;           // Angular velocity
+    double             m_phi;             // Current angle
+    double             m_torque;          // Torque
+    vec3               m_force;
+    double             m_velocity;        // Current velocity of the driver in the x-direction
+    vec3               m_v;
+    vec3               m_center;          // Current center of the beam
+    std::vector<double> m_distFromCenter;
 
-    // Not read from spParameters
+    // Not read from parameters
     const int offset = 1;
-    std::shared_ptr<Lattice> m_lattice;
+
+    std::shared_ptr<Parameters> m_parameters;
 };

@@ -1,4 +1,5 @@
 #include "potentialpusher.h"
+#include "Node/node.h"
 
 PotentialPusher::PotentialPusher(double k, double vD, double xInit, double tInit)
       :

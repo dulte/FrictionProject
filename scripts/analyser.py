@@ -117,25 +117,87 @@ class Analyzer:
         if save:
             plt.savefig(os.path.join(self.savepath, 'plotShearForce.png'), dpi=1200)
 
-    def getReducedSpringAttachments(self):
-        return np.sum(self.readAndResize('node_springs_attached_interface.bin'))
+    """
+    If the number of springs attached is less then the cutoffPoint (percentage) times the total number of springs belonging to that node,
+    the node is treated as dislodged, else it is treated as attached.
+    """
+    def getReducedSpringAttachments(self,cutoffPoint):
+        return np.sum(np.where(self.readAndResize('node_springs_attached_interface.bin')< self.parameters['ns']*cutoffPoint,0,1))
 
-    def plotFrontVelocities(self):
-        data = self.getReducedSpringAttachments()
+
+    """
+    Finds the front velocity of the rapture of the springs. 'h' is the time step used for integration, and is the between each measurment dt*freq.
+    A symmetric differentiation is used to find the velocity.
+    """
+    def getFrontVelocities(self, cutoffPoint = 0.1):
+        data = self.getReducedSpringAttachments(cutoffPoint)
+        data = np.where(data )
         v = np.zeros(len(data) - 2)
-        h = self.parameters["dt"]*100.
+        h = self.parameters["dt"]*self.parameters['freqNodeSpringsAttachedInterface']
         for i in range(1,len(data) -1):
             v[i-1] = (data[i+1] - data[i-1])/(2.0*h)
 
         del data
-        return np.abs(v)*0.005*50
+        return np.abs(v)*self.parameters['d']
 
 
-    def getStaticFrictionCoefficient(self):
-        self.pusherForce = self.read('pusher_force.bin')
-        staticCoefficiant = np.max(self.pusherForce)
-        del self.pusherForce
+    def plotFrontVelocities(self,cutoffPoint = 0.1):
+        data = self.getFrontVelocities(cutoffPoint)
+        time = np.arange(data)*self.parameters['dt']*self.parameters['freqNodeSpringsAttachedInterface']
+        plt.plot(time,data)
+        plt.title("Front Velocity for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim[0]))
+        plt.xlabel("Time [s]")
+        plt.ylabel("Velocity [m/s]")
+        plt.show()
+
+
+    """
+    Reads the shear forces on the top rod. The array is then resized to a matrix with the shape [time,block]. If the parameter mean == True,
+    mean forces is calculated, else the total force is calculated. The static friction coefficent is returned as the maximum value of the mean or total shear force
+    on the rod divided by the normal force.
+    """
+    def getStaticFrictionCoefficient(self, mean = False):
+        shearForce_on_rod = self.read('rodShearForce.bin')
+        shearForce_on_rod = np.reshape(shearForce_on_rod, len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx'])
+        if mean:
+            shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
+        else:
+            shearForce_on_rod = np.sum(shearForce_on_rod,axis = 1)
+
+        staticCoefficiant = np.max(shearForce_on_rod)/np.float(self.parameters['fn'])
+        del shearForce_on_rod
         return staticCoefficiant
+
+    """
+    Returns a time serier of the shear force on the rod. Much of the processing is the same as for the method above.
+    """
+
+    def getRodShearForceTimeSeries(self,mean = False):
+        shearForce_on_rod = self.read('rodShearForce.bin')
+        shearForce_on_rod = np.reshape(shearForce_on_rod, len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx'])
+        if mean:
+            shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
+        else:
+            shearForce_on_rod = np.sum(shearForce_on_rod,axis = 1)
+
+        return shearForce_on_rod/np.float(self.parameters['fn'])
+
+    def plotRodShearForceTimeSeries(self,mean = False):
+        data = self.getRodShearForceTimeSeries(mean)
+        time = np.arange(data)*self.parameters['dt']*self.parameters['freq...']
+        plt.plot(time,data)
+        plt.title("Shear force of rod for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim[0]))
+        plt.xlabel("Time [s]")
+        plt.ylabel(r"$F_T/F_N$")
+        plt.show()
+
+
+
+    # def getStaticFrictionCoefficient(self):
+    #     self.pusherForce = self.read('pusher_force.bin')
+    #     staticCoefficiant = np.max(self.pusherForce)
+    #     del self.pusherForce
+    #     return staticCoefficiant
 
     def getGrooveDim(self):
         return self.parameters["grooveHeight"], self.parameters["grooveSize"]
@@ -158,6 +220,9 @@ class Analyzer:
         self.shearForce = self.readAndResize('shear_force.bin')
         self.plotShearForce()
         del self.shearForce
+
+
+
 
 
 class SortingHelpFormatter(argparse.RawTextHelpFormatter):
@@ -252,6 +317,19 @@ class Compare:
         plt.legend()
         plt.show()
 
+    """
+    Plots the different times series for the shear force on the rod. As of now, this does nothing. Change freq... to the right name for the freq of the shear force of the rod.
+    """
+    def plotRodShearForceAgainsRodVelocity(self):
+
+        for i in self.instanceList:
+            timeSeries = i.getRodShearForceTimeSeries
+            time = np.arange(0,len(timeSeries))*i.parameters['dt']*i.parameters['freq...']
+            plt.plot(timeSeries, label = "Rod Velocity: %g m/s"%i.parameters['driverVD'])
+
+
+        plt.legend()
+        plt.show()
 
 
 
@@ -275,9 +353,9 @@ if __name__ == '__main__':
 
     pattern = "grooveHeight\d+-grooveSize\d+"
     instanceList = glob.walk(pattern, Analyzer)
-    comp = Compare(instanceList)
-    comp.makeStaticCoeffArray()
-    comp.printStaticCoeffArray()
-    comp.plotCoeff3D()
-    comp.plotPushers()
+    #comp = Compare(instanceList)
+    #comp.makeStaticCoeffArray()
+    #comp.printStaticCoeffArray()
+    #comp.plotCoeff3D()
+    #comp.plotPushers()
     #analyser = Analyzer(args.dir)

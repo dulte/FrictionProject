@@ -126,12 +126,29 @@ class Analyzer:
         del data
         return np.abs(v)*0.005*50
 
+    """
+    Reads the shear forces on the top rod. The array is then resized to a matrix with the shape [time,block]. If the parameter mean == True,
+    mean forces is calculated, else the total force is calculated. The static friction coefficent is returned as the maximum value of the mean or total shear force
+    on the rod
+    """
 
-    def getStaticFrictionCoefficient(self):
-        self.pusherForce = self.read('pusher_force.bin')
-        staticCoefficiant = np.max(self.pusherForce)
-        del self.pusherForce
+    def getStaticFrictionCoefficient(self, mean = False):
+        shearForce_on_rod = self.read('rodShearForce.bin')
+        shearForce_on_rod = np.reshape(shearForce_on_rod, len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx'])
+        if mean:
+            shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
+        else:
+            shearForce_on_rod = np.sum(shearForce_on_rod,axis = 1)
+
+        staticCoefficiant = np.max(shearForce_on_rod)
+        del shearForce_on_rod
         return staticCoefficiant
+
+    # def getStaticFrictionCoefficient(self):
+    #     self.pusherForce = self.read('pusher_force.bin')
+    #     staticCoefficiant = np.max(self.pusherForce)
+    #     del self.pusherForce
+    #     return staticCoefficiant
 
     def getGrooveDim(self):
         return self.parameters["grooveHeight"], self.parameters["grooveSize"]

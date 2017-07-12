@@ -9,7 +9,7 @@ class Node;
 class LatticeInfo;
 class Parameters;
 
-class Lattice : public SimpleLattice// , public std::enable_shared_from_this<Lattice>
+class Lattice : public SimpleLattice
 {
 public:
     Lattice();
@@ -17,6 +17,7 @@ public:
     std::vector<std::shared_ptr<Node>> bottomNodes;
     std::vector<std::shared_ptr<Node>> topNodes;
     std::vector<std::shared_ptr<Node>> leftNodes;
+    std::vector<std::shared_ptr<Node>> normalNodes;
 
     virtual void populate(std::shared_ptr<Parameters> parameters) = 0;
     static std::shared_ptr<LatticeInfo> latticeInfoFromParameters(std::shared_ptr<Parameters> parameters);

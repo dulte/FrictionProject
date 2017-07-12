@@ -31,21 +31,22 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     const double hZ              = parameters->m_hZ;
     const double mass            = density*d*d*hZ/4.0 * pi;
     const double eta             = sqrt(0.1*mass*m_k);
+    const double topLoadingForce = parameters->m_fn;
 
     lattice      = std::make_shared<UnstructuredLattice>();
-    m_driverBeam = std::make_unique<DriverBeam>(parameters);
+    m_driverBeam = std::make_shared<DriverBeam>(parameters);
     lattice->populate(parameters);
 
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 
     // Add top loading force
-    // for (auto & node :m_driverBeam->m_attachmentNodes)
-    // {
-    //     std::unique_ptr<ConstantForce> force = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce, 0));
-    //     node->addModifier(std::move(force));
-    // }
+    for (auto & node : lattice->topNodes)
+    {
+        std::unique_ptr<ConstantForce> force = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce, 0));
+        node->addModifier(std::move(force));
+    }
 
-    // Add dampening force
+    // Add springs
     for (auto & node : lattice->bottomNodes)
     {
             std::shared_ptr<SpringFriction> springFriction = std::make_shared<SpringFriction>(frictionInfo);
@@ -53,6 +54,7 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
             node->addModifier(std::move(springFriction));
     }
 
+    // Add dampning force
     for (auto & node : lattice->nodes)
     {
         std::unique_ptr<RelativeVelocityDamper> damper = std::make_unique<RelativeVelocityDamper>(eta);
@@ -61,29 +63,12 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
         std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(omegaDamper));
     }
-
-    // for (auto & node : m_driverBeam->nodes){
-    //     std::unique_ptr<RelativeVelocityDamper> damper = std::make_unique<RelativeVelocityDamper>(eta);
-    //     node->addModifier(std::move(damper));
-    //     // TODO: Why is there a magic number 1e-5 here?
-    //     std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
-    //     node->addModifier(std::move(omegaDamper));
-    // }
-    // for (auto & node : m_driverBeam->m_attachmentNodes){
-    //     std::unique_ptr<StraightenerForce> straightenerForce = std::make_unique<StraightenerForce>(m_driverBeam->m_attachmentNodes,parameters);
-    //     node->addModifier(std::move(straightenerForce));
-    // }
+    m_driverBeam->attachToLattice(lattice);
 }
 
 SidePotentialLoading::~SidePotentialLoading()
 {
-    outfileParameters.close(); // <- Uuuh???
 }
-
-// void SidePotentialLoading::addDriverForce(double tInit){
-//     auto newPusherNodes = m_driverBeam->addDriverForce(tInit);
-//     pusherNodes.insert(std::end(pusherNodes), std::begin(newPusherNodes), std::end(newPusherNodes));
-// }
 
 void SidePotentialLoading::addPusher(double tInit)
 {
@@ -99,10 +84,10 @@ void SidePotentialLoading::addPusher(double tInit)
     }
 }
 
-void SidePotentialLoading::addDriverBeam(double tInit){
-    m_driverBeam->attachToLattice(lattice);
-    auto newPusherNodes = m_driverBeam->addPushers(tInit);
-    pusherNodes.insert(std::end(pusherNodes), std::begin(newPusherNodes), std::end(newPusherNodes));
+void SidePotentialLoading::addDriver(double tInit){
+    // auto newPusherNodes = m_driverBeam->addPushers(tInit);
+    // pusherNodes.insert(std::end(pusherNodes), std::begin(newPusherNodes), std::end(newPusherNodes));
+    m_driverBeam->startDriving();
 }
 
 void SidePotentialLoading::isLockFrictionSprings(bool isLock)
@@ -111,24 +96,9 @@ void SidePotentialLoading::isLockFrictionSprings(bool isLock)
         frictionElement->isLockSprings = isLock;
 }
 
-// void SidePotentialLoading::dumpParameters()
-// {
-//     outfileParameters.open(outFileFolder+std::string("parameters.txt"));
-//     std::vector<string> outputParameters = {"nx","step","nt","grooveHeight","grooveSize","pusherStartHeight","pusherEndHeight"};
-//     for (string name: outputParameters){
-//         outfileParameters << name << " " << input->get(name) << "\n";
-//     }
-
-
-//     outfileParameters << "bottomNodes" << " " << lattice->bottomNodes.size() << "\n";
-
-//     outfileParameters.close();
-
-// }
-
 void SidePotentialLoading::step(double step){
     lattice->step(step);
-    // m_driverBeam->step(step);
+    m_driverBeam->step(step);
 }
 
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)
@@ -158,21 +128,25 @@ std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, doubl
 std::string SidePotentialLoading::xyzString() const
 {
     std::stringstream xyz;
-    xyz << lattice->nodes.size() + lattice->bottomNodes.size() + m_driverBeam->nodes.size() << "\n\n";
+    xyz << lattice->normalNodes.size() + lattice->topNodes.size() +
+        lattice->bottomNodes.size() + lattice->leftNodes.size() +
+        m_driverBeam->nodes.size() << "\n\n";
 
     // Write out the lattice
-    for (auto & node : lattice->nodes)
+    for (auto & node : lattice->normalNodes)
         xyz << xyzNodeString("N", node);
 
     for (auto & node : lattice->bottomNodes)
         xyz << xyzNodeString("B", node);
 
-    // Write out the driver beam
-    // for (auto & node : m_driverBeam->m_attachmentNodes)
-        // xyz << xyzNodeString("O", node);
+    for (auto & node : lattice->topNodes)
+        xyz << xyzNodeString("T", node);
 
-    for (auto & node : m_driverBeam->nodes)
-        xyz << xyzNodeString("D", node);
+    for (auto & node : lattice->leftNodes)
+        xyz << xyzNodeString("L", node);
+
+    for (auto & node: m_driverBeam->m_topNodes)
+        xyz << xyzNodeString("T", node);
 
     return xyz.str();
 }
@@ -182,7 +156,8 @@ std::string xyzNodeString(std::string c, const std::shared_ptr<Node>& node)
 {
     std::stringstream ss;
     vec3 r = node->r()+node->r_offset();
-    double phi = node->phi();
-    ss << c << " " << r[0] << " " << r[1] << " " << r[2] << " " << cos(phi) << " " << sin(phi) << " " << 0 << "\n";
+    vec3 f = node->f();
+    // double phi = node->phi();
+    ss << c << " " << r[0] << " " << r[1] << " " << node->v().length() << " " << f[0] << " " << f[1] << '\n';
     return ss.str();
 }

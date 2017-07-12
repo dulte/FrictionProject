@@ -85,6 +85,8 @@ void LatticeScanner::scan(){
             m_bottomNodes.push_back(node);
         if (tokens[0].find("L") != std::string::npos)
             m_leftNodes.push_back(node);
+        if (tokens[0].find("N") != std::string::npos)
+            m_normalNodes.push_back(node);
         m_nodes.push_back(node);
     }
 

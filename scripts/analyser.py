@@ -1,3 +1,6 @@
+#!/bin/python3
+# -*- coding: utf-8 -*-
+
 from __future__ import division, absolute_import
 from __future__ import print_function, unicode_literals
 import numpy as np
@@ -65,6 +68,7 @@ class Analyzer:
             for line in infile:
                 words = line.split()
                 # Convert the parameter to either int or float
+                # TODO: Just use eval?
                 try:
                     self.parameters[words[0]] = int(words[1])
                 except ValueError as valErr:
@@ -200,17 +204,12 @@ class Compare:
     def __init__(self,instanceList):
         self.instanceList = instanceList
 
-
-
     def makeStaticCoeffArray(self):
         self.staticCoefficiantArray = np.zeros([len(self.instanceList),3])
         for i in range(len(self.instanceList)):
             self.staticCoefficiantArray[i,0] = self.instanceList[i].getStaticFrictionCoefficient()
             self.staticCoefficiantArray[i,1] = self.instanceList[i].getGrooveDim()[0]
             self.staticCoefficiantArray[i,2] = self.instanceList[i].getGrooveDim()[1]
-
-
-
 
     def plotCoeffHeight(self):
         if not hasattr(self, "staticCoefficiantArray"):

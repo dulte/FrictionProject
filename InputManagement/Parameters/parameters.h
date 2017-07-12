@@ -4,6 +4,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <string>
 
 class Parameters{
 public:
@@ -11,6 +12,9 @@ public:
     ~Parameters();
     void readParameters(std::string filenameConfig);
     void checkThatAllParametersAreSet();
+    int dumpParameters();
+
+    std::string m_dumpFilename = "paramdump.txt";
 
     // Simulation Parameters
     int    m_nx;
@@ -43,11 +47,9 @@ public:
     int    m_pusherEndHeight;
 
     // Beam
-    double m_driverSprings_k;
-    double m_attachmentSprings_k;
-    double m_driverVD;
-    double m_driverForce;
-    double m_straightener_k;
+    double m_beamMass;
+    double m_beamAngle;
+    int    m_beamRotTime;
 
     // Writer Frequencies
     int    m_writeNodePositionInterface;
@@ -108,11 +110,9 @@ private:
     bool m_bpusherEndHeight                   = 0;
 
     // Beam
-    bool m_bdriverSprings_k                   = 0;
-    bool m_battachmentSprings_k               = 0;
-    bool m_bdriverVD                          = 0;
-    bool m_bdriverForce                       = 0;
-    bool m_bstraightener_k                    = 0;
+    bool m_bbeamMass                          = 0;
+    bool m_bbeamAngle                         = 0;
+    bool m_bbeamRotTime                       = 0;
 
     // Writer Frequencies
     bool m_bwriteNodePositionInterface        = 0;

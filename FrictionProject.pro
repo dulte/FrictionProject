@@ -1,14 +1,21 @@
 TEMPLATE = app
+TARGET = simulate
 CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 
 QMAKE_CXXFLAGS+= -fopenmp -g
-QMAKE_LFLAGS +=  -fopenmp
+QMAKE_LFLAGS +=  -fopenmp -g
 
 QMAKE_CXXFLAGS_RELEASE -= -O1
 QMAKE_CXXFLAGS_RELEASE -= -O2
-# QMAKE_CXXFLAGS_RELEASE *= -O3
+QMAKE_CXXFLAGS_RELEASE *= -O3
+
+QMAKE_CXXFLAGS_DEBUG -= -O1
+QMAKE_CXXFLAGS_DEBUG -= -O2
+QMAKE_CXXFLAGS_DEBUG -= -O3
+QMAKE_CXXFLAGS_DEBUG *= -g
+
 QMAKE_MAC_SDK = macosx10.11
 
 
@@ -60,3 +67,6 @@ HEADERS += \
     # ForceModifier/StraightenerForce/straightenerforce.h \
     Lattice/UnstructuredLattice/unstructuredlattice.h \
     InputManagment/LatticeScanner/latticescanner.h
+
+LIBS += \
+        -lboost_system\

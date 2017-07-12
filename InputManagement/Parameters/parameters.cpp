@@ -17,6 +17,65 @@ Parameters::Parameters(std::string filenameConfig){
 Parameters::~Parameters(){
 }
 
+int Parameters::dumpParameters(){
+    std::ofstream dumpFile(m_dumpFilename);
+    if (!dumpFile.is_open()){
+        std::cerr << "Could not dump parameters to file" << std::endl;
+        return -1;
+    }
+
+
+    dumpFile << "nx\t" << m_nx << "\n"
+             << "ny\t" << m_ny << "\n"
+             << "writingFreq\t" << m_writingFreq << "\n"
+             << "nt\t" << m_nt << "\n"
+             << "releaseTime\t" << m_releaseTime << "\n"
+             << "fn\t" << m_fn << "\n"
+             << "ns\t" << m_ns << "\n"
+             << "tau\t" << m_tau << "\n"
+             << "d\t" << m_d << "\n"
+             << "E\t" << m_E << "\n"
+             << "k\t" << m_k << "\n"
+             << "nu\t" << m_nu << "\n"
+             << "hZ\t" << m_hZ << "\n"
+             << "density\t" << m_density << "\n"
+             << "step\t" << m_step << "\n"
+             << "latticeFilename\t" << m_latticeFilename << "\n"
+             << "grooveSize\t" << m_grooveSize << "\n"
+             << "grooveHeight\t" << m_grooveHeight << "\n"
+             << "vD\t" << m_vD << "\n"
+             << "pK\t" << m_pK << "\n"
+             << "pusherStartHeight\t" << m_pusherStartHeight << "\n"
+             << "pusherEndHeight\t" << m_pusherEndHeight << "\n"
+             << "beamMass\t" << m_beamMass << "\n"
+             << "beamAngle\t" << m_beamAngle << "\n"
+             << "beamRotTime\t" << m_beamRotTime << "\n"
+             << "writeNodePositionInterface\t" << m_writeNodePositionInterface << "\n"
+             << "writeNodeVelocityInterface\t" << m_writeNodeVelocityInterface << "\n"
+             << "writeNodeSpringsAttachedInterface\t" << m_writeNodeSpringsAttachedInterface << "\n"
+             << "writeNodePositionAll\t" << m_writeNodePositionAll << "\n"
+             << "writeNodeVelocityAll\t" << m_writeNodeVelocityAll << "\n"
+             << "writeTotalEnergyAll\t" << m_writeTotalEnergyAll << "\n"
+             << "writeTotalForceAll\t" << m_writeTotalForceAll << "\n"
+             << "writePusherForce\t" << m_writePusherForce << "\n"
+             << "writeNormalForce\t" << m_writeNormalForce << "\n"
+             << "writeShearForce\t" << m_writeShearForce << "\n"
+             << "writeXYZ\t" << m_writeXYZ << "\n"
+             << "freqNodePositionInterface\t" << m_freqNodePositionInterface << "\n"
+             << "freqNodeVelocityInterface\t" << m_freqNodeVelocityInterface << "\n"
+             << "freqNodeSpringsAttachedInterface\t" << m_freqNodeSpringsAttachedInterface << "\n"
+             << "freqNodePositionAll\t" << m_freqNodePositionAll << "\n"
+             << "freqNodeVelocityAll\t" << m_freqNodeVelocityAll << "\n"
+             << "freqTotalEnergyAll\t" << m_freqTotalEnergyAll << "\n"
+             << "freqTotalForceAll\t" << m_freqTotalForceAll << "\n"
+             << "freqPusherForce\t" << m_freqPusherForce << "\n"
+             << "freqNormalForce\t" << m_freqNormalForce << "\n"
+             << "freqShearForce\t" << m_freqShearForce << "\n"
+             << "freqXYZ\t" << m_freqXYZ << std::endl;
+    dumpFile.close();
+    return 0;
+}
+
 void Parameters::readParameters(std::string filenameConfig){
     m_infileParameters.open(filenameConfig);
 
@@ -52,7 +111,7 @@ void Parameters::readParameters(std::string filenameConfig){
             m_nt = std::stod(tokens[1]);
             m_bnt = 1;
         } else  if (tokens[0] == "releaseTime") {
-            m_releaseTime = static_cast<int>(std::stoi(tokens[1]));
+            m_releaseTime = static_cast<int>(std::stod(tokens[1]));
             m_breleaseTime = 1;
         } else  if (tokens[0] == "fn") {
             m_fn = std::stod(tokens[1]);
@@ -168,24 +227,18 @@ void Parameters::readParameters(std::string filenameConfig){
         } else  if (tokens[0] == "freqXYZ") {
             m_freqXYZ = std::stoi(tokens[1]);
             m_bfreqXYZ = 1;
-        } else if (tokens[0] == "driverSprings_k") {
-            m_driverSprings_k = std::stod(tokens[1]);
-            m_bdriverSprings_k = 1;
-        } else if (tokens[0] == "attachmentSprings_k") {
-            m_attachmentSprings_k = std::stod(tokens[1]);
-            m_battachmentSprings_k = 1;
-        } else if (tokens[0] == "driverForce") {
-            m_driverForce = std::stod(tokens[1]);
-            m_bdriverForce = 1;
-        } else if (tokens[0] == "driverVD") {
-            m_driverVD = std::stod(tokens[1]);
-            m_bdriverVD = 1;
-        } else if (tokens[0] == "straightenerK") {
-            m_straightener_k = std::stod(tokens[1]);
-            m_bstraightener_k = 1;
         } else if (tokens[0] == "latticefilename") {
             m_latticeFilename = tokens[1];
             m_blatticeFilename = 1;
+        } else if (tokens[0] == "beamMass") {
+            m_beamMass = std::stod(tokens[1]);
+            m_bbeamMass = 1;
+        } else if (tokens[0] == "beamAngle") {
+            m_beamAngle = std::stod(tokens[1]);
+            m_bbeamAngle = 1;
+        } else if (tokens[0] == "beamRotTime") {
+            m_beamRotTime = static_cast<int>(std::stod(tokens[1]));
+            m_bbeamRotTime = 1;
         } else if (tokens[0][0] == '\n' || tokens[0][0] == '#') {
             continue;
         } else {
@@ -321,25 +374,18 @@ void Parameters::checkThatAllParametersAreSet(){
     } else if (!m_bfreqShearForce) {
         std::cerr << "The parameter freqShearForce is not set" << std::endl;
         throw std::runtime_error("The parameter freqShearForce is not set");
-    } else if (!m_bdriverSprings_k) {
-        std::cerr << "The parameter driverSprings_k is not set" << std::endl;
-        throw std::runtime_error("The parameter driverSprings_k is not set");
-    } else if (!m_battachmentSprings_k) {
-        std::cerr << "The parameter attachmentSprings_k is not set" << std::endl;
-        throw std::runtime_error("The parameter attachmentSprings_k is not set");
-    } else if (!m_bdriverForce) {
-        std::cerr << "The parameter driverForce is not set" << std::endl;
-        throw std::runtime_error("The parameter driverForce is not set");
-    } else if (!m_bdriverVD) {
-        std::cerr << "The parameter driverVD is not set" << std::endl;
-        throw std::runtime_error("The parameter VD is not set");
     } else if (!m_bfreqXYZ) {
         std::cerr << "The parameter freqXYZ is not set" << std::endl;
         throw std::runtime_error("The parameter freqXYZ is not set");
-    }
-    else if (!m_bstraightener_k) {
-        std::cerr << "The parameter straightenerK is not set" << std::endl;
-        throw std::runtime_error("The parameter straightenerK is not set");
+    } else if (!m_bbeamMass) {
+        std::cerr << "The parameter beamMass is not set" << std::endl;
+        throw std::runtime_error("The parameter beamMass is not set");
+    } else if (!m_bbeamAngle) {
+        std::cerr << "The parameter beamAngle is not set" << std::endl;
+        throw std::runtime_error("The parameter beamAngle is not set");
+    } else if (!m_bbeamRotTime) {
+        std::cerr << "The parameter beamRotTime is not set" << std::endl;
+        throw std::runtime_error("The parameter beamRotTime is not set");
     } else if (!m_blatticeFilename) {
         throw std::runtime_error("The parameteter latticefilename is not set");
     }

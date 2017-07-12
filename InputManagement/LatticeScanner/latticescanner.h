@@ -32,6 +32,7 @@ public:
     std::vector<std::shared_ptr<Node>> m_bottomNodes;
     std::vector<std::shared_ptr<Node>> m_topNodes;
     std::vector<std::shared_ptr<Node>> m_leftNodes;
+    std::vector<std::shared_ptr<Node>> m_normalNodes;
 private:
     std::shared_ptr<Parameters>  m_parameters;
     std::shared_ptr<LatticeInfo> m_latticeInfo;

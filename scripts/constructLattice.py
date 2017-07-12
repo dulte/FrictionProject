@@ -231,6 +231,8 @@ class Geometry(metaclass=Meta):
         """
         self.doPlaceBottomNodeHere = [1]*self.nx
 
+    def makeXYfromIJ(self):
+        raise NotImplementedError("Geometry is an abstract class")
 
 class SquareGeometry(Geometry):
     """ Implements a nx×ny square geometry """
@@ -453,5 +455,5 @@ if __name__ == '__main__':
     lattice = Lattice(parampath, xyzpath)
     geometry = (TriangleGeometry
                 + SymmetricLegs()
-                + SymmetricGroovesByDaniel())
+                + SymmetricGroovesByReverseConstruction())
     lattice.makeLattice(geometry)

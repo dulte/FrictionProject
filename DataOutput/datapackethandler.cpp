@@ -43,6 +43,9 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_ofNormalForce.open(outputFolder                  + "/normal_force.bin",                    std::ios::out | std::ios::binary);
     m_ofShearForce.open(outputFolder                   + "/shear_force.bin",                     std::ios::out | std::ios::binary);
     m_ofXYZ.open(outputFolder                          + "/positions.xyz",                       std::ofstream::out);
+    // Check that the directory is writable
+    if(!m_ofNodePositionInterface.is_open())
+        throw runtime_error("Could not open output files");
 }
 
 DataPacketHandler::~DataPacketHandler()

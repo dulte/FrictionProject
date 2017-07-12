@@ -26,6 +26,7 @@ void UnstructuredLattice::populate(std::shared_ptr<Parameters> parameters){
     bottomNodes = scanner.m_bottomNodes;
     topNodes    = scanner.m_topNodes;
     leftNodes   = scanner.m_leftNodes;
+    normalNodes = scanner.m_normalNodes;
     nodes       = scanner.m_nodes;
     connectNodes();
 }

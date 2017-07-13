@@ -21,6 +21,7 @@ std::string xyzNodeString(std::string c, const std::shared_ptr<Node>& node);
 SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameters)
 {
     // Set all member variables
+    m_parameters           = parameters;
     m_k                    = parameters->m_k;
     m_pusherStartHeight    = parameters->m_pusherStartHeight;
     m_pusherEndHeight      = parameters->m_pusherEndHeight;
@@ -33,21 +34,21 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     const double eta             = sqrt(0.1*mass*m_k);
     const double topLoadingForce = parameters->m_fn;
 
-    lattice      = std::make_shared<UnstructuredLattice>();
-    m_driverBeam = std::make_shared<DriverBeam>(parameters);
-    lattice->populate(parameters);
+    m_lattice      = std::make_shared<UnstructuredLattice>();
+    m_lattice->populate(parameters);
 
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 
     // Add top loading force
-    for (auto & node : lattice->topNodes)
+    double N = -topLoadingForce/parameters->m_nx;
+    for (auto & node : m_lattice->topNodes)
     {
-        std::unique_ptr<ConstantForce> force = std::make_unique<ConstantForce>(vec3(0, -topLoadingForce, 0));
+        std::unique_ptr<ConstantForce> force = std::make_unique<ConstantForce>(vec3(0, N, 0));
         node->addModifier(std::move(force));
     }
 
     // Add springs
-    for (auto & node : lattice->bottomNodes)
+    for (auto & node : m_lattice->bottomNodes)
     {
             std::shared_ptr<SpringFriction> springFriction = std::make_shared<SpringFriction>(frictionInfo);
             frictionElements.push_back(springFriction);
@@ -55,7 +56,7 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     }
 
     // Add dampning force
-    for (auto & node : lattice->nodes)
+    for (auto & node : m_lattice->nodes)
     {
         std::unique_ptr<RelativeVelocityDamper> damper = std::make_unique<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(damper));
@@ -63,7 +64,7 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
         std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(omegaDamper));
     }
-    m_driverBeam->attachToLattice(lattice);
+    addDriver();
 }
 
 SidePotentialLoading::~SidePotentialLoading()
@@ -72,19 +73,25 @@ SidePotentialLoading::~SidePotentialLoading()
 
 void SidePotentialLoading::addPusher(double tInit)
 {
-    if (lattice->leftNodes.size() <= 0)
+    if (m_lattice->leftNodes.size() <= 0)
         throw std::runtime_error("Lattice has no left nodes, and can not addPusher");
 
     for (int j = m_pusherStartHeight; j < m_pusherEndHeight; j++)
     {
-        std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(m_k, m_vD, lattice->leftNodes[j]->r().x(), tInit);
+        std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(m_k, m_vD, m_lattice->leftNodes[j]->r().x(), tInit);
         pusherNodes.push_back(myPusher);
 
-        lattice->leftNodes[j]->addModifier(std::move(myPusher));
+        m_lattice->leftNodes[j]->addModifier(std::move(myPusher));
     }
 }
 
-void SidePotentialLoading::addDriver(double tInit){
+void SidePotentialLoading::addDriver(){
+    m_driverBeam = std::make_shared<DriverBeam>(m_parameters, m_lattice);
+    m_driverBeam->attachToLattice();
+    m_lattice->nodes.push_back(m_driverBeam);
+}
+
+void SidePotentialLoading::startDriving(){
     // auto newPusherNodes = m_driverBeam->addPushers(tInit);
     // pusherNodes.insert(std::end(pusherNodes), std::begin(newPusherNodes), std::end(newPusherNodes));
     m_driverBeam->startDriving();
@@ -97,14 +104,13 @@ void SidePotentialLoading::isLockFrictionSprings(bool isLock)
 }
 
 void SidePotentialLoading::step(double step){
-    lattice->step(step);
-    m_driverBeam->step(step);
+    m_lattice->step(step);
 }
 
 std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, double time)
 {
     // Get the data packets from the lattice
-    std::vector<DataPacket> packets = lattice->getDataPackets(timestep, time);
+    std::vector<DataPacket> packets = m_lattice->getDataPackets(timestep, time);
 
     // Get the data from the friction elements
     for (auto & frictionElement : frictionElements) {
@@ -128,24 +134,24 @@ std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, doubl
 std::string SidePotentialLoading::xyzString() const
 {
     std::stringstream xyz;
-    xyz << lattice->normalNodes.size() + lattice->topNodes.size() +
-        lattice->bottomNodes.size() + lattice->leftNodes.size() +
-        m_driverBeam->nodes.size() << "\n\n";
+    xyz << m_lattice->normalNodes.size() + m_lattice->topNodes.size() +
+        m_lattice->bottomNodes.size() + m_lattice->leftNodes.size() +
+        m_driverBeam->m_nodes.size() << "\n\n";
 
     // Write out the lattice
-    for (auto & node : lattice->normalNodes)
+    for (auto & node : m_lattice->normalNodes)
         xyz << xyzNodeString("N", node);
 
-    for (auto & node : lattice->bottomNodes)
+    for (auto & node : m_lattice->bottomNodes)
         xyz << xyzNodeString("B", node);
 
-    for (auto & node : lattice->topNodes)
+    for (auto & node : m_lattice->topNodes)
         xyz << xyzNodeString("T", node);
 
-    for (auto & node : lattice->leftNodes)
+    for (auto & node : m_lattice->leftNodes)
         xyz << xyzNodeString("L", node);
 
-    for (auto & node: m_driverBeam->m_topNodes)
+    for (auto & node: m_driverBeam->m_nodes)
         xyz << xyzNodeString("T", node);
 
     return xyz.str();

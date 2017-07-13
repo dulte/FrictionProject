@@ -4,13 +4,15 @@
 // TODO: Side of grooves do not "see" the bottom.
 // TODO: Instead turning on the movement at once, what about increasing it slowly?
 // TODO: Take a look at and improve vec3
+// TODO: Shear force på topblokkene
 #include <iostream>
 #include <string>
 #include <fstream>
 #include <memory>
 #include <time.h>
 #include <omp.h>
-// #include <boost/filesystem.hpp>
+#include <boost/filesystem.hpp>
+#include <boost/program_options.hpp>
 #include "ForceModifier/ConstantForce/constantforce.h"
 #include "ForceModifier/PotentialSurface/potentialsurface.h"
 #include "ForceModifier/ConstantMoment/constantmoment.h"
@@ -29,16 +31,55 @@ double timeSince(const clock_t &);
 
 int main(int argc, char *argv[])
 {
+    std::string outputDirectory;
+    std::string parametersPath;
+    bool doDumpParameters;
+    // Parse and handle commandline arguments
+    // This works only partially. Fix
+    try{
+        boost::program_options::options_description desc{"Options"};
+        desc.add_options()
+            ("help,h", "Help screen")
+            ("output,o", boost::program_options::value<std::string>()->default_value("output/"), "outputDirectory")
+            ("parameters,p", boost::program_options::value<std::string>()->default_value("Config/config.txt"), "config")
+            ("dumpparams,d", boost::program_options::value<bool>()->default_value(false), "doDumpParameters");
+        boost::program_options::variables_map vm;
+        boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+        boost::program_options::notify(vm);
+        doDumpParameters = vm["dumpparams"].as<bool>();
+        outputDirectory  = vm["output"].as<std::string>();
+        parametersPath   = vm["parameters"].as<std::string>();
+
+        bool isOutputCreated = boost::filesystem::create_directories(outputDirectory);
+        if (!isOutputCreated){
+            if (boost::filesystem::exists(outputDirectory))
+                std::cout << "Output directory exists. Overwriting files within." << std::endl;
+            else {
+                std::cerr << "Could not make output directory" << std::endl;
+                return -1;
+            }
+        }
+    } catch (const std::exception &ex) {
+        std::cerr << "Error: " << ex.what() << std::endl;
+        return -1;
+    }
+
+
     clock_t     start = clock();
-    std::string outputFolder = "output/";
-    // bool isOutputCreated = boost::filesystem::create_directories(outputFolder);
-
-
     // Get all of the configuration parameters
-    std::cout << "Reading configuration parameters at " << timeSince(start) << std::endl;
-    std::shared_ptr<Parameters> spParameters = std::make_shared<Parameters>("Config/config.txt");
-    std::cout << "Dumping parameters to " << spParameters->m_dumpFilename << std::endl;
-    spParameters->dumpParameters();
+    std::shared_ptr<Parameters> spParameters;
+    try {
+        spParameters = std::make_shared<Parameters>(parametersPath);
+        std::cout << "Reading configuration parameters at " << timeSince(start) << std::endl;
+    } catch (std::exception &ex) {
+        std::cerr << "Error: " <<ex.what() << std::endl;
+        return -1;
+    }
+
+    if (doDumpParameters){
+        std::cout << "Dumping parameters to " << spParameters->m_dumpFilename << std::endl;
+        spParameters->dumpParameters();
+    }
 
     int    nt          = spParameters->m_nt;
     int    releaseTime = spParameters->m_releaseTime;
@@ -49,14 +90,14 @@ int main(int argc, char *argv[])
     float prevProgress = 0;
 
     SidePotentialLoading mySystem(spParameters);
-    DataPacketHandler    dataPacketHandler(outputFolder, spParameters);
+    DataPacketHandler    dataPacketHandler(outputDirectory, spParameters);
 
     mySystem.isLockFrictionSprings(true);
     std :: cout << "Starting the model with springs locked at " << timeSince(start) << std::endl;
     for (int i = 0; i<releaseTime; i++)
     {
         mySystem.step(step);
-        mySystem.m_driverBeam->checkRotation(i);
+        mySystem.m_driverBeam->checkRotation();
         dataPacketHandler.dumpXYZ(mySystem, i);
         dataPacketHandler.step(mySystem.getDataPackets(i, i*step));
 
@@ -67,8 +108,8 @@ int main(int argc, char *argv[])
         progress = static_cast<double>(i)/releaseTime;
     }
 
-    // TODO: Why calls mySystem.lattice->t()? Can't the system do it internally?
-    mySystem.addDriver(mySystem.lattice->t());
+    // TODO: Why call mySystem.lattice->t()? Can't the system do it internally?
+    mySystem.startDriving();
     mySystem.isLockFrictionSprings(false);
     std::cout << "Unlocking springs at " << timeSince(start) << std::endl;
     prevProgress = 0;

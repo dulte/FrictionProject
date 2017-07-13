@@ -11,6 +11,7 @@
 class SpringFriction;
 class PotentialPusher;
 class UnstructuredLattice;
+class Parameters;
 
 class SidePotentialLoading : public Dumpable
 {
@@ -21,7 +22,8 @@ public:
     // void addDriverForce(double);
     // Add the pusher nodes as described by pusherStartHeight and pusherEndHeight
     void addPusher(double tInit);
-    void addDriver(double tInit);
+    void startDriving();
+    void addDriver();
     // Un/lock springs
     void isLockFrictionSprings(bool);
     // Call the lattice and driverbeam's step
@@ -31,7 +33,8 @@ public:
 
     std::vector<std::shared_ptr<SpringFriction>> frictionElements;
     std::vector<std::shared_ptr<PotentialPusher>> pusherNodes;
-    std::shared_ptr<Lattice> lattice;
+    std::shared_ptr<Lattice> m_lattice;
+    std::shared_ptr<Parameters> m_parameters;
     std::shared_ptr<DriverBeam> m_driverBeam;
 
 protected:

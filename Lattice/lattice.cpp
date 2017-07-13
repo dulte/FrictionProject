@@ -23,7 +23,7 @@ void Lattice::step(double dt)
 #pragma omp parallel for
     for (size_t i = 0; i<nodes.size(); i++)
     {
-        nodes[i]->vvstep1(dt);
+        nodes[i]->vvstep(dt);
     }
 
     m_t += dt*0.5;
@@ -38,7 +38,7 @@ void Lattice::step(double dt)
 #pragma omp parallel for
     for (size_t i = 0; i<nodes.size(); i++)
     {
-        nodes[i]->vvstep2(dt);
+        nodes[i]->vvstep(dt);
     }
     m_t += dt*0.5;
 }

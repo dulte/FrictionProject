@@ -70,3 +70,5 @@ HEADERS += \
 
 LIBS += \
         -lboost_system\
+        -lboost_filesystem\
+        -lboost_program_options\

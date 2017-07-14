@@ -117,12 +117,32 @@ class Analyzer:
         if save:
             plt.savefig(os.path.join(self.savepath, 'plotShearForce.png'), dpi=1200)
 
+
+    """
+    Method for quickly getting a time array for a spesific type of data. freqName is the name found in the parameters.txt file corresponding to the given data
+    """
+    def getTimeArray(self,data,freqName):
+        return np.arange(len(data))*self.parameters['dt']*self.parameters[freqName]
+
     """
     If the number of springs attached is less then the cutoffPoint (percentage) times the total number of springs belonging to that node,
     the node is treated as dislodged, else it is treated as attached.
     """
     def getReducedSpringAttachments(self,cutoffPoint):
-        return np.sum(np.where(self.readAndResize('node_springs_attached_interface.bin')< self.parameters['ns']*cutoffPoint,0,1))
+        return np.sum(np.where(self.readAndResize('node_springs_attached_interface.bin')=< self.parameters['ns']*cutoffPoint,0,1))
+
+    """
+    Plots the number of attached blocks. Show desides if the plot will be shown, or used in an other figure.
+    """
+    def plotReducedSpringAttachments(self, cutoffPoint = 0.1, show = True):
+        data = self.getReducedSpringAttachments(cutoffPoint)
+        time = getTimeArray(data,'freqNodeSpringsAttachedInterface')
+        plt.plot(time,data)
+        if show:
+            plt.title("Number of Nodes Attached to the Ground")
+            plt.xlabel("Time [s]")
+            plt.ylabel("Number")
+            plt.show()
 
 
     """
@@ -140,10 +160,12 @@ class Analyzer:
         del data
         return np.abs(v)*self.parameters['d']
 
-
+    """
+    Plots the Front Velocities.
+    """
     def plotFrontVelocities(self,cutoffPoint = 0.1):
         data = self.getFrontVelocities(cutoffPoint)
-        time = np.arange(data)*self.parameters['dt']*self.parameters['freqNodeSpringsAttachedInterface']
+        time = np.arange(len(data))*self.parameters['dt']*self.parameters['freqNodeSpringsAttachedInterface']
         plt.plot(time,data)
         plt.title("Front Velocity for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim[0]))
         plt.xlabel("Time [s]")
@@ -155,6 +177,8 @@ class Analyzer:
     Reads the shear forces on the top rod. The array is then resized to a matrix with the shape [time,block]. If the parameter mean == True,
     mean forces is calculated, else the total force is calculated. The static friction coefficent is returned as the maximum value of the mean or total shear force
     on the rod divided by the normal force.
+
+    TODO: Get the friction force from the flat case, and use that to normalize the static friction for grooves.
     """
     def getStaticFrictionCoefficient(self, mean = False):
         shearForce_on_rod = self.read('rodShearForce.bin')

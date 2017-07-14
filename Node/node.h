@@ -17,10 +17,11 @@ class Node : public std::enable_shared_from_this<Node>
 public:
     Node(vec3 r, double mass, double momentOfInertia, std::shared_ptr<LatticeInfo> latticeInfo);
 
-    void    updateForcesAndMoments();
-    void    step(double dt);
-    void    vvstep1(double dt);
-    void    vvstep2(double dt);
+    virtual void    updateForcesAndMoments();
+    virtual void    step(double dt);
+    virtual void    vvstep1(double dt);
+    virtual void    vvstep2(double dt);
+    virtual void    vvstep(double dt);
     bool    connectToNode(std::shared_ptr<Node> other);
     bool    connectToNode(std::shared_ptr<Node> other, double distance);
     double  distanceTo(Node & other);

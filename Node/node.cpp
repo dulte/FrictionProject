@@ -77,6 +77,14 @@ void Node::step(double dt)
     m_r     = m_r + m_v*dt;
 }
 
+void Node::vvstep(double dt)
+{
+    m_omega += (m_moment/m_momentOfInertia)*0.5*dt;
+    m_phi   += m_omega*dt;
+    m_v     += (m_f/m_mass)*0.5*dt;
+    m_r     += m_v*dt;
+}
+
 void Node::vvstep1(double dt)
 {
     m_omega += (m_moment/m_momentOfInertia)*0.5*dt;

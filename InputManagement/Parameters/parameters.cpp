@@ -249,142 +249,96 @@ void Parameters::readParameters(std::string filenameConfig){
 
 void Parameters::checkThatAllParametersAreSet(){
     if (!m_bnx) {
-        std::cerr << "The parameter nx is not set" << std::endl;
         throw std::runtime_error("The parameter nx is not set");
     } else if (!m_bny) {
-        std::cerr << "The parameter ny is not set" << std::endl;
         throw std::runtime_error("The parameter ny is not set");
     } else if (!m_bwritingFreq) {
-        std::cerr << "The parameter writingFreq is not set" << std::endl;
         throw std::runtime_error("The parameter writingFreq is not set");
     } else if (!m_bnt) {
-        std::cerr << "The parameter nt is not set" << std::endl;
         throw std::runtime_error("The parameter nt is not set");
     } else if (!m_breleaseTime) {
-        std::cerr << "The parameter releaseTime is not set" << std::endl;
         throw std::runtime_error("The parameter releaseTime is not set");
     } else if (!m_bfn) {
-        std::cerr << "The parameter fn is not set" << std::endl;
         throw std::runtime_error("The parameter fn is not set");
     } else if (!m_bns) {
-        std::cerr << "The parameter ns is not set" << std::endl;
         throw std::runtime_error("The parameter ns is not set");
     } else if (!m_btau) {
-        std::cerr << "The parameter tau is not set" << std::endl;
         throw std::runtime_error("The parameter tau is not set");
     } else if (!m_bd) {
-        std::cerr << "The parameter d is not set" << std::endl;
         throw std::runtime_error("The parameter d is not set");
     } else if (!m_bE) {
-        std::cerr << "The parameter E is not set" << std::endl;
         throw std::runtime_error("The parameter E is not set");
     } else if (!m_bk) {
-        std::cerr << "The parameter k is not set" << std::endl;
         throw std::runtime_error("The parameter k is not set");
     } else if (!m_bnu) {
-        std::cerr << "The parameter nu is not set" << std::endl;
         throw std::runtime_error("The parameter nu is not set");
     } else if (!m_bhZ) {
-        std::cerr << "The parameter hZ is not set" << std::endl;
         throw std::runtime_error("The parameter hZ is not set");
     } else if (!m_bdensity) {
-        std::cerr << "The parameter density is not set" << std::endl;
         throw std::runtime_error("The parameter density is not set");
     } else if (!m_bstep) {
-        std::cerr << "The parameter step is not set" << std::endl;
         throw std::runtime_error("The parameter step is not set");
     } else if (!m_bgrooveSize) {
-        std::cerr << "The parameter grooveSize is not set" << std::endl;
         throw std::runtime_error("The parameter grooveSize is not set");
     } else if (!m_bgrooveHeight) {
-        std::cerr << "The parameter grooveHeight is not set" << std::endl;
         throw std::runtime_error("The parameter grooveHeight is not set");
     } else if (!m_bvD) {
-        std::cerr << "The parameter vD is not set" << std::endl;
         throw std::runtime_error("The parameter vD is not set");
     } else if (!m_bpK) {
-        std::cerr << "The parameter pK is not set" << std::endl;
         throw std::runtime_error("The parameter pK is not set");
     } else if (!m_bpusherStartHeight) {
-        std::cerr << "The parameter pusherStartHeight is not set" << std::endl;
         throw std::runtime_error("The parameter pusherStartHeight is not set");
     } else if (!m_bpusherEndHeight) {
-        std::cerr << "The parameter pusherEndHeight is not set" << std::endl;
         throw std::runtime_error("The parameter pusherEndHeight is not set");
     } else if (!m_bwriteNodePositionInterface) {
-        std::cerr << "The parameter writeNodePositionInterface is not set" << std::endl;
         throw std::runtime_error("The parameter writeNodePositionInterface is not set");
     } else if (!m_bwriteNodeVelocityInterface) {
-        std::cerr << "The parameter writeNodeVelocityInterface is not set" << std::endl;
         throw std::runtime_error("The parameter writeNodeVelocityInterface is not set");
     } else if (!m_bwriteNodeSpringsAttachedInterface) {
-        std::cerr << "The parameter writeNodeSpringsAttachedInterface is not set" << std::endl;
         throw std::runtime_error("The parameter writeNodeSpringsAttachedInterface is not set");
     } else if (!m_bwriteNodePositionAll) {
-        std::cerr << "The parameter writeNodePositionAll is not set" << std::endl;
         throw std::runtime_error("The parameter writeNodePositionAll is not set");
     } else if (!m_bwriteNodeVelocityAll) {
-        std::cerr << "The parameter writeNodeVelocityAll is not set" << std::endl;
         throw std::runtime_error("The parameter writeNodeVelocityAll is not set");
     } else if (!m_bwriteTotalEnergyAll) {
-        std::cerr << "The parameter writeTotalEnergyAll is not set" << std::endl;
         throw std::runtime_error("The parameter writeTotalEnergyAll is not set");
     } else if (!m_bwriteTotalForceAll) {
-        std::cerr << "The parameter writeTotalForceAll is not set" << std::endl;
         throw std::runtime_error("The parameter writeTotalForceAll is not set");
     } else if (!m_bwritePusherForce) {
-        std::cerr << "The parameter writePusherForce is not set" << std::endl;
         throw std::runtime_error("The parameter writePusherForce is not set");
     } else if (!m_bwriteNormalForce) {
-        std::cerr << "The parameter writeNormalForce is not set" << std::endl;
         throw std::runtime_error("The parameter writeNormalForce is not set");
     } else if (!m_bwriteShearForce) {
-        std::cerr << "The parameter writeShearForce is not set" << std::endl;
         throw std::runtime_error("The parameter writeShearForce is not set");
     } else if (!m_bwriteXYZ) {
-        std::cerr << "The parameter writeXYZ is not set" << std::endl;
         throw std::runtime_error("The parameter writeXYZ is not set");
     } else if (!m_bfreqNodePositionInterface) {
-        std::cerr << "The parameter freqNodePositionInterface is not set" << std::endl;
         throw std::runtime_error("The parameter freqNodePositionInterface is not set");
     } else if (!m_bfreqNodeVelocityInterface) {
-        std::cerr << "The parameter freqNodeVelocityInterface is not set" << std::endl;
         throw std::runtime_error("The parameter freqNodeVelocityInterface is not set");
     } else if (!m_bfreqNodeSpringsAttachedInterface) {
-        std::cerr << "The parameter freqNodeSpringsAttachedInterface is not set" << std::endl;
         throw std::runtime_error("The parameter freqNodeSpringsAttachedInterface is not set");
     } else if (!m_bfreqNodePositionAll) {
-        std::cerr << "The parameter freqNodePositionAll is not set" << std::endl;
         throw std::runtime_error("The parameter freqNodePositionAll is not set");
     } else if (!m_bfreqNodeVelocityAll) {
-        std::cerr << "The parameter freqNodeVelocityAll is not set" << std::endl;
         throw std::runtime_error("The parameter freqNodeVelocityAll is not set");
     } else if (!m_bfreqTotalEnergyAll) {
-        std::cerr << "The parameter freqTotalEnergyAll is not set" << std::endl;
         throw std::runtime_error("The parameter freqTotalEnergyAll is not set");
     } else if (!m_bfreqTotalForceAll) {
-        std::cerr << "The parameter freqTotalForceAll is not set" << std::endl;
         throw std::runtime_error("The parameter freqTotalForceAll is not set");
     } else if (!m_bfreqPusherForce) {
-        std::cerr << "The parameter freqPusherForce is not set" << std::endl;
         throw std::runtime_error("The parameter freqPusherForce is not set");
     } else if (!m_bfreqNormalForce) {
-        std::cerr << "The parameter freqNormalForce is not set" << std::endl;
         throw std::runtime_error("The parameter freqNormalForce is not set");
     } else if (!m_bfreqShearForce) {
-        std::cerr << "The parameter freqShearForce is not set" << std::endl;
         throw std::runtime_error("The parameter freqShearForce is not set");
     } else if (!m_bfreqXYZ) {
-        std::cerr << "The parameter freqXYZ is not set" << std::endl;
         throw std::runtime_error("The parameter freqXYZ is not set");
     } else if (!m_bbeamMass) {
-        std::cerr << "The parameter beamMass is not set" << std::endl;
         throw std::runtime_error("The parameter beamMass is not set");
     } else if (!m_bbeamAngle) {
-        std::cerr << "The parameter beamAngle is not set" << std::endl;
         throw std::runtime_error("The parameter beamAngle is not set");
     } else if (!m_bbeamRotTime) {
-        std::cerr << "The parameter beamRotTime is not set" << std::endl;
         throw std::runtime_error("The parameter beamRotTime is not set");
     } else if (!m_blatticeFilename) {
         throw std::runtime_error("The parameteter latticefilename is not set");

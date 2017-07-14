@@ -28,7 +28,7 @@ grooveHeight         4
 latticefilename      Config/lattice.txt
 
 #Pusher
-vD                   4e1
+vD                   4e-3
 pK                   4e5
 pusherStartHeight    4
 pusherEndHeight      5
@@ -36,7 +36,7 @@ pusherEndHeight      5
 #Driver Beam
 beamMass             1
 beamAngle            0   # The final angle of the beam [degrees, anticlockwise]
-beamRotTime          1e2 # Number of steps for the beam to rotate from 0 to beamAngle
+beamRotTime          1e3 # Number of steps for the beam to rotate from 0 to beamAngle
 
 #Write_data
 writeNodePositionInterface        0

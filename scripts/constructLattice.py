@@ -449,10 +449,16 @@ class SymmetricLegs(GeometryExtension):
         return self.doPlaceBottomNodeHere[i]
 
 
+def getArgs():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('parampath', type=os.path.realpath)
+    parser.add_argument('outputpath', type=os.path.realpath)
+    return parser.parse_args()
+
+
 if __name__ == '__main__':
-    parampath = os.path.realpath('../Config/config.txt')
-    xyzpath = os.path.realpath('../Config/lattice.txt')
-    lattice = Lattice(parampath, xyzpath)
+    args = getArgs()
+    lattice = Lattice(args.parampath, args.outputpath)
     geometry = (TriangleGeometry
                 + SymmetricLegs()
                 + SymmetricGroovesByReverseConstruction())

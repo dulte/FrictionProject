@@ -17,7 +17,7 @@ Lattice::~Lattice()
 
 void Lattice::step(double dt)
 {
-    omp_set_num_threads(4);
+    omp_set_num_threads( 16 );
 #pragma omp flush(dt)
 
 #pragma omp parallel for

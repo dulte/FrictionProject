@@ -1,8 +1,5 @@
-// TODO: Write a function to dump all relevant parameters to a file
 // TODO: Buffer the IO operations
 // TODO: Write tests. Things have a tendency to go wonky after a lot of refactoring
-// TODO: Side of grooves do not "see" the bottom.
-// TODO: Instead turning on the movement at once, what about increasing it slowly?
 // TODO: Take a look at and improve vec3
 // TODO: Shear force på topblokkene
 #include <iostream>
@@ -11,8 +8,8 @@
 #include <memory>
 #include <time.h>
 #include <omp.h>
-#include <boost/filesystem.hpp>
-#include <boost/program_options.hpp>
+// #include <boost/filesystem.hpp>
+// #include <boost/program_options.hpp>
 #include "ForceModifier/ConstantForce/constantforce.h"
 #include "ForceModifier/PotentialSurface/potentialsurface.h"
 #include "ForceModifier/ConstantMoment/constantmoment.h"
@@ -31,46 +28,46 @@ double timeSince(const clock_t &);
 
 int main(int argc, char *argv[])
 {
-    std::string outputDirectory;
-    std::string parametersPath;
-    bool doDumpParameters;
+    std::string outputDirectory = "output";
+    std::string parametersPath = "input/parameters.txt";
+    bool doDumpParameters = false;
     // Parse and handle commandline arguments
     // This works only partially. Fix
-    try{
-        boost::program_options::options_description desc{"Options"};
-        desc.add_options()
-            ("help,h", "Help screen")
-            ("output,o", boost::program_options::value<std::string>()->default_value("output/"), "outputDirectory")
-            ("parameters,p", boost::program_options::value<std::string>()->default_value("Config/config.txt"), "config")
-            ("dumpparams,d", boost::program_options::value<bool>()->default_value(false), "doDumpParameters");
-        boost::program_options::variables_map vm;
-        boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
-        boost::program_options::notify(vm);
-        doDumpParameters = vm["dumpparams"].as<bool>();
-        outputDirectory  = vm["output"].as<std::string>();
-        parametersPath   = vm["parameters"].as<std::string>();
+    // try{
+    //     boost::program_options::options_description desc{"Options"};
+    //     desc.add_options()
+    //         ("help,h", "Help screen")
+    //         ("output,o", boost::program_options::value<std::string>()->default_value("output/"), "outputDirectory")
+    //         ("parameters,p", boost::program_options::value<std::string>()->default_value("Config/config.txt"), "config")
+    //         ("dumpparams,d", boost::program_options::value<bool>()->default_value(false), "doDumpParameters");
+    //     boost::program_options::variables_map vm;
+    //     boost::program_options::store(boost::program_options::parse_command_line(argc, argv, desc), vm);
+    //     boost::program_options::notify(vm);
+    //     doDumpParameters = vm["dumpparams"].as<bool>();
+    //     outputDirectory  = vm["output"].as<std::string>();
+    //     parametersPath   = vm["parameters"].as<std::string>();
 
-        bool isOutputCreated = boost::filesystem::create_directories(outputDirectory);
-        if (!isOutputCreated){
-            if (boost::filesystem::exists(outputDirectory))
-                std::cout << "Output directory exists. Overwriting files within." << std::endl;
-            else {
-                std::cerr << "Could not make output directory" << std::endl;
-                return -1;
-            }
-        }
-    } catch (const std::exception &ex) {
-        std::cerr << "Error: " << ex.what() << std::endl;
-        return -1;
-    }
+    //     bool isOutputCreated = boost::filesystem::create_directories(outputDirectory);
+    //     if (!isOutputCreated){
+    //         if (boost::filesystem::exists(outputDirectory))
+    //             std::cout << "Output directory exists. Overwriting files within." << std::endl;
+    //         else {
+    //             std::cerr << "Could not make output directory" << std::endl;
+    //             return -1;
+    //         }
+    //     }
+    // } catch (const std::exception &ex) {
+    //     std::cerr << "Error: " << ex.what() << std::endl;
+    //     return -1;
+    // }
 
 
     clock_t     start = clock();
     // Get all of the configuration parameters
     std::shared_ptr<Parameters> spParameters;
     try {
-        spParameters = std::make_shared<Parameters>(parametersPath);
         std::cout << "Reading configuration parameters at " << timeSince(start) << std::endl;
+        spParameters = std::make_shared<Parameters>(parametersPath);
     } catch (std::exception &ex) {
         std::cerr << "Error: " <<ex.what() << std::endl;
         return -1;

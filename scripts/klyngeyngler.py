@@ -4,6 +4,8 @@ import argparse
 from datetime import datetime
 from itertools import permutations, product
 from operator import attrgetter
+import subprocess
+from distutils.file_util import copy_file
 import sys
 import traceback
 import os
@@ -27,9 +29,9 @@ class Parser:
             lines = [line.rstrip() for line in infile.readlines()]
 
         # Extract metalines and execute
-        logger.debug("Executing metalines: %s", self.metalines)
         self.metalines = [line[1:] for line in lines
                           if line.startswith(self.metachar)]
+        logger.debug("Executing metalines: %s", self.metalines)
         [exec(line) for line in self.metalines]
 
         # Filter out empty lines and comments
@@ -72,9 +74,7 @@ class Parser:
 
 class Jobfile:
     """ Creates a jobfile for running jobs on the cluster """
-    def __init__(self, executable, argument, **kwargs):
-        self.executable = executable
-        self.argument = argument
+    def __init__(self, **kwargs):
         self.cluster = 'abel'
         self.jobname = 'bob'
         self.account = 'uio'
@@ -82,14 +82,18 @@ class Jobfile:
         self.memPerCPU = '3600M'
         self.cpusPerTask = 16
         self.modules = []
-        self.minutes, self.seconds = divmod(self.wallTime, 60)
-        self.hours, self.minutes = divmod(self.minutes, 60)
+        self.customCommands = []
+        self.infiles = []
+        self.outfiles = []
         # Overwrite any local variables with the ones given
         # as keyword arguments
         logger.debug("Updating Jobfile dictionary with: %s", kwargs)
         for key in kwargs:
             if key not in self.__dict__:
                 logger.warning("Non-standard keyword: %s", key)
+        self.__dict__.update(kwargs)
+        self.minutes, self.seconds = divmod(self.wallTime, 60)
+        self.hours, self.minutes = divmod(self.minutes, 60)
         self.__dict__.update(kwargs)
 
     def makeJobfile(self):
@@ -100,11 +104,11 @@ class Jobfile:
             "#\n"
             "# Project: \n"
             "#SBATCH --account={account}\n"
-            "# Wall time limit"
-            "#SBTACH --time={hours}:{minutes}:{seconds}\n"
+            "# Wall time limit\n"
+            "#SBATCH --time={hours:02d}:{minutes:02d}:{seconds:02d}\n"
             "#\n"
-            "# Max memory usage per task:\n"
-            "#SBATCH --mem-per-cpu{memPerCPU}\n"
+            "# Max memory usage per core:\n"
+            "#SBATCH --mem-per-cpu={memPerCPU}\n"
             "#SBATCH --cpus-per-task={cpusPerTask}\n"
             "#\n\n"
             "# Set up the job environment\n"
@@ -124,43 +128,82 @@ class Jobfile:
             )
             for module in self.modules:
                 env += 'module load {module}\n'.format(module=module)
-            env += (
-                '# Copy files to work directory\n'
-                'mkdir $SCRATCH/files\n'
-                'cp $SUBMITDIR/* $SCRATCH/files\n'
-                '# Mark outfiles for automatic copying to $SUBMITDIR\n'
-                'chkfile files/\n'
-                'cd $SCRATCH/files\n'
-            )
+            env += '# Copy files to work directory\n'
+            for f in self.infiles:
+                env += 'cp -r $SUBMITDIR/{} $SCRATCH\n'.format(f)
+            env += '# Mark outfiles for automatic copying to $SUBMITDIR\n'
+            env += 'chkfile {}\n'.format(' '.join(self.outfiles))
+            env += 'cd $SCRATCH\n'
+            env += '# Run custom commands\n'
         else:
             raise RuntimeError('Cluster not recognized: {}'.format(self.cluster))
-
-        env += './{executable} {argument}'.format(**self.__dict__)
+        for command in self.customCommands:
+            env += "{}\n".format(command)
         return env
 
     def addModule(self, module):
         self.modules.append(module)
 
+    def addCommand(self, command):
+        self.customCommands.append(command)
+
 
 class JobRunner:
     """ Manages and runs jobs on a cluster """
-    def __init__(self, configpath, projectpaths, debugmode=False):
-        self.debugmode = debugmode
-        self.setUpLogger()
-        sys.excepthook = self.excepthook
-        self.logger.info("Attemping to parse {}".format(configpath))
+    def __init__(self, name, configpath, projectpaths, dryrun=False, **kwargs):
+        logger.info("Attemping to parse {}".format(configpath))
         parser = Parser(configpath)
+        self.configpath = configpath
+        self.projectpaths = projectpaths
+        self.name = name
         self.parameters = parser.parse()
+        self.jobfilekwargs = kwargs
+        self.jobdir = 'jobs'
+        self.dryrun = dryrun
 
     def run(self):
-        jobfile = Jobfile('talys', '< bird > duck')
+        infiles = [self.configpath] + self.projectpaths
+        jobfile = Jobfile(**self.jobfilekwargs, infiles=infiles)
+        mkdir(self.jobdir)
         i = 0
         for configStr in self.makeConfigFile():
-            jobfile.name = 'talys'+i
-            pass
+            jobname = self.name+str(i)
+            jobfile.jobname = jobname
+            currDir = self.handleFiles(jobname, configStr)
+            self.writeJobfile(currDir, jobfile.makeJobfile())
+            self.runJob(currDir)
+            i += 1
 
-    def makeJobFile(self):
-        pass
+    def runJob(self, src):
+        logger.info("Running job")
+        if self.dryrun:
+            return
+
+        wd = os.getcwd()
+        os.chdir(src)
+        subprocess.call(['sbatch', 'jobfile'])
+        os.chdir(wd)
+
+    def writeJobfile(self, path, jobfile):
+        path = os.path.join(path, 'jobfile')
+        with open(path, 'w') as jfile:
+            jfile.write(jobfile)
+
+    def handleFiles(self, jobname, configStr):
+        currDir = os.path.join(self.jobdir, jobname)
+        mkdir(currDir)
+        configPath = os.path.join(currDir, self.configpath)
+        for src in self.projectpaths:
+            dst = os.path.join(currDir, src)
+            logger.debug("Copying %s to %s", src, dst)
+            cp(src, dst)
+
+        logger.debug("Writing configuration %s to %s", self.configpath, configPath)
+        mkdirRec(configPath)
+        with open(configPath, 'w') as configFile:
+            configFile.write(configStr)
+
+        return currDir
 
     def makeConfigFile(self):
         nonIterables = ''.join(["{} {}\n".format(k, v)
@@ -180,12 +223,13 @@ class JobRunner:
                 iterables[key] = value
         keys = list(iterables.keys())
         for prod in product(*iterables.values()):
+            logger.debug("Yielding %s", str(prod))
             yield [keys, prod]
 
     def nonIterables(self):
         nonIterables = {}
         for key, value in self.parameters.items():
-            if not isinstance(value, collections.Iterable):
+            if not isinstance(value, collections.Iterable) or isinstance(value, str):
                 nonIterables[key] = value
         return nonIterables.items()
 
@@ -273,6 +317,53 @@ def excepthook(ex_cls, ex, tb):
     sys.exit()
 
 
+def mkdir(path):
+    logger.debug("Making %s", path)
+    if not os.path.exists(path):
+        os.mkdir(path)
+
+
+def mkdirRec(path):
+    logger.debug("Making %s recursively.", path)
+    if not os.path.exists(path):
+        root = os.path.split(path)[0]
+        if not os.path.exists(root):
+            mkdirRec(root)
+        else:
+            os.mkdir(path)
+
+
+def cp(src, dst):
+    # Check if the source exists
+    if not os.path.exists(src):
+        raise IOError("{} does not exist".format(src))
+    # If the src is a dir, make the dst as dir
+    if os.path.isdir(src):
+        if not os.path.exists(dst):
+            mkdirRec(dst)
+        else:
+            if not os.path.isdir(dst):
+                raise IOError("{} already exists as non-dir".format(dst))
+        # And copy all files within src to dst
+        for root, dirs, files in os.walk(src):
+            for d in dirs:
+                D = os.path.join(root, d)
+                dstD = os.path.join(dst, d)
+                logger.info('Internally cp dir %s to %s', D, dstD)
+                cp(D, dstD)
+            for f in files:
+                F = os.path.join(root, f)
+                dstF = os.path.join(dst, f)
+                logger.debug('Internally cp file %s to %s', F, dstF)
+                cp(F, dstF)
+    else:
+        # If src is file, copy the file to dst and make path if necessary
+        try:
+            copy_file(src, dst)
+        except:
+            mkdirRec(os.path.split(dst)[0])
+        copy_file(src, dst)
+
 if __name__ == '__main__':
     args = getArgs()
 
@@ -282,5 +373,7 @@ if __name__ == '__main__':
     logging.getLogger("__name__").addHandler(logging.NullHandler())
     setUpLogger(args.debug)
     sys.excepthook = excepthook
-    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+    jobr = JobRunner('friction', 'input/parameters.txt', ['simulate', 'input', 'constructLattice.py'], dryrun=args.dryrun,
+                     customCommands=['mkdir output', 'python3 constructLattice.py input/parameters.txt input/lattice.xyz', './simulate'],
+                     wallTime=86400, modules=['python3', 'gcc'], outfiles=['output/'])
     jobr.run()

@@ -150,7 +150,7 @@ class Jobfile:
 
 class JobRunner:
     """ Manages and runs jobs on a cluster """
-    def __init__(self, name, configpath, projectpaths, dryrun=False, **kwargs):
+    def __init__(self, name, configpath, projectpaths, outpath='jobs', dryrun=False, **kwargs):
         logger.info("Attemping to parse {}".format(configpath))
         parser = Parser(configpath)
         self.configpath = configpath
@@ -158,7 +158,7 @@ class JobRunner:
         self.name = name
         self.parameters = parser.parse()
         self.jobfilekwargs = kwargs
-        self.jobdir = 'jobs'
+        self.jobdir = outpath
         self.dryrun = dryrun
 
     def run(self):

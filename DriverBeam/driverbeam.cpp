@@ -100,17 +100,12 @@ void DriverBeam::vvstep(double dt){
 std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
 
-    DataPacket position = DataPacket(DataPacket::dataId::BEAM_POSITION, timestep, time);
-    DataPacket velocity = DataPacket(DataPacket::dataId::BEAM_VELOCITY, timestep, time);
+    DataPacket torque   = DataPacket(DataPacket::dataId::BEAM_TORQUE, timestep, time);
 
     for (std::shared_ptr<Node> node : m_nodes) {
-        position.push_back(node->r().x());
-        position.push_back(node->r().y());
-        velocity.push_back(node->v().x());
-        velocity.push_back(node->v().y());
+        torque.push_back(node->moment());
     }
-    packetvec.push_back(position);
-    packetvec.push_back(velocity);
+    packetvec.push_back(torque);
     return packetvec;
 }
 

@@ -8,7 +8,7 @@
 #include <sstream>
 #include <vector>
 
-Parameters::Parameters(std::string filenameConfig){
+Parameters::Parameters(const std::string &filenameConfig){
     readParameters(filenameConfig);
     checkThatAllParametersAreSet();
     m_infileParameters.close();

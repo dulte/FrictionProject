@@ -1,15 +1,31 @@
-2017-07-10 12:39:08,275 - DEBUG    - Updating Jobfile dictionary with: {'obname': 'adolf'}
-2017-07-10 12:39:08,275 - WARNING  - Non-standard keyword: obname
-2017-07-10 12:39:08,275 - DEBUG    - Creating jobfile: #!/bin/sh
+2017-07-15 07:43:41,862 - INFO     - Attemping to parse input/parameters.txt
+2017-07-15 07:43:41,862 - INFO     - Parsing file: input/parameters.txt
+2017-07-15 07:43:41,862 - DEBUG    - Executing metalines: []
+2017-07-15 07:43:41,863 - INFO     - Parsing was succesful
+2017-07-15 07:43:41,863 - DEBUG    - Parameters: {'nx': 64, 'ny': 31, 'writingFreq': 100, 'nt': 500000.0, 'releaseTime': 10000.0, 'fn': 1920, 'ns': 50, 'tau': 0.002, 'd': 0.005, 'E': 3000000000.0, 'k': 4000000.0, 'nu': 0.33, 'hZ': 0.006, 'density': 1300, 'step': 2e-07, 'grooveSize': 5, 'grooveHeight': 4, 'latticefilename': 'input/lattice.txt', 'vD': 0.004, 'pK': 400000.0, 'pusherStartHeight': 4, 'pusherEndHeight': 5, 'beamMass': 1, 'beamAngle': 0, 'beamRotTime': 1000.0, 'writeNodePositionInterface': 0, 'writeNodeVelocityInterface': 0, 'writeNodeSpringsAttachedInterface': 0, 'writeNodePositionAll': 0, 'writeNodeVelocityAll': 0, 'writeTotalEnergyAll': 0, 'writeTotalForceAll': 0, 'writePusherForce': 0, 'writeNormalForce': 0, 'writeShearForce': 0, 'writeXYZ': 1, 'freqNodePositionInterface': 100, 'freqNodeVelocityInterface': 1000, 'freqNodeSpringsAttachedInterface': 100, 'freqNodePositionAll': 100000, 'freqNodeVelocityAll': 10000, 'freqTotalEnergyAll': 10000, 'freqTotalForceAll': 10000, 'freqPusherForce': 100, 'freqNormalForce': 100, 'freqShearForce': 100, 'freqXYZ': 100}
+2017-07-15 07:43:41,863 - DEBUG    - Updating Jobfile dictionary with: {'customCommands': ['mkdir output', 'python3 constructLattice.py input/parameters input/lattice.xyz', './simulate'], 'wallTime': 86400, 'modules': ['python3', 'gcc'], 'outfiles': ['output/'], 'infiles': ['input/parameters.txt', 'simulate', 'input', 'constructLattice.py']}
+2017-07-15 07:43:41,863 - DEBUG    - Making jobs
+2017-07-15 07:43:41,863 - DEBUG    - Yielding ()
+2017-07-15 07:43:41,863 - DEBUG    - Making jobs/friction0
+2017-07-15 07:43:41,864 - DEBUG    - Copying simulate to jobs/friction0/simulate
+2017-07-15 07:43:41,870 - DEBUG    - Copying input to jobs/friction0/input
+2017-07-15 07:43:41,870 - DEBUG    - Internally cp file input/parameters.txt to jobs/friction0/input/parameters.txt
+2017-07-15 07:43:41,870 - DEBUG    - Internally cp file input/lattice.txt to jobs/friction0/input/lattice.txt
+2017-07-15 07:43:41,870 - DEBUG    - Internally cp file input/errors.log to jobs/friction0/input/errors.log
+2017-07-15 07:43:41,871 - DEBUG    - Copying constructLattice.py to jobs/friction0/constructLattice.py
+2017-07-15 07:43:41,871 - DEBUG    - Writing configuration input/parameters.txt to jobs/friction0/input/parameters.txt
+2017-07-15 07:43:41,871 - DEBUG    - Making jobs/friction0/input/parameters.txt recursively.
+2017-07-15 07:43:41,871 - DEBUG    - Creating jobfile: #!/bin/sh
 # Job name:
-#SBATCH --job-name=bob
+#SBATCH --job-name=friction0
 #
 # Project: 
 #SBATCH --account=uio
-# Wall time limit#SBTACH --time=0:0:24
+# Wall time limit
+#SBATCH --time=24:00:00
 #
-# Max memory usage per task:
-#SBATCH --mem-per-cpu3600M
+# Max memory usage per core:
+#SBATCH --mem-per-cpu=3600M
 #SBATCH --cpus-per-task=16
 #
 
@@ -19,23 +35,35 @@ source /cluster/bin/jobsetup
 module purge
 # Exit on any errors after this point
 set -o errexit
+module load python3
+module load gcc
 # Copy files to work directory
-mkdir $SCRATCH/files
-cp $SUBMITDIR/* $SCRATCH/files
+cp -r $SUBMITDIR/input/parameters.txt $SCRATCH
+cp -r $SUBMITDIR/simulate $SCRATCH
+cp -r $SUBMITDIR/input $SCRATCH
+cp -r $SUBMITDIR/constructLattice.py $SCRATCH
 # Mark outfiles for automatic copying to $SUBMITDIR
-chkfile files/
-cd $SCRATCH/files
-./talys < bird > duck
-2017-07-10 12:39:08,275 - DEBUG    - Creating jobfile: #!/bin/sh
+chkfile output/
+cd $SCRATCH
+# Run custom commands
+mkdir output
+python3 constructLattice.py input/parameters input/lattice.xyz
+./simulate
+
+2017-07-15 07:43:41,871 - INFO     - Running job
+BUG    - Writing configuration input/parameters.txt to jobs/friction0/input/parameters.txt
+2017-07-15 07:43:41,871 - DEBUG    - Making jobs/friction0/input/parameters.txt recursively.
+2017-07-15 07:43:41,871 - DEBUG    - Creating jobfile: #!/bin/sh
 # Job name:
-#SBATCH --job-name=bob
+#SBATCH --job-name=friction0
 #
 # Project: 
 #SBATCH --account=uio
-# Wall time limit#SBTACH --time=0:0:24
+# Wall time limit
+#SBATCH --time=24:00:00
 #
-# Max memory usage per task:
-#SBATCH --mem-per-cpu3600M
+# Max memory usage per core:
+#SBATCH --mem-per-cpu=3600M
 #SBATCH --cpus-per-task=16
 #
 
@@ -45,10 +73,19 @@ source /cluster/bin/jobsetup
 module purge
 # Exit on any errors after this point
 set -o errexit
+module load python3
+module load gcc
 # Copy files to work directory
-mkdir $SCRATCH/files
-cp $SUBMITDIR/* $SCRATCH/files
+cp -r $SUBMITDIR/input/parameters.txt $SCRATCH
+cp -r $SUBMITDIR/simulate $SCRATCH
+cp -r $SUBMITDIR/input $SCRATCH
+cp -r $SUBMITDIR/constructLattice.py $SCRATCH
 # Mark outfiles for automatic copying to $SUBMITDIR
-chkfile files/
-cd $SCRATCH/files
-./talys < bird > duck
+chkfile output/
+cd $SCRATCH
+# Run custom commands
+mkdir output
+python3 constructLattice.py input/parameters input/lattice.xyz
+./simulate
+
+2017-07-15 07:43:41,871 - INFO     - Running job

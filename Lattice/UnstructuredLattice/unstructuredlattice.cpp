@@ -61,7 +61,6 @@ std::vector<DataPacket> UnstructuredLattice::getDataPackets(int timestep, double
         position_interface_packet.push_back(node->r().y());
         velocity_interface_packet.push_back(node->v().x());
         velocity_interface_packet.push_back(node->v().y());
-
     }
 
     for (std::shared_ptr<Node> node : nodes) {

@@ -192,6 +192,30 @@ class Analyzer:
         return decorator
 
 
+class AnalyzerManager:
+    def __init__(self):
+        self.analyzers = []
+
+    def __getattr__(self, name):
+        print(self, name)
+        for analyzer in self.analyzers:
+            try:
+                analyzer.name()
+            except:
+                print("{} had no attribute {}".format(analyzer, name))
+
+    def setUp(self, args):
+        globbler = Globbler(args.search_path)
+        self.analyzers = globbler.glob(className=FrictionAnalyzer,
+                                       pattern=args.pattern,
+                                       outputPattern=args.output,
+                                       inputPattern=args.input)
+        for analyzer in self.analyzers:
+            analyzer.setPlotPath(args.plotpath)
+            analyzer.readParameters(args.paramname)
+            analyzer.readNumberOfBottomNodes()
+
+
 class FrictionAnalyzer(Analyzer):
     def readNumberOfBottomNodes(self):
         filename = 'lattice.txt'
@@ -531,18 +555,9 @@ def getArgs():
 
 if __name__ == '__main__':
     args = getArgs()
-    glob = Globbler(args.search_path)
-
-    instanceList = glob.glob(className=FrictionAnalyzer, pattern=args.pattern,
-                             outputPattern=args.output,
-                             inputPattern=args.input)
-    print(instanceList)
-    a = instanceList[0]
-    a.setPlotPath(args.plotpath)
-    a.readParameters(args.paramname)
-    a.readNumberOfBottomNodes()
-    a.readAll()
-    a.plotAttachedSprings(save=True)
+    manager = AnalyzerManager()
+    manager.readAll()
+    manager.plotAttachedSprings(save=True)
     #comp = Compare(instanceList)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()

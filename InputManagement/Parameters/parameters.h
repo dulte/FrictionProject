@@ -8,7 +8,7 @@
 
 class Parameters{
 public:
-    explicit Parameters(std::string filenameConfig);
+    explicit Parameters(const std::string &filenameConfig);
     ~Parameters();
     void readParameters(std::string filenameConfig);
     void checkThatAllParametersAreSet();

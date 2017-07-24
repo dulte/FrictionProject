@@ -19,21 +19,21 @@ public:
         PUSHER_FORCE,
         NORMAL_FORCE,
         SHEAR_FORCE,
-        BEAM_POSITION,
-        BEAM_VELOCITY
+        BEAM_TORQUE
     };
+
 
     DataPacket(DataPacket::dataId id, int timeStep, double time);
     void push_back(double number);
 
-    dataId id() {return m_id;}
-    int timestep() {return m_timeStep;}
-    double time() {return m_time;}
+    dataId id()                {return m_id;}
+    int    timestep()          {return m_timeStep;}
+    double time()              {return m_time;}
     std::vector<double> data() {return m_data;}
 
 private:
     dataId m_id;
-    int m_timeStep;
+    int    m_timeStep;
     double m_time;
 
     std::vector<double> m_data;

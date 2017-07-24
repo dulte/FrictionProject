@@ -67,58 +67,75 @@ void DataPacketHandler::step(std::vector<DataPacket> packets)
 {
     for (DataPacket & packet: packets)
     {
-        if(packet.id() ==  DataPacket::dataId::NODE_POSITION_INTERFACE)
+        switch(packet.id()){
+        case DataPacket::dataId::NODE_POSITION_INTERFACE:
         {
             if(m_writeNodePositionInterface && packet.timestep()%m_freqNodePositionInterface == 0)
                 m_ofNodePositionInterface.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NODE_VELOCITY_INTERFACE)
+        case DataPacket::dataId::NODE_VELOCITY_INTERFACE:
         {
             if(m_writeNodeVelocityInterface && packet.timestep()%m_freqNodeVelocityInterface == 0)
                 m_ofNodeVelocityInterface.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE)
+        case DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE:
         {
             if(m_writeNodeSpringsAttachedInterface && packet.timestep()%m_freqNodeSpringsAttachedInterface == 0)
                 m_ofNodeSpringsAttachedInterface.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NODE_POSITION_ALL)
+        case DataPacket::dataId::NODE_POSITION_ALL:
         {
             if(m_writeNodePositionAll && packet.timestep()%m_freqNodePositionAll == 0)
                 m_ofNodePositionAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NODE_VELOCITY_ALL)
+        case DataPacket::dataId::NODE_VELOCITY_ALL:
         {
             if(m_writeNodeVelocityAll && packet.timestep()%m_freqNodeVelocityAll == 0)
                 m_ofNodeVelocityAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NODE_TOTAL_ENERGY_ALL)
+        case DataPacket::dataId::NODE_TOTAL_ENERGY_ALL:
         {
             if(m_writeTotalEnergyAll && packet.timestep()%m_freqTotalEnergyAll == 0)
                 m_ofTotalEnergyAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NODE_TOTAL_FORCE_ALL)
+        case DataPacket::dataId::NODE_TOTAL_FORCE_ALL:
         {
             if(m_writeTotalForceAll && packet.timestep()%m_freqTotalForceAll == 0)
                 m_ofTotalForceAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::PUSHER_FORCE)
+        case DataPacket::dataId::PUSHER_FORCE:
         {
             if(m_writePusherForce && packet.timestep()%m_freqPusherForce == 0)
                 m_ofPusherForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() ==  DataPacket::dataId::NORMAL_FORCE)
+        case DataPacket::dataId::NORMAL_FORCE:
         {
             if(m_writeNormalForce && packet.timestep()%m_freqNormalForce == 0)
                 m_ofNormalForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else if(packet.id() == DataPacket::dataId::SHEAR_FORCE)
+        case DataPacket::dataId::SHEAR_FORCE:
         {
             if(m_writeShearForce && packet.timestep()%m_freqShearForce == 0)
                 m_ofShearForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
         }
-        else{
+        case DataPacket::dataId::BEAM_TORQUE: {
+            if (m_writeBeamTorque && packet.timestep()%m_freqBeamTorque == 0)
+                m_ofBeamTorque.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
+        }
+        default: {
             std::cerr << "Unknown data packet sent" << std::endl;
+        }
         }
     }
 }

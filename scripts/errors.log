@@ -304,3 +304,467 @@
     jobf = Jobfile(obname='adolf')
 
 2017-07-10 12:38:24,191 - CRITICAL - TypeError: __init__() missing 2 required positional arguments: 'executable' and 'argument'
+2017-07-13 13:46:26,539 - CRITICAL -   File "klyngeyngler.py", line 285, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "klyngeyngler.py", line 149, in __init__
+    self.setUpLogger()
+
+2017-07-13 13:46:26,564 - CRITICAL - AttributeError: 'JobRunner' object has no attribute 'setUpLogger'
+2017-07-13 13:46:57,528 - CRITICAL -   File "klyngeyngler.py", line 284, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "klyngeyngler.py", line 149, in __init__
+    sys.excepthook = self.excepthook
+
+2017-07-13 13:46:57,528 - CRITICAL - AttributeError: 'JobRunner' object has no attribute 'excepthook'
+2017-07-13 13:47:09,819 - CRITICAL -   File "klyngeyngler.py", line 283, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "klyngeyngler.py", line 151, in __init__
+    self.parameters = parser.parse()
+  File "klyngeyngler.py", line 26, in parse
+    with open(self.filename, 'r') as infile:
+
+2017-07-13 13:47:09,819 - CRITICAL - TypeError: expected str, bytes or os.PathLike object, not NoneType
+2017-07-13 14:08:01,451 - CRITICAL -   File "klyngeyngler.py", line 283, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "klyngeyngler.py", line 151, in __init__
+    self.parameters = parser.parse()
+  File "klyngeyngler.py", line 30, in parse
+    logger.debug("Executing metalines: %s", self.metalines)
+
+2017-07-13 14:08:01,451 - CRITICAL - AttributeError: 'Parser' object has no attribute 'metalines'
+2017-07-13 14:13:09,203 - CRITICAL -   File "klyngeyngler.py", line 284, in <module>
+    jobr.run()
+  File "klyngeyngler.py", line 157, in run
+    jobfile.name = 'talys'+i
+
+2017-07-13 14:13:09,203 - CRITICAL - TypeError: must be str, not int
+2017-07-14 13:19:49,236 - CRITICAL -   File "./klyngeyngler.py", line 284, in <module>
+    jobr = JobRunner(args.configpath, args.projectpaths, args.debug)
+  File "./klyngeyngler.py", line 151, in __init__
+    self.parameters = parser.parse()
+  File "./klyngeyngler.py", line 26, in parse
+    with open(self.filename, 'r') as infile:
+
+2017-07-14 13:19:49,237 - CRITICAL - TypeError: expected str, bytes or os.PathLike object, not NoneType
+2017-07-14 14:03:09,213 - CRITICAL -   File "./klyngeyngler.py", line 284, in <module>
+    jobr = JobRunner('friction', 'input/parameters.txt', ['simulate', 'input'])
+  File "./klyngeyngler.py", line 154, in __init__
+    self.parameters = parser.parse()
+  File "./klyngeyngler.py", line 26, in parse
+    with open(self.filename, 'r') as infile:
+
+2017-07-14 14:03:09,213 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'input/parameters.txt'
+2017-07-14 14:03:22,871 - CRITICAL -   File "./klyngeyngler.py", line 285, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 158, in run
+    jobfile = Jobfile(self.jobfilekwargs)
+
+2017-07-14 14:03:22,871 - CRITICAL - TypeError: __init__() takes 1 positional argument but 2 were given
+2017-07-14 14:03:45,177 - CRITICAL -   File "./klyngeyngler.py", line 285, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 158, in run
+    jobfile = Jobfile(self.jobfilekwargs)
+
+2017-07-14 14:03:45,177 - CRITICAL - TypeError: __init__() takes 1 positional argument but 2 were given
+2017-07-14 14:24:59,013 - CRITICAL -   File "./klyngeyngler.py", line 302, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 170, in run
+    self.handleFiles(jobnam)
+
+2017-07-14 14:24:59,013 - CRITICAL - NameError: name 'jobnam' is not defined
+2017-07-14 14:26:39,326 - CRITICAL -   File "./klyngeyngler.py", line 302, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 161, in run
+    os.mkdir(self.jobdir)
+
+2017-07-14 14:26:39,326 - CRITICAL - FileExistsError: [Errno 17] File exists: 'jobs'
+2017-07-14 14:29:16,894 - CRITICAL -   File "./klyngeyngler.py", line 303, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 176, in handleFiles
+    shutil.copyfile(self.configpath, '{}/{}'.format(currDir, self.configpath))
+
+2017-07-14 14:29:16,895 - CRITICAL - AttributeError: 'JobRunner' object has no attribute 'configpath'
+2017-07-14 14:29:54,295 - CRITICAL -   File "./klyngeyngler.py", line 304, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 172, in run
+    self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 176, in handleFiles
+    currDir = os.mkdir('{}/{}'.format(self.jobdir, jobname))
+
+2017-07-14 14:29:54,295 - CRITICAL - FileExistsError: [Errno 17] File exists: 'jobs/friction0'
+2017-07-14 14:32:13,589 - CRITICAL -   File "./klyngeyngler.py", line 308, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 162, in run
+    mkdir(jobfile)
+  File "./klyngeyngler.py", line 290, in mkdir
+    if not os.path.exists(path):
+  File "/usr/lib/python3.6/genericpath.py", line 19, in exists
+    os.stat(path)
+
+2017-07-14 14:32:13,589 - CRITICAL - TypeError: stat: path should be string, bytes, os.PathLike or integer, not Jobfile
+2017-07-14 14:33:21,843 - CRITICAL -   File "./klyngeyngler.py", line 308, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 173, in handleFiles
+    shutil.copyfile(self.configpath, '{}/{}'.format(currDir, self.configpath))
+  File "/usr/lib/python3.6/shutil.py", line 121, in copyfile
+    with open(dst, 'wb') as fdst:
+
+2017-07-14 14:33:21,843 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'jobs/friction0/input/parameters.txt'
+2017-07-14 14:36:18,282 - CRITICAL -   File "./klyngeyngler.py", line 308, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 173, in handleFiles
+    shutil.copytree(self.configpath, '{}/{}'.format(currDir, self.configpath))
+  File "/usr/lib/python3.6/shutil.py", line 309, in copytree
+    names = os.listdir(src)
+
+2017-07-14 14:36:18,282 - CRITICAL - NotADirectoryError: [Errno 20] Not a directory: 'input/parameters.txt'
+2017-07-14 14:38:30,292 - CRITICAL -   File "./klyngeyngler.py", line 309, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 173, in handleFiles
+    shutil.copytree(self.configpath, '{}/{}'.format(currDir, self.configpath))
+  File "/usr/lib/python3.6/shutil.py", line 309, in copytree
+    names = os.listdir(src)
+
+2017-07-14 14:38:30,293 - CRITICAL - NotADirectoryError: [Errno 20] Not a directory: 'input/parameters.txt'
+2017-07-14 14:40:25,350 - CRITICAL -   File "./klyngeyngler.py", line 311, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 175, in handleFiles
+    shutil.copytree(self.configpath, configPath)
+  File "/usr/lib/python3.6/shutil.py", line 309, in copytree
+    names = os.listdir(src)
+
+2017-07-14 14:40:25,350 - CRITICAL - NotADirectoryError: [Errno 20] Not a directory: 'input/parameters.txt'
+2017-07-14 14:50:41,245 - CRITICAL -   File "./klyngeyngler.py", line 315, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 179, in handleFiles
+    distutils.dir_utils.copy_tree(self.configpath, configPath)
+
+2017-07-14 14:50:41,245 - CRITICAL - AttributeError: module 'distutils' has no attribute 'dir_utils'
+2017-07-14 14:50:52,967 - CRITICAL -   File "./klyngeyngler.py", line 315, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 179, in handleFiles
+    distutils.dir_util.copy_tree(self.configpath, configPath)
+
+2017-07-14 14:50:52,967 - CRITICAL - AttributeError: module 'distutils' has no attribute 'dir_util'
+2017-07-14 14:52:07,667 - CRITICAL -   File "./klyngeyngler.py", line 315, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 179, in handleFiles
+    distutils.dir_util.copy_tree(self.configpath, configPath)
+
+2017-07-14 14:52:07,667 - CRITICAL - AttributeError: module 'distutils' has no attribute 'dir_util'
+2017-07-14 14:54:07,040 - CRITICAL -   File "./klyngeyngler.py", line 315, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 167, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 179, in handleFiles
+    dir_util.copy_tree(self.configpath, configPath)
+  File "/usr/lib/python3.6/distutils/dir_util.py", line 124, in copy_tree
+    "cannot copy tree '%s': not a directory" % src)
+
+2017-07-14 14:54:07,040 - CRITICAL - DistutilsFileError: cannot copy tree 'input/parameters.txt': not a directory
+2017-07-14 14:55:11,029 - CRITICAL -   File "./klyngeyngler.py", line 316, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 168, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 180, in handleFiles
+    file_util.copy_file(self.configpath, configPath)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 151, in copy_file
+    _copy_file_contents(src, dst)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 44, in _copy_file_contents
+    "could not create '%s': %s" % (dst, e.strerror))
+
+2017-07-14 14:55:11,029 - CRITICAL - DistutilsFileError: could not create 'jobs/friction0/input/parameters.txt': No such file or directory
+2017-07-14 14:56:46,955 - CRITICAL -   File "./klyngeyngler.py", line 319, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 168, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 180, in handleFiles
+    file_util.copy_file(self.configpath, configPath)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 151, in copy_file
+    _copy_file_contents(src, dst)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 44, in _copy_file_contents
+    "could not create '%s': %s" % (dst, e.strerror))
+
+2017-07-14 14:56:46,955 - CRITICAL - DistutilsFileError: could not create 'jobs/friction0/input/parameters.txt': No such file or directory
+2017-07-14 14:59:01,988 - CRITICAL -   File "./klyngeyngler.py", line 319, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 168, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 181, in handleFiles
+    for f in self.projectpaths:
+
+2017-07-14 14:59:01,988 - CRITICAL - AttributeError: 'JobRunner' object has no attribute 'projectpaths'
+2017-07-14 15:02:04,587 - CRITICAL -   File "./klyngeyngler.py", line 319, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 168, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 180, in handleFiles
+    subprocess.call("cp {} {}".format(self.configpath, configPath))
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 15:02:04,588 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'cp input/parameters.txt jobs/friction0/input'
+2017-07-14 15:38:33,222 - CRITICAL -   File "./klyngeyngler.py", line 341, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 181, in handleFiles
+    cp(self.configpath, configPath)
+  File "./klyngeyngler.py", line 328, in cp
+    copy_file(src, dst)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 151, in copy_file
+    _copy_file_contents(src, dst)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 44, in _copy_file_contents
+    "could not create '%s': %s" % (dst, e.strerror))
+
+2017-07-14 15:38:33,222 - CRITICAL - DistutilsFileError: could not create 'jobs/friction0/input/parameters.txt': Not a directory
+2017-07-14 15:43:53,488 - CRITICAL -   File "./klyngeyngler.py", line 349, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 181, in handleFiles
+    cp(self.configpath, configPath)
+  File "./klyngeyngler.py", line 335, in cp
+    mkdirRec(dst)
+  File "./klyngeyngler.py", line 307, in mkdirRec
+    root = os.path.strip(path)[0]
+
+2017-07-14 15:43:53,488 - CRITICAL - AttributeError: module 'posixpath' has no attribute 'strip'
+2017-07-14 15:44:51,494 - CRITICAL -   File "./klyngeyngler.py", line 349, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 181, in handleFiles
+    cp(self.configpath, configPath)
+  File "./klyngeyngler.py", line 335, in cp
+    mkdirRec(dst)
+  File "./klyngeyngler.py", line 311, in mkdirRec
+    os.mkdir(path)
+
+2017-07-14 15:44:51,494 - CRITICAL - NotADirectoryError: [Errno 20] Not a directory: 'jobs/friction0/input/parameters.txt'
+2017-07-14 15:46:11,618 - CRITICAL -   File "./klyngeyngler.py", line 352, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname)
+  File "./klyngeyngler.py", line 181, in handleFiles
+    cp(self.configpath, configPath)
+  File "./klyngeyngler.py", line 339, in cp
+    copy_file(src, dst)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 151, in copy_file
+    _copy_file_contents(src, dst)
+  File "/usr/lib/python3.6/distutils/file_util.py", line 44, in _copy_file_contents
+    "could not create '%s': %s" % (dst, e.strerror))
+
+2017-07-14 15:46:11,618 - CRITICAL - DistutilsFileError: could not create 'jobs/friction0/input/parameters.txt': Not a directory
+2017-07-14 16:37:01,013 - CRITICAL -   File "./klyngeyngler.py", line 367, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname, configStr)
+  File "./klyngeyngler.py", line 193, in handleFiles
+    with open(currDir, 'w') as configFile:
+
+2017-07-14 16:37:01,013 - CRITICAL - IsADirectoryError: [Errno 21] Is a directory: 'jobs/friction0'
+2017-07-14 16:38:50,039 - CRITICAL -   File "./klyngeyngler.py", line 367, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname, configStr)
+  File "./klyngeyngler.py", line 187, in handleFiles
+    with open(configPath, 'w') as configFile:
+
+2017-07-14 16:38:50,039 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'jobs/friction1/input/parameters.txt'
+2017-07-14 16:47:59,171 - CRITICAL -   File "./klyngeyngler.py", line 369, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 169, in run
+    currDir = self.handleFiles(jobname, configStr)
+  File "./klyngeyngler.py", line 189, in handleFiles
+    print(configFile.lines())
+
+2017-07-14 16:47:59,171 - CRITICAL - AttributeError: '_io.TextIOWrapper' object has no attribute 'lines'
+2017-07-14 19:14:28,510 - CRITICAL -   File "./klyngeyngler.py", line 371, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 177, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 19:14:28,511 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 19:15:01,775 - CRITICAL -   File "./klyngeyngler.py", line 371, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 177, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 19:15:01,775 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 19:15:27,825 - CRITICAL -   File "./klyngeyngler.py", line 371, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 177, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 19:15:27,825 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 19:17:04,283 - CRITICAL -   File "./klyngeyngler.py", line 371, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 177, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 19:17:04,283 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 19:18:47,822 - CRITICAL -   File "./klyngeyngler.py", line 371, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 177, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 19:18:47,822 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 19:18:51,379 - CRITICAL -   File "./klyngeyngler.py", line 371, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 171, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 177, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 19:18:51,380 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 20:11:54,968 - CRITICAL -   File "./klyngeyngler.py", line 372, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 172, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 178, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 20:11:54,968 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 22:23:13,705 - CRITICAL -   File "./klyngeyngler.py", line 373, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 172, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 178, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 22:23:13,705 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 22:23:20,267 - CRITICAL -   File "./klyngeyngler.py", line 373, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 172, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 178, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 22:23:20,267 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 22:24:17,938 - CRITICAL -   File "./klyngeyngler.py", line 373, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 172, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 178, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 22:24:17,939 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-14 22:24:51,760 - CRITICAL -   File "./klyngeyngler.py", line 373, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 172, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 178, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-14 22:24:51,760 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'
+2017-07-15 07:39:15,388 - CRITICAL -   File "./klyngeyngler.py", line 382, in <module>
+    jobr.run()
+  File "./klyngeyngler.py", line 178, in run
+    self.runJob(currDir)
+  File "./klyngeyngler.py", line 187, in runJob
+    subprocess.call(['sbatch', 'jobfile'])
+  File "/usr/lib/python3.6/subprocess.py", line 267, in call
+    with Popen(*popenargs, **kwargs) as p:
+  File "/usr/lib/python3.6/subprocess.py", line 707, in __init__
+    restore_signals, start_new_session)
+  File "/usr/lib/python3.6/subprocess.py", line 1326, in _execute_child
+    raise child_exception_type(errno_num, err_msg)
+
+2017-07-15 07:39:15,388 - CRITICAL - FileNotFoundError: [Errno 2] No such file or directory: 'sbatch'

@@ -124,9 +124,13 @@ std::vector<DataPacket> SidePotentialLoading::getDataPackets(int timestep, doubl
         pushForce += pusherNode->fPush;
     }
     DataPacket pusherForce = DataPacket(DataPacket::dataId::PUSHER_FORCE, timestep, time);
+
     pusherForce.push_back(pushForce);
     packets.push_back(pusherForce);
 
+    // Get the data packets from the driver beam
+    auto driverbeam = m_driverBeam->getDataPackets(timestep, time);
+    packets.insert(packets.end(), driverbeam.begin(), driverbeam.end());
     return packets;
 }
 

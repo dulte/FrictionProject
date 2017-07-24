@@ -101,11 +101,14 @@ std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
 
     DataPacket torque   = DataPacket(DataPacket::dataId::BEAM_TORQUE, timestep, time);
+    DataPacket shearForce = DataPacket(DataPacket::dataId::BEAM_SHEAR_FORCE, timestep, time);
 
     for (std::shared_ptr<Node> node : m_nodes) {
         torque.push_back(node->moment());
+        shearForce.push_back(node->f().x());
     }
     packetvec.push_back(torque);
+    packetvec.push_back(shearForce);
     return packetvec;
 }
 

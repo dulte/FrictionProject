@@ -15,6 +15,8 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_writeNormalForce                  = m_pParameters->m_writeNormalForce;
     m_writeShearForce                   = m_pParameters->m_writeShearForce;
     m_writeXYZ                          = m_pParameters->m_writeXYZ;
+    m_writeBeamTorque                   = m_pParameters->m_writeBeamTorque;
+    m_writeBeamShearForce               = m_pParameters->m_writeBeamShearForce;
 
     m_freqNodePositionInterface         = m_pParameters->m_freqNodePositionInterface;
     m_freqNodeVelocityInterface         = m_pParameters->m_freqNodeVelocityInterface;
@@ -27,6 +29,8 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_freqNormalForce                   = m_pParameters->m_freqNormalForce;
     m_freqShearForce                    = m_pParameters->m_freqShearForce;
     m_freqXYZ                           = m_pParameters->m_freqXYZ;
+    m_freqBeamShearForce                = m_pParameters->m_freqBeamShearForce;
+    m_freqBeamTorque                    = m_pParameters->m_freqBeamTorque;
 
     if (outputFolder.back() != '/') {
         std::cerr << "Forgot final '/'" << std::endl;
@@ -42,7 +46,10 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_ofPusherForce.open(outputFolder                  + "/pusher_force.bin",                    std::ios::out | std::ios::binary);
     m_ofNormalForce.open(outputFolder                  + "/normal_force.bin",                    std::ios::out | std::ios::binary);
     m_ofShearForce.open(outputFolder                   + "/shear_force.bin",                     std::ios::out | std::ios::binary);
-    m_ofXYZ.open(outputFolder                         + "/positions.xyz",                       std::ofstream::out);
+    m_ofXYZ.open(outputFolder                         + "/positions.xyz",                        std::ofstream::out);
+    m_ofBeamShearForce.open(outputFolder                   + "/beam_shear_force.bin",            std::ios::out | std::ios::binary);
+    m_ofBeamTorque.open(outputFolder                   + "/beam_torque.bin",                     std::ios::out | std::ios::binary);
+
     // Check that the directory is writable
     if(!m_ofNodePositionInterface.is_open())
         throw runtime_error("Could not open output files");
@@ -131,6 +138,11 @@ void DataPacketHandler::step(std::vector<DataPacket> packets)
         case DataPacket::dataId::BEAM_TORQUE: {
             if (m_writeBeamTorque && packet.timestep()%m_freqBeamTorque == 0)
                 m_ofBeamTorque.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            break;
+        }
+        case DataPacket::dataId::BEAM_SHEAR_FORCE: {
+            if (m_writeBeamShearForce && packet.timestep()%m_freqBeamShearForce == 0)
+                m_ofBeamShearForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
             break;
         }
         default: {

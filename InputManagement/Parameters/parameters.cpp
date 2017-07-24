@@ -194,6 +194,12 @@ void Parameters::readParameters(std::string filenameConfig){
         } else  if (tokens[0] == "writeXYZ") {
             m_writeXYZ = std::stoi(tokens[1]);
             m_bwriteXYZ = 1;
+        } else  if (tokens[0] == "writeBeamShearForce") {
+            m_writeBeamShearForce = std::stoi(tokens[1]);
+            m_bwriteBeamShearForce = 1;
+        } else  if (tokens[0] == "writeBeamTorque") {
+            m_writeBeamTorque = std::stoi(tokens[1]);
+            m_bwriteBeamTorque = 1;
         } else  if (tokens[0] == "freqNodePositionInterface") {
             m_freqNodePositionInterface = std::stoi(tokens[1]);
             m_bfreqNodePositionInterface = 1;
@@ -227,6 +233,12 @@ void Parameters::readParameters(std::string filenameConfig){
         } else  if (tokens[0] == "freqXYZ") {
             m_freqXYZ = std::stoi(tokens[1]);
             m_bfreqXYZ = 1;
+        } else  if (tokens[0] == "freqBeamShearForce") {
+            m_freqBeamShearForce = std::stoi(tokens[1]);
+            m_bfreqBeamShearForce = 1;
+        } else  if (tokens[0] == "freqBeamTorque") {
+            m_freqBeamTorque = std::stoi(tokens[1]);
+            m_bfreqBeamTorque = 1;
         } else if (tokens[0] == "latticefilename") {
             m_latticeFilename = tokens[1];
             m_blatticeFilename = 1;
@@ -312,6 +324,10 @@ void Parameters::checkThatAllParametersAreSet(){
         throw std::runtime_error("The parameter writeShearForce is not set");
     } else if (!m_bwriteXYZ) {
         throw std::runtime_error("The parameter writeXYZ is not set");
+    } else if (!m_bwriteBeamTorque) {
+        throw std::runtime_error("The parameter writeBeamTorque is not set");
+    } else if (!m_bwriteBeamShearForce) {
+        throw std::runtime_error("The parameter writeBeamShearForce is not set");
     } else if (!m_bfreqNodePositionInterface) {
         throw std::runtime_error("The parameter freqNodePositionInterface is not set");
     } else if (!m_bfreqNodeVelocityInterface) {
@@ -332,6 +348,10 @@ void Parameters::checkThatAllParametersAreSet(){
         throw std::runtime_error("The parameter freqNormalForce is not set");
     } else if (!m_bfreqShearForce) {
         throw std::runtime_error("The parameter freqShearForce is not set");
+    } else if (!m_bfreqBeamShearForce) {
+        throw std::runtime_error("The parameter freqBeamShearForce is not set");
+    } else if (!m_bfreqBeamTorque) {
+        throw std::runtime_error("The parameter freqBeamTorque is not set");
     } else if (!m_bfreqXYZ) {
         throw std::runtime_error("The parameter freqXYZ is not set");
     } else if (!m_bbeamMass) {

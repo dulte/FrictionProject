@@ -36,6 +36,7 @@ private:
     std::ofstream m_ofShearForce;
     std::ofstream m_ofBeamTorque;
     std::ofstream m_ofXYZ;
+    std::ofstream m_ofBeamShearForce;
 
     bool m_writeNodePositionInterface        = true;
     bool m_writeNodeVelocityInterface        = true;
@@ -49,6 +50,7 @@ private:
     bool m_writeShearForce                   = true;
     bool m_writeBeamTorque                   = true;
     bool m_writeXYZ                          = true;
+    bool m_writeBeamShearForce               = true;
 
     int m_freqNodePositionInterface          = 1000;
     int m_freqNodeVelocityInterface          = 1000;
@@ -61,6 +63,7 @@ private:
     int m_freqNormalForce                    = 1000;
     int m_freqShearForce                     = 1000;
     int m_freqBeamTorque                     = 1000;
+    int m_freqBeamShearForce                 = 1000;
     int m_freqXYZ                            = 1000;
 };
 

@@ -192,6 +192,33 @@ class Analyzer:
         return decorator
 
 
+class AnalyzerManager:
+    def __init__(self):
+        self.analyzers = []
+
+    def __getattr__(self, name):
+        def func(*args, **kwargs):
+            returnVals = []
+            for analyzer in self.analyzers:
+                try:
+                    returnVals.append(getattr(analyzer, name)(*args, **kwargs))
+                except AttributeError as attrErr:
+                    print(attrErr)
+            return returnVals
+        return func
+
+    def setUp(self, args):
+        globbler = Globbler(args.search_path)
+        self.analyzers = globbler.glob(className=FrictionAnalyzer,
+                                       pattern=args.pattern,
+                                       outputPattern=args.output,
+                                       inputPattern=args.input)
+        for analyzer in self.analyzers:
+            analyzer.setPlotPath(args.plotpath)
+            analyzer.readParameters(args.paramname)
+            analyzer.readNumberOfBottomNodes()
+
+
 class FrictionAnalyzer(Analyzer):
     def readNumberOfBottomNodes(self):
         filename = 'lattice.txt'
@@ -206,9 +233,9 @@ class FrictionAnalyzer(Analyzer):
                         numberOfBottomNodes += 1
                 elif i > blockSize:
                     break
-        self.parameters['numBottomNodes'] = numberOfBottomNodes
         # Since dicts are muteable, self.datareader.params is
         # simulanously updated.
+        self.parameters['numBottomNodes'] = numberOfBottomNodes
 
     def readAll(self):
         """ Reads all binary files available as described in parameters.
@@ -534,18 +561,10 @@ def getArgs():
 
 if __name__ == '__main__':
     args = getArgs()
-    glob = Globbler(args.search_path)
-
-    instanceList = glob.glob(className=FrictionAnalyzer, pattern=args.pattern,
-                             outputPattern=args.output,
-                             inputPattern=args.input)
-    print(instanceList)
-    a = instanceList[0]
-    a.setPlotPath(args.plotpath)
-    a.readParameters(args.paramname)
-    a.readNumberOfBottomNodes()
-    a.readAll()
-    a.plotAttachedSprings(save=True)
+    manager = AnalyzerManager()
+    manager.setUp(args)
+    manager.readAll()
+    manager.plotAttachedSprings(show=True)
     #comp = Compare(instanceList)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()

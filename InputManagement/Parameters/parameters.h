@@ -62,7 +62,10 @@ public:
     int    m_writePusherForce;
     int    m_writeNormalForce;
     int    m_writeShearForce;
+    int    m_writeBeamTorque;
+    int    m_writeBeamShearForce;
     int    m_writeXYZ;
+
     int    m_freqNodePositionInterface;
     int    m_freqNodeVelocityInterface;
     int    m_freqNodeSpringsAttachedInterface;
@@ -73,6 +76,8 @@ public:
     int    m_freqPusherForce;
     int    m_freqNormalForce;
     int    m_freqShearForce;
+    int    m_freqBeamTorque;
+    int    m_freqBeamShearForce;
     int    m_freqXYZ;
 
 private:
@@ -126,6 +131,9 @@ private:
     bool m_bwriteNormalForce                  = 0;
     bool m_bwriteShearForce                   = 0;
     bool m_bwriteXYZ                          = 0;
+    bool m_bwriteBeamShearForce               = 0;
+    bool m_bwriteBeamTorque                   = 0;
+
     bool m_bfreqNodePositionInterface         = 0;
     bool m_bfreqNodeVelocityInterface         = 0;
     bool m_bfreqNodeSpringsAttachedInterface  = 0;
@@ -137,6 +145,8 @@ private:
     bool m_bfreqNormalForce                   = 0;
     bool m_bfreqShearForce                    = 0;
     bool m_bfreqXYZ                           = 0;
+    bool m_bfreqBeamShearForce                = 0;
+    bool m_bfreqBeamTorque                    = 0;
 };
 
 #endif /* PARAMETERS_H */

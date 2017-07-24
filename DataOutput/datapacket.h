@@ -19,7 +19,8 @@ public:
         PUSHER_FORCE,
         NORMAL_FORCE,
         SHEAR_FORCE,
-        BEAM_TORQUE
+        BEAM_TORQUE,
+        BEAM_SHEAR_FORCE
     };
 
 

@@ -4,6 +4,7 @@
 #include <vector>
 #include "ForceModifier/SpringFriction/springfriction.h"
 #include "Lattice/simplelattice.h"
+#include "DataOutput/datapacket.h"
 #define pi 3.14159265358979323
 
 class SpringFriction;

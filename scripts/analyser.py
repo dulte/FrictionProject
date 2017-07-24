@@ -25,12 +25,19 @@ class DataReader:
     def read(self, filename):
         return np.fromfile(os.path.join(self.folder, filename))
 
-    def resize(self, array, everySecondElement=False, start=0):
-        if everySecondElement:
-            array = array[start::2]
-        return np.reshape(array, (len(array) / (self.params["bottomNodes"] - 1),
-                                 self.params["bottomNodes"] - 1))
+    """
+    Original "self.params['bottomNodes'] - 1", removed '-1' to get rid of an error
+    """
 
+    def resize(self, array, everySecondElement=False, start=1):
+        # if everySecondElement:
+        #     array = np.copy(array[start::2])
+        # return np.reshape(array, ((len(array) / (self.params["bottomNodes"])),
+        #                          (self.params["bottomNodes"])))
+        arrayList = []
+        for i in range(int(len(array) / (self.params["bottomNodes"]))):
+            arrayList.append(array[i*self.params['bottomNodes']:(i+1)*self.params['bottomNodes']])
+        return np.array(arrayList)
 
 class Analyzer:
 
@@ -62,17 +69,37 @@ class Analyzer:
         sys.stdout.write("done.\n")
         return data
 
-    def readParameters(self, filename="parameters.txt"):
+    """
+    Added input/ to the filename, due to the set up at abel
+    """
+
+    def readParameters(self, filename="input/parameters.txt",xyzFilename = "input/lattice.xyz"):#input/lattice.txt"):
         self.parameters = {}
         with open(os.path.join(self.folder, filename), 'r') as infile:
             for line in infile:
-                words = line.split()
-                # Convert the parameter to either int or float
-                # TODO: Just use eval?
-                try:
-                    self.parameters[words[0]] = int(words[1])
-                except ValueError as valErr:
-                    self.parameters[words[0]] = float(words[1])
+                if line[0] != "#" and line != "\n":
+                    words = line.split()
+                    # Convert the parameter to either int or float
+                    # TODO: Just use eval?
+                    try:
+                        self.parameters[words[0]] = eval(words[1])
+                    except:
+                        self.parameters[words[0]] = str(words[1])
+
+                    # try:
+                    #     self.parameters[words[0]] = int(words[1])
+                    # except ValueError as valErr:
+                    #     self.parameters[words[0]] = float(words[1])
+
+        with open(os.path.join(self.folder, xyzFilename), 'r') as infile:
+            numBottomBlocks = 0
+            for line in infile:
+                if line[0] == 'B':
+                    numBottomBlocks += 1
+
+            self.parameters['bottomNodes'] = numBottomBlocks
+
+
 
     def plotNormalForce(self, show=False, save=True):
         plt.pcolormesh(self.normalForce)
@@ -122,14 +149,14 @@ class Analyzer:
     Method for quickly getting a time array for a spesific type of data. freqName is the name found in the parameters.txt file corresponding to the given data
     """
     def getTimeArray(self,data,freqName):
-        return np.arange(len(data))*self.parameters['dt']*self.parameters[freqName]
+        return np.arange(len(data))*self.parameters['step']*self.parameters[freqName]
 
     """
     If the number of springs attached is less then the cutoffPoint (percentage) times the total number of springs belonging to that node,
     the node is treated as dislodged, else it is treated as attached.
     """
     def getReducedSpringAttachments(self,cutoffPoint):
-        return np.sum(np.where(self.readAndResize('node_springs_attached_interface.bin')=< self.parameters['ns']*cutoffPoint,0,1))
+        return np.sum(np.where(self.readAndResize('node_springs_attached_interface.bin') <= self.parameters['ns']*cutoffPoint,0,1),axis = 1)
 
     """
     Plots the number of attached blocks. Show desides if the plot will be shown, or used in an other figure.
@@ -151,9 +178,8 @@ class Analyzer:
     """
     def getFrontVelocities(self, cutoffPoint = 0.1):
         data = self.getReducedSpringAttachments(cutoffPoint)
-        data = np.where(data )
         v = np.zeros(len(data) - 2)
-        h = self.parameters["dt"]*self.parameters['freqNodeSpringsAttachedInterface']
+        h = self.parameters["step"]*self.parameters['freqNodeSpringsAttachedInterface']
         for i in range(1,len(data) -1):
             v[i-1] = (data[i+1] - data[i-1])/(2.0*h)
 
@@ -165,9 +191,9 @@ class Analyzer:
     """
     def plotFrontVelocities(self,cutoffPoint = 0.1):
         data = self.getFrontVelocities(cutoffPoint)
-        time = np.arange(len(data))*self.parameters['dt']*self.parameters['freqNodeSpringsAttachedInterface']
+        time = np.arange(len(data))*self.parameters['step']*self.parameters['freqNodeSpringsAttachedInterface']
         plt.plot(time,data)
-        plt.title("Front Velocity for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim[0]))
+        plt.title("Front Velocity for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
         plt.xlabel("Time [s]")
         plt.ylabel("Velocity [m/s]")
         plt.show()
@@ -208,12 +234,18 @@ class Analyzer:
 
     def plotRodShearForceTimeSeries(self,mean = False):
         data = self.getRodShearForceTimeSeries(mean)
-        time = np.arange(data)*self.parameters['dt']*self.parameters['freq...']
+        time = np.arange(data)*self.parameters['step']*self.parameters['freq...']
         plt.plot(time,data)
         plt.title("Shear force of rod for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim[0]))
         plt.xlabel("Time [s]")
-        plt.ylabel(r"$F_T/F_N$")
+        if mean:
+            plt.ylabel(r"Mean $F_T/F_N$")
+        else:
+            plt.ylabel(r"Total $F_T/F_N$")
         plt.show()
+
+
+
 
 
 
@@ -376,7 +408,11 @@ if __name__ == '__main__':
     glob = Globbler(args.dir)
 
     pattern = "grooveHeight\d+-grooveSize\d+"
-    instanceList = glob.walk(pattern, Analyzer)
+    # instanceList = glob.walk(pattern, Analyzer)
+    an = Analyzer()
+    an.plotFrontVelocities()
+    an.readAll()
+    an.plotAttachedSprings(show = True, save = False)
     #comp = Compare(instanceList)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()

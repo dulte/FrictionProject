@@ -1,9 +1,10 @@
 project("Friction")
-FIND_PACKAGE( Boost 1.60 COMPONENTS system filesystem program_options REQUIRED )
-INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
+# FIND_PACKAGE( Boost 1.60 COMPONENTS system filesystem program_options REQUIRED )
+# INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 include_directories(".")
 set(CMAKE_BUILD_TYPE Release)
 set(CMAKE_CXX_FLAGS "-g -O3 -Wall -fopenmp -std=c++14")
+message("CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 add_executable(simulate main.cpp
     Lattice/lattice.cpp
     Node/node.cpp
@@ -29,5 +30,4 @@ add_executable(simulate main.cpp
     Lattice/UnstructuredLattice/unstructuredlattice.cpp
     InputManagement/LatticeScanner/latticescanner.cpp
   )
-message("CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
-TARGET_LINK_LIBRARIES( simulate LINK_PUBLIC ${Boost_LIBRARIES} )
+# TARGET_LINK_LIBRARIES( simulate LINK_PUBLIC ${Boost_LIBRARIES} )

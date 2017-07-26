@@ -66,8 +66,11 @@ void DriverBeam::stealTopNodes(std::shared_ptr<Lattice> lattice){
         }
         m_nodes.push_back(topnode);
     }
-    // then, clear the topNodes (is this necessary??)
+    // then, clear the topNodes (is this necessary??) YES!
     lattice->topNodes.clear();
+    // Distribute the mass of the driver beam onto the nodes
+    for (auto& node: m_nodes)
+        node->setMass(m_mass/m_nodes.size());
 }
 
 void DriverBeam::updateForcesAndMoments(){

@@ -1,8 +1,8 @@
 #!/bin/python3
 # -*- coding: utf-8 -*-
 import argparse
-from datetime import datetime
-from itertools import permutations, product
+import time
+from itertools import product
 from operator import attrgetter
 import subprocess
 from distutils.file_util import copy_file
@@ -12,6 +12,80 @@ import os
 import logging
 import re
 import collections
+import multiprocessing
+import shlex
+
+
+def SupportMultiprocessing(func):
+    def addon(*args, **kwargs):
+        func(*args, **kwargs)
+        pid = multiprocessing.current_process().pid
+        logger.debug("Terminating %s and sending pid %s",
+                     func, pid)
+        args[0].queue.put(pid)
+
+    def inner(*args, **kwargs):
+        """ Lowest level of the decorator
+        Parameters: args: The args to the function to be called
+                    kwargs: The kwargs to the function to be called
+        Algorithm:  If check_list is True, check if the keyword "name
+                    is in args.multi_list. If it is, use multiprocessing.
+                    If check_list is False, use multiprocessing.
+                    Check if the number of active children is under
+                    the limit set by --processes. If it is, increment
+                    the running_children counter. This is done first to
+                    make it less likely that the number of processes
+                    exeeds the limit. Run the function and store the
+                    PID in a multiprocessing.Manager
+                    If the limit is reached, wait at the
+                    multiprocessing.Queue for a PID. This PID is then
+                    removed from the list over running children and the
+                    counter is decremented":"""
+        cls = args[0]
+        if cls.use_multiprocessing:
+            # Only pause if the limit set by --processes is reached
+            logger.debug("Currently there are %s/%s processes running",
+                         cls.running_children.value, cls.num_processes)
+            if cls.running_children.value >= cls.num_processes:
+                logger.debug("Waiting for available process")
+                pid = cls.queue.get()
+                logger.debug("Got pid %s", pid)
+                # Wait a second to let the process be terminated
+                for process in cls.mps_list:
+                    if process == pid:
+                        # If it did not terminate, wait till it does
+                        #process.join()
+                        logger.debug("Removing %s from list", pid)
+                        # Finally, remove it
+                        cls.mps_list.remove(process)
+                        cls.running_children.value -= 1
+                        break
+                if cls.running_children.value >= cls.num_processes:
+                    logger.exception("PID not in list")
+                    raise RuntimeError("PID not in list")
+            cls.running_children.value += 1
+            logger.debug("Starting process")
+            job = multiprocessing.Process(
+                target=addon,
+                args=args, kwargs=kwargs)
+            # Start it
+            job.start()
+            # Keep a reference to shut them down
+            cls.mps_list.append(job.pid)
+        else:
+            func(*args, **kwargs)
+
+    return inner
+
+
+class MultiprocessingSupport:
+    def __init__(self, doUseMultiprocessing=False, numProcesses=0):
+        self.use_multiprocessing = doUseMultiprocessing
+        self.running_children = multiprocessing.Value('i', 0)
+        self.mps_list = multiprocessing.Manager().list()
+        self.num_processes = (numProcesses if numProcesses > 0
+                              else multiprocessing.cpu_count())
+        self.queue = multiprocessing.Queue()
 
 
 class Parser:
@@ -132,7 +206,10 @@ class Jobfile:
             for f in self.infiles:
                 env += 'cp -r $SUBMITDIR/{} $SCRATCH\n'.format(f)
             env += '# Mark outfiles for automatic copying to $SUBMITDIR\n'
-            env += 'chkfile {}\n'.format(' '.join(self.outfiles))
+            if len(self.outfiles) == 1:
+                env += 'cleanup "cp -r $SCRATCH/{o} $SUBMITDIR/{o}"'.format(o=self.outfiles)
+            else:
+                env += 'chkfile {}\n'.format(' '.join(self.outfiles))
             env += 'cd $SCRATCH\n'
             env += '# Run custom commands\n'
         else:
@@ -148,9 +225,13 @@ class Jobfile:
         self.customCommands.append(command)
 
 
-class JobRunner:
+class JobRunner(MultiprocessingSupport):
     """ Manages and runs jobs on a cluster """
-    def __init__(self, name, configpath, projectpaths, outpath='jobs', dryrun=False, **kwargs):
+    def __init__(self, name, configpath, projectpaths,
+                 outpath='jobs', dryrun=False, multiprocessing=None,
+                 **kwargs):
+        super(JobRunner, self).__init__(True if multiprocessing is not None else False,
+                                        numProcesses=multiprocessing)
         logger.info("Attemping to parse {}".format(configpath))
         parser = Parser(configpath)
         self.configpath = configpath
@@ -160,6 +241,7 @@ class JobRunner:
         self.jobfilekwargs = kwargs
         self.jobdir = outpath
         self.dryrun = dryrun
+        self.multiprocessing = multiprocessing
 
     def run(self):
         infiles = [self.configpath] + self.projectpaths
@@ -170,8 +252,11 @@ class JobRunner:
             jobname = self.name+str(i)
             jobfile.jobname = jobname
             currDir = self.handleFiles(jobname, configStr)
-            self.writeJobfile(currDir, jobfile.makeJobfile())
-            self.runJob(currDir)
+            if self.multiprocessing is None:
+                self.writeJobfile(currDir, jobfile.makeJobfile())
+                self.runJob(currDir)
+            else:
+                self.runTask(currDir)
             i += 1
 
     def runJob(self, src):
@@ -182,6 +267,17 @@ class JobRunner:
         wd = os.getcwd()
         os.chdir(src)
         subprocess.call(['sbatch', 'jobfile'])
+        os.chdir(wd)
+
+    @SupportMultiprocessing
+    def runTask(self, src):
+        logger.info("Running task")
+        if self.dryrun:
+            return
+        wd = os.getcwd()
+        os.chdir(src)
+        for command in self.jobfilekwargs['customCommands']:
+            process = subprocess.call(shlex.split(command))
         os.chdir(wd)
 
     def writeJobfile(self, path, jobfile):
@@ -266,6 +362,9 @@ def getArgs():
     parser.add_argument('-p', '--projectpaths',
                         help="Paths to all other files needed for the job",
                         nargs='+')
+    parser.add_argument('-j', '--numcores',
+                        help="Number of cores when using multiprocessing",
+                        type=int)
 
     return parser.parse_args()
 
@@ -364,16 +463,24 @@ def cp(src, dst):
             mkdirRec(os.path.split(dst)[0])
         copy_file(src, dst)
 
+
 if __name__ == '__main__':
     args = getArgs()
 
     # Set up logging
     logging.basicConfig(level=logging.DEBUG, filename='log.log',
-                        filemode="w", format="%(asctime)s - %(levelname)-8s - %(message)s")
+                        filemode="w",
+                        format="%(asctime)s - %(levelname)-8s - %(message)s")
     logging.getLogger("__name__").addHandler(logging.NullHandler())
     setUpLogger(args.debug)
     sys.excepthook = excepthook
-    jobr = JobRunner('friction', 'input/parameters.txt', ['simulate', 'input', 'constructLattice.py'], dryrun=args.dryrun,
-                     customCommands=['mkdir output', 'python3 constructLattice.py input/parameters.txt input/lattice.xyz', './simulate'],
-                     wallTime=86400, modules=['python3', 'gcc'], outfiles=['output/'])
+    jobr = JobRunner('friction', 'input/parameters.txt',
+                     ['simulate', 'input', 'constructLattice.py'],
+                     dryrun=args.dryrun,
+                     customCommands=['mkdir output',
+                                     'python3 constructLattice.py input/parameters.txt input/lattice.xyz',
+                                     './simulate'],
+                     wallTime=86400, modules=['python3', 'gcc'],
+                     outfiles=['output/'],
+                     multiprocessing=args.numcores)
     jobr.run()

@@ -28,7 +28,7 @@ grooveHeight         4
 latticefilename      input/lattice.txt
 
 #Pusher
-vD                   4e-3
+vD                   4e0
 pK                   4e5
 pusherStartHeight    4
 pusherEndHeight      5
@@ -39,17 +39,17 @@ beamAngle            0   # The final angle of the beam [degrees, anticlockwise]
 beamRotTime          1e3 # Number of steps for the beam to rotate from 0 to beamAngle
 
 #Write_data
-writeNodePositionInterface        0
+writeNodePositionInterface        1
 writeNodeVelocityInterface        0
-writeNodeSpringsAttachedInterface 0
-writeNodePositionAll              0
+writeNodeSpringsAttachedInterface 1
+writeNodePositionAll              1
 writeNodeVelocityAll              0
 writeTotalEnergyAll               0
-writeTotalForceAll                0
+writeNodeForceAll                 1
 writePusherForce                  0
 writeNormalForce                  0
 writeShearForce                   0
-writeXYZ                          1
+writeXYZ                          0
 writeBeamTorque                   0
 writeBeamShearForce               1
 
@@ -57,10 +57,10 @@ writeBeamShearForce               1
 freqNodePositionInterface        100
 freqNodeVelocityInterface        1000
 freqNodeSpringsAttachedInterface 100
-freqNodePositionAll              100000
+freqNodePositionAll              1000
 freqNodeVelocityAll              10000
 freqTotalEnergyAll               10000
-freqTotalForceAll                10000
+freqNodeForceAll                 100
 freqPusherForce                  100
 freqNormalForce                  100
 freqShearForce                   100

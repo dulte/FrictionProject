@@ -10,7 +10,7 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_writeNodePositionAll              = m_pParameters->m_writeNodePositionAll;
     m_writeNodeVelocityAll              = m_pParameters->m_writeNodeVelocityAll;
     m_writeTotalEnergyAll               = m_pParameters->m_writeTotalEnergyAll;
-    m_writeTotalForceAll                = m_pParameters->m_writeTotalForceAll;
+    m_writeNodeForceAll                 = m_pParameters->m_writeNodeForceAll;
     m_writePusherForce                  = m_pParameters->m_writePusherForce;
     m_writeNormalForce                  = m_pParameters->m_writeNormalForce;
     m_writeShearForce                   = m_pParameters->m_writeShearForce;
@@ -24,7 +24,7 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_freqNodePositionAll               = m_pParameters->m_freqNodePositionAll;
     m_freqNodeVelocityAll               = m_pParameters->m_freqNodeVelocityAll;
     m_freqTotalEnergyAll                = m_pParameters->m_freqTotalEnergyAll;
-    m_freqTotalForceAll                 = m_pParameters->m_freqTotalForceAll;
+    m_freqNodeForceAll                  = m_pParameters->m_freqNodeForceAll;
     m_freqPusherForce                   = m_pParameters->m_freqPusherForce;
     m_freqNormalForce                   = m_pParameters->m_freqNormalForce;
     m_freqShearForce                    = m_pParameters->m_freqShearForce;
@@ -42,12 +42,12 @@ DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<P
     m_ofNodePositionAll.open(outputFolder              + "/node_position_all.bin",               std::ios::out | std::ios::binary);
     m_ofNodeVelocityAll.open(outputFolder              + "/node_velocity_all.bin",               std::ios::out | std::ios::binary);
     m_ofTotalEnergyAll.open(outputFolder               + "/node_total_energy_all.bin",           std::ios::out | std::ios::binary);
-    m_ofTotalForceAll.open(outputFolder                + "/node_total_force_all.bin",            std::ios::out | std::ios::binary);
+    m_ofNodeForceAll.open(outputFolder                 + "/node_force_all.bin",                  std::ios::out | std::ios::binary);
     m_ofPusherForce.open(outputFolder                  + "/pusher_force.bin",                    std::ios::out | std::ios::binary);
     m_ofNormalForce.open(outputFolder                  + "/normal_force.bin",                    std::ios::out | std::ios::binary);
     m_ofShearForce.open(outputFolder                   + "/shear_force.bin",                     std::ios::out | std::ios::binary);
-    m_ofXYZ.open(outputFolder                         + "/positions.xyz",                        std::ofstream::out);
-    m_ofBeamShearForce.open(outputFolder                   + "/beam_shear_force.bin",            std::ios::out | std::ios::binary);
+    m_ofXYZ.open(outputFolder                          + "/positions.xyz",                       std::ofstream::out);
+    m_ofBeamShearForce.open(outputFolder               + "/beam_shear_force.bin",                std::ios::out | std::ios::binary);
     m_ofBeamTorque.open(outputFolder                   + "/beam_torque.bin",                     std::ios::out | std::ios::binary);
 
     // Check that the directory is writable
@@ -63,7 +63,7 @@ DataPacketHandler::~DataPacketHandler()
     m_ofNodePositionAll.close();
     m_ofNodeVelocityAll.close();
     m_ofTotalEnergyAll.close();
-    m_ofTotalForceAll.close();
+    m_ofNodeForceAll.close();
     m_ofPusherForce.close();
     m_ofNormalForce.close();
     m_ofShearForce.close();
@@ -111,10 +111,10 @@ void DataPacketHandler::step(std::vector<DataPacket> packets)
                 m_ofTotalEnergyAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
             break;
         }
-        case DataPacket::dataId::NODE_TOTAL_FORCE_ALL:
+        case DataPacket::dataId::NODE_FORCE_ALL:
         {
-            if(m_writeTotalForceAll && packet.timestep()%m_freqTotalForceAll == 0)
-                m_ofTotalForceAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
+            if(m_writeNodeForceAll && packet.timestep()%m_freqNodeForceAll == 0)
+                m_ofNodeForceAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
             break;
         }
         case DataPacket::dataId::PUSHER_FORCE:

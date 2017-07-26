@@ -30,7 +30,7 @@ private:
     std::ofstream m_ofNodePositionAll;
     std::ofstream m_ofNodeVelocityAll;
     std::ofstream m_ofTotalEnergyAll;
-    std::ofstream m_ofTotalForceAll;
+    std::ofstream m_ofNodeForceAll;
     std::ofstream m_ofPusherForce;
     std::ofstream m_ofNormalForce;
     std::ofstream m_ofShearForce;
@@ -44,7 +44,7 @@ private:
     bool m_writeNodePositionAll              = true;
     bool m_writeNodeVelocityAll              = true;
     bool m_writeTotalEnergyAll               = true;
-    bool m_writeTotalForceAll                = true;
+    bool m_writeNodeForceAll                = true;
     bool m_writePusherForce                  = true;
     bool m_writeNormalForce                  = true;
     bool m_writeShearForce                   = true;
@@ -58,7 +58,7 @@ private:
     int m_freqNodePositionAll                = 1000;
     int m_freqNodeVelocityAll                = 1000;
     int m_freqTotalEnergyAll                 = 1000;
-    int m_freqTotalForceAll                  = 1000;
+    int m_freqNodeForceAll                   = 1000;
     int m_freqPusherForce                    = 1000;
     int m_freqNormalForce                    = 1000;
     int m_freqShearForce                     = 1000;

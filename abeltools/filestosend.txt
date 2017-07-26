@@ -9,3 +9,7 @@ FrictionInfo/
 DataOutput/
 FrictionSystem/
 InputManagement/
+CMakeLists.txt
+input/
+scripts/
+DriverBeam/

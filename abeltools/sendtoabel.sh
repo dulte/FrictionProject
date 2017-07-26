@@ -11,8 +11,8 @@ OPTIND=1         # Reset in case getopts has been used previously in the shell.
 #### GET ARGUMENTS ####
 # Initialize our own variables:
 SOURCE='..'
-DESTINATION=$1
-HOST="abel"
+DESTINATION=$2
+HOST=$1
 FILESFILE="filestosend.txt"
 verbose=0
 

@@ -46,6 +46,7 @@ public:
     void    isSetForce(bool);
     void    setLattice(std::shared_ptr<SimpleLattice> lattice) {m_lattice = lattice;}
     void    forcePosition(const vec3 &r);
+    void    setMass(double mass){ m_mass = mass};
 
 protected:
     vec3   m_r;

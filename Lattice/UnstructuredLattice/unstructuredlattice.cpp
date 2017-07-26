@@ -53,6 +53,7 @@ std::vector<DataPacket> UnstructuredLattice::getDataPackets(int timestep, double
     DataPacket num_springs_attached_interface_packet = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
     DataPacket position_all = DataPacket(DataPacket::dataId::NODE_POSITION_ALL, timestep, time);
     DataPacket velocity_all = DataPacket(DataPacket::dataId::NODE_VELOCITY_ALL, timestep, time);
+    DataPacket force_all    = DataPacket(DataPacket::dataId::NODE_FORCE_ALL, timestep, time);
 //    DataPacket energy_all = DataPachet(DataPacket::dataId::NODE_TOTAL_ENERGY_ALL,timestep,time);
 
     for (std::shared_ptr<Node> node : bottomNodes)
@@ -68,10 +69,13 @@ std::vector<DataPacket> UnstructuredLattice::getDataPackets(int timestep, double
         position_all.push_back(node->r().y());
         velocity_all.push_back(node->v().x());
         velocity_all.push_back(node->v().y());
+        force_all.push_back(node->f().x());
+        force_all.push_back(node->f().y());
     }
     packetvec.push_back(position_interface_packet);
     packetvec.push_back(velocity_interface_packet);
     packetvec.push_back(position_all);
     packetvec.push_back(velocity_all);
+    packetvec.push_back(force_all);
     return packetvec;
 }

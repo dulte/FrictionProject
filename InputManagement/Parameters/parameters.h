@@ -59,7 +59,7 @@ public:
     int    m_writeNodePositionAll;
     int    m_writeNodeVelocityAll;
     int    m_writeTotalEnergyAll;
-    int    m_writeTotalForceAll;
+    int    m_writeNodeForceAll;
     int    m_writePusherForce;
     int    m_writeNormalForce;
     int    m_writeShearForce;
@@ -73,7 +73,7 @@ public:
     int    m_freqNodePositionAll;
     int    m_freqNodeVelocityAll;
     int    m_freqTotalEnergyAll;
-    int    m_freqTotalForceAll;
+    int    m_freqNodeForceAll;
     int    m_freqPusherForce;
     int    m_freqNormalForce;
     int    m_freqShearForce;
@@ -128,7 +128,7 @@ private:
     bool m_bwriteNodePositionAll              = 0;
     bool m_bwriteNodeVelocityAll              = 0;
     bool m_bwriteTotalEnergyAll               = 0;
-    bool m_bwriteTotalForceAll                = 0;
+    bool m_bwriteNodeForceAll                = 0;
     bool m_bwritePusherForce                  = 0;
     bool m_bwriteNormalForce                  = 0;
     bool m_bwriteShearForce                   = 0;
@@ -142,7 +142,7 @@ private:
     bool m_bfreqNodePositionAll               = 0;
     bool m_bfreqNodeVelocityAll               = 0;
     bool m_bfreqTotalEnergyAll                = 0;
-    bool m_bfreqTotalForceAll                 = 0;
+    bool m_bfreqNodeForceAll                 = 0;
     bool m_bfreqPusherForce                   = 0;
     bool m_bfreqNormalForce                   = 0;
     bool m_bfreqShearForce                    = 0;

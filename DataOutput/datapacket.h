@@ -3,8 +3,6 @@
 
 #include <vector>
 
-
-
 class DataPacket
 {
 public:
@@ -15,7 +13,7 @@ public:
         NODE_POSITION_ALL,
         NODE_VELOCITY_ALL,
         NODE_TOTAL_ENERGY_ALL,
-        NODE_TOTAL_FORCE_ALL,
+        NODE_FORCE_ALL,
         PUSHER_FORCE,
         NORMAL_FORCE,
         SHEAR_FORCE,

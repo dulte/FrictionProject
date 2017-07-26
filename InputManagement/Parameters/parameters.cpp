@@ -56,7 +56,7 @@ int Parameters::dumpParameters(){
              << "writeNodePositionAll\t" << m_writeNodePositionAll << "\n"
              << "writeNodeVelocityAll\t" << m_writeNodeVelocityAll << "\n"
              << "writeTotalEnergyAll\t" << m_writeTotalEnergyAll << "\n"
-             << "writeTotalForceAll\t" << m_writeTotalForceAll << "\n"
+             << "writeNodeForceAll\t" << m_writeNodeForceAll << "\n"
              << "writePusherForce\t" << m_writePusherForce << "\n"
              << "writeNormalForce\t" << m_writeNormalForce << "\n"
              << "writeShearForce\t" << m_writeShearForce << "\n"
@@ -67,7 +67,7 @@ int Parameters::dumpParameters(){
              << "freqNodePositionAll\t" << m_freqNodePositionAll << "\n"
              << "freqNodeVelocityAll\t" << m_freqNodeVelocityAll << "\n"
              << "freqTotalEnergyAll\t" << m_freqTotalEnergyAll << "\n"
-             << "freqTotalForceAll\t" << m_freqTotalForceAll << "\n"
+             << "freqNodeForceAll\t" << m_freqNodeForceAll << "\n"
              << "freqPusherForce\t" << m_freqPusherForce << "\n"
              << "freqNormalForce\t" << m_freqNormalForce << "\n"
              << "freqShearForce\t" << m_freqShearForce << "\n"
@@ -182,9 +182,9 @@ void Parameters::readParameters(std::string filenameConfig){
         } else  if (tokens[0] == "writeTotalEnergyAll") {
             m_writeTotalEnergyAll = std::stoi(tokens[1]);
             m_bwriteTotalEnergyAll = 1;
-        } else  if (tokens[0] == "writeTotalForceAll") {
-            m_writeTotalForceAll = std::stoi(tokens[1]);
-            m_bwriteTotalForceAll = 1;
+        } else  if (tokens[0] == "writeNodeForceAll") {
+            m_writeNodeForceAll = std::stoi(tokens[1]);
+            m_bwriteNodeForceAll = 1;
         } else  if (tokens[0] == "writePusherForce") {
             m_writePusherForce = std::stoi(tokens[1]);
             m_bwritePusherForce = 1;
@@ -221,9 +221,9 @@ void Parameters::readParameters(std::string filenameConfig){
         } else  if (tokens[0] == "freqTotalEnergyAll") {
             m_freqTotalEnergyAll = std::stoi(tokens[1]);
             m_bfreqTotalEnergyAll = 1;
-        } else  if (tokens[0] == "freqTotalForceAll") {
-            m_freqTotalForceAll = std::stoi(tokens[1]);
-            m_bfreqTotalForceAll = 1;
+        } else  if (tokens[0] == "freqNodeForceAll") {
+            m_freqNodeForceAll = std::stoi(tokens[1]);
+            m_bfreqNodeForceAll = 1;
         } else  if (tokens[0] == "freqPusherForce") {
             m_freqPusherForce = std::stoi(tokens[1]);
             m_bfreqPusherForce = 1;
@@ -319,8 +319,8 @@ void Parameters::checkThatAllParametersAreSet(){
         throw std::runtime_error("The parameter writeNodeVelocityAll is not set");
     } else if (!m_bwriteTotalEnergyAll) {
         throw std::runtime_error("The parameter writeTotalEnergyAll is not set");
-    } else if (!m_bwriteTotalForceAll) {
-        throw std::runtime_error("The parameter writeTotalForceAll is not set");
+    } else if (!m_bwriteNodeForceAll) {
+        throw std::runtime_error("The parameter writeNodeForceAll is not set");
     } else if (!m_bwritePusherForce) {
         throw std::runtime_error("The parameter writePusherForce is not set");
     } else if (!m_bwriteNormalForce) {
@@ -345,8 +345,8 @@ void Parameters::checkThatAllParametersAreSet(){
         throw std::runtime_error("The parameter freqNodeVelocityAll is not set");
     } else if (!m_bfreqTotalEnergyAll) {
         throw std::runtime_error("The parameter freqTotalEnergyAll is not set");
-    } else if (!m_bfreqTotalForceAll) {
-        throw std::runtime_error("The parameter freqTotalForceAll is not set");
+    } else if (!m_bfreqNodeForceAll) {
+        throw std::runtime_error("The parameter freqNodeForceAll is not set");
     } else if (!m_bfreqPusherForce) {
         throw std::runtime_error("The parameter freqPusherForce is not set");
     } else if (!m_bfreqNormalForce) {

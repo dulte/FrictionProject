@@ -4,8 +4,8 @@ CONFIG += console c++14
 CONFIG -= app_bundle
 CONFIG -= qt
 
-QMAKE_CXXFLAGS+= -fopenmp -g -c
-QMAKE_LFLAGS +=  -fopenmp -g -c
+QMAKE_CXXFLAGS+= -fopenmp -g
+QMAKE_LFLAGS +=  -fopenmp -g
 #-static
 
 QMAKE_CXXFLAGS_RELEASE -= -O1

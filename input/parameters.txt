@@ -18,6 +18,7 @@ k                    4e6
 nu                   0.33
 hZ                   0.006
 density              1300
+staticCoefficient    0.4
 step                 2e-7  # Time step [s]
 
 # Grooves

@@ -22,7 +22,7 @@ step                 2e-7  # Time step [s]
 
 # Grooves
 grooveSize           5
-grooveHeight         4
+grooveHeight         0
 
 #Filenames
 latticefilename      Config/lattice.txt

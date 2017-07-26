@@ -375,8 +375,8 @@ class FrictionAnalyzer(Analyzer):
         Much of the processing is the same as for the method above.
         """
 
-        shearForce_on_rod = self.read('rodShearForce.bin')
-        shearForce_on_rod = np.reshape(shearForce_on_rod, len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx'])
+        shearForce_on_rod = self.read('beam_shear_force.bin')
+        shearForce_on_rod = -1*np.reshape(shearForce_on_rod, (len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx']))
         if mean:
             shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
         else:
@@ -387,9 +387,9 @@ class FrictionAnalyzer(Analyzer):
     @Analyzer.plotable
     def plotRodShearForceTimeSeries(self, mean=False):
         data = self.getRodShearForceTimeSeries(mean)
-        time = np.arange(data)*self.parameters['step']*self.parameters['freq...']
+        time = np.arange(len(data))*self.parameters['step']*self.parameters['freqBeamShearForce']
         plt.plot(time,data)
-        plt.title("Shear force of rod for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim[0]))
+        plt.title("Shear force of rod for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
         plt.xlabel("Time [s]")
         if mean:
             plt.ylabel(r"Mean $F_T/F_N$")
@@ -565,6 +565,7 @@ if __name__ == '__main__':
     manager.setUp(args)
     manager.readAll()
     manager.plotAttachedSprings(show=True)
+    manager.plotRodShearForceTimeSeries(show = True)
     #comp = Compare(instanceList)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()

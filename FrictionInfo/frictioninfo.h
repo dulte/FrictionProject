@@ -15,4 +15,5 @@ public:
     double m_ns;
     double m_nx;
     double m_tau;
+    double m_staticCoefficient;
 };

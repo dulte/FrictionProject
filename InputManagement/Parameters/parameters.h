@@ -32,6 +32,7 @@ public:
     double m_hZ;
     double m_density;
     double m_step;
+    double m_staticCoefficient;
 
     // Filenames
     std::string m_latticeFilename;
@@ -100,6 +101,7 @@ private:
     bool m_bhZ                                = 0;
     bool m_bdensity                           = 0;
     bool m_bstep                              = 0;
+    bool m_bstaticCoefficient                 = 0;
 
     // Filenames
     bool m_blatticeFilename                   = 0;

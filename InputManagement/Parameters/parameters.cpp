@@ -100,6 +100,9 @@ void Parameters::readParameters(std::string filenameConfig){
         } else if (tokens[0] == "nx") {
             m_nx = std::stoi(tokens[1]);
             m_bnx = 1;
+        } else if(tokens[0] == "staticCoefficient"){
+            m_staticCoefficient = std::stod(tokens[1]);
+            m_bstaticCoefficient = 1;
         } else if (tokens[0] == "ny") {
             m_ny = std::stoi(tokens[1]);
             m_bny = 1;
@@ -264,6 +267,8 @@ void Parameters::checkThatAllParametersAreSet(){
         throw std::runtime_error("The parameter nx is not set");
     } else if (!m_bny) {
         throw std::runtime_error("The parameter ny is not set");
+    } else if (!m_bstaticCoefficient){
+        throw std::runtime_error("The parameter staticCoefficient is not set");
     } else if (!m_bwritingFreq) {
         throw std::runtime_error("The parameter writingFreq is not set");
     } else if (!m_bnt) {

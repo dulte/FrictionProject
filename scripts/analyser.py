@@ -11,6 +11,7 @@ import glob as _glob
 from string import Formatter
 from operator import attrgetter
 from mpl_toolkits.mplot3d import Axes3D
+from scipy.signal import argrelmax
 
 # Global variables
 join = os.path.join
@@ -191,6 +192,22 @@ class Analyzer:
 
         return decorator
 
+    def restrictHeightAndSize(fn):
+        decoratorKeywords = ('certainSize','certainHeight')
+        def decorator(*args, **kwargs):
+            self = args[0]
+            fnKwargs = {k: v for k, v in kwargs.items()
+                        if k not in decoratorKeywords}
+            dcKwargs = {k: v for k, v in kwargs.items()
+                        if k in decoratorKeywords}
+            if (('certainSize' in dcKwargs) and (dcKwargs['certainSize'] == self.parameters['grooveSize'])) or ('certainSize' not in dcKwargs):
+                if (('certainHeight' in dcKwargs) and (dcKwargs['certainHeight'] == self.parameters['grooveHeight'])) or ('certainHeight' not in dcKwargs):
+                    fn(*args, **fnKwargs)
+
+        return decorator
+
+
+
 
 class AnalyzerManager:
     def __init__(self):
@@ -224,6 +241,7 @@ class FrictionAnalyzer(Analyzer):
         filename = 'lattice.txt'
         blockSize = 10000  # Each xyz-block is atleast larger than 0
         numberOfBottomNodes = 0
+        numberofTopNodes = 0
         with open(join(self.input, filename)) as xyz:
             for i, line in enumerate(xyz):
                 if i == 0:
@@ -231,11 +249,15 @@ class FrictionAnalyzer(Analyzer):
                 elif 1 < i < blockSize:  # Second line is the comment
                     if 'B' in line:
                         numberOfBottomNodes += 1
+                    elif 'T' in line:
+                        numberofTopNodes += 1
                 elif i > blockSize:
                     break
         # Since dicts are muteable, self.datareader.params is
         # simulanously updated.
         self.parameters['numBottomNodes'] = numberOfBottomNodes
+        self.parameters['numTopNodes'] = numberofTopNodes
+        self.parameters['numNodes'] = blockSize
 
     def readAll(self):
         """ Reads all binary files available as described in parameters.
@@ -291,7 +313,7 @@ class FrictionAnalyzer(Analyzer):
             freqName: The name found in the parameters file
                 corresponding to the given data.
         """
-        return np.arange(len(data))*(self.parameters['dt'] *
+        return np.arange(len(data))*(self.parameters['step'] *
                                      self.parameters[freqName])
 
     def getReducedSpringAttachments(self, cutoffPoint):
@@ -358,8 +380,8 @@ class FrictionAnalyzer(Analyzer):
         TODO: Get the friction force from the flat case,
         and use that to normalize the static friction for grooves.
         """
-        shearForce_on_rod = self.read('rodShearForce.bin')
-        shearForce_on_rod = np.reshape(shearForce_on_rod, len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx'])
+        shearForce_on_rod = self.read('beam_shear_force.bin')
+        shearForce_on_rod = np.reshape(shearForce_on_rod, (len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx']))
         if mean:
             shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
         else:
@@ -385,17 +407,55 @@ class FrictionAnalyzer(Analyzer):
         return shearForce_on_rod/np.float(self.parameters['fn'])
 
     @Analyzer.plotable
-    def plotRodShearForceTimeSeries(self, mean=False):
-        data = self.getRodShearForceTimeSeries(mean)
-        time = np.arange(len(data))*self.parameters['step']*self.parameters['freqBeamShearForce']
+    def plotRodShearForceTimeSeries(self, mean=False, useAngleGreaterThanZero = True, certainHeight = None,certainSize = None):
+        if useAngleGreaterThanZero or self.parameters['beamAngle'] == 0:
+            if (certainHeight is not None) and self.parameters['grooveHeight'] == certainHeight:
+                if (certainSize is not None) and self.parameters['grooveSize'] == certainSize:
+                    data = self.getRodShearForceTimeSeries(mean)
+                    time = np.arange(len(data))*self.parameters['step']*self.parameters['freqBeamShearForce']
+                    plt.plot(time,data,label = "size %g height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
+                    plt.title("Shear force of rod for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
+                    plt.xlabel("Time [s]")
+                    if mean:
+                        plt.ylabel(r"Mean $F_T/F_N$")
+                    else:
+                        plt.ylabel(r"Total $F_T/F_N$")
+
+
+    def getYForceBeam(self):
+        force = self.read('node_force_all.bin')
+        readStep = 2*(self.parameters['numNodes'] - self.parameters['nx'] + 1)
+        beamForceY = force[::readStep]
+        del force
+        return beamForceY
+
+    @Analyzer.restrictHeightAndSize
+    @Analyzer.plotable
+    def plotYForceBeam(self):
+        data = self.getYForceBeam()
+        timeArray = self.getTimeArray(data,'freqNodeForceAll')
+        plt.plot(timeArray,data)
+        plt.title("Force In Y for size %g height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
+        self.plotStartOfPush(data,'freqNodeForceAll')
+
+    def getLocalMax(self):
+        data = getRodShearForceTimeSeries()
+        locMaxIndex = argrelmax[data][0]
+        timeArray = self.getTimeArray(data,'freqBeamShearForce')[argrelmax[data][0]]
+        locMax = np.copy(data[locMaxIndex])
+        return locMax, times
+
+    @Analyzer.plotable
+    @Analyzer.restrictHeightAndSize
+    def plotLocalMax(self):
+        data, time= getLocalMax
         plt.plot(time,data)
-        plt.title("Shear force of rod for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
-        plt.xlabel("Time [s]")
-        if mean:
-            plt.ylabel(r"Mean $F_T/F_N$")
-        else:
-            plt.ylabel(r"Total $F_T/F_N$")
-        plt.show()
+
+
+    def plotStartOfPush(self,data,freqName):
+        plt.plot(self.parameters['releaseTime']*self.parameters['step'],data[int(self.parameters['ns']/self.parameters[freqName])],"*")
+
+
 
     def getGrooveDim(self):
         return self.parameters["grooveHeight"], self.parameters["grooveSize"]
@@ -418,6 +478,8 @@ class FrictionAnalyzer(Analyzer):
         self.shearForce = self.readAndResize('shear_force.bin')
         self.plotShearForce()
         del self.shearForce
+
+
 
 
 class SortingHelpFormatter(argparse.RawTextHelpFormatter):
@@ -465,12 +527,22 @@ class Compare:
     def __init__(self,instanceList):
         self.instanceList = instanceList
 
-    def makeStaticCoeffArray(self):
+    def makeStaticCoeffArray(self, useAngleGreaterThanZero = False):
+        instanceLength = len(self.instanceList)
+        instanceIndex = range(instanceLength)
+        if(not useAngleGreaterThanZero):
+            instanceLength = 0
+            instanceIndex = []
+            for i in range(len(self.instanceList)):
+                if self.instanceList[i].parameters['beamAngle'] == 0:
+                    instanceLength += 1
+                    instanceIndex.append(i)
+
         self.staticCoefficiantArray = np.zeros([len(self.instanceList),3])
-        for i in range(len(self.instanceList)):
-            self.staticCoefficiantArray[i,0] = self.instanceList[i].getStaticFrictionCoefficient()
-            self.staticCoefficiantArray[i,1] = self.instanceList[i].getGrooveDim()[0]
-            self.staticCoefficiantArray[i,2] = self.instanceList[i].getGrooveDim()[1]
+        for i,j in zip(range(instanceLength), instanceIndex):
+            self.staticCoefficiantArray[i,0] = self.instanceList[j].getStaticFrictionCoefficient()
+            self.staticCoefficiantArray[i,1] = self.instanceList[j].getGrooveDim()[0]
+            self.staticCoefficiantArray[i,2] = self.instanceList[j].getGrooveDim()[1]
 
     def plotCoeffHeight(self):
         if not hasattr(self, "staticCoefficiantArray"):
@@ -563,9 +635,11 @@ if __name__ == '__main__':
     args = getArgs()
     manager = AnalyzerManager()
     manager.setUp(args)
-    manager.readAll()
-    manager.plotAttachedSprings(show=True)
-    manager.plotRodShearForceTimeSeries(show = True)
+    #manager.readAll()
+    #manager.plotAttachedSprings(show=True)
+    #manager.plotRodShearForceTimeSeries(show = True,certainSize = 1)
+    #manager.plotYForceBeam(show = True,certainSize = 1)
+    manager.plotLocalMax(show = True,certainSize = 1)
     #comp = Compare(instanceList)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()

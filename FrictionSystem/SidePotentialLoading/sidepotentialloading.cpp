@@ -22,17 +22,23 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
 {
     // Set all member variables
     m_parameters           = parameters;
-    m_k                    = parameters->m_k;
-    m_pusherStartHeight    = parameters->m_pusherStartHeight;
-    m_pusherEndHeight      = parameters->m_pusherEndHeight;
-    m_vD                   = parameters->m_vD;
+    parameters->get("k", m_k);
+    parameters->get("pusherStartHeight", m_pusherStartHeight);
+    parameters->get("pusherEndHeight", m_pusherEndHeight);
+    parameters->get("vD", m_vD);
 
-    const double d               = parameters->m_d;
-    const double density         = parameters->m_density;
-    const double hZ              = parameters->m_hZ;
+    double d;
+    double density;
+    double hZ;
+    double topLoadingForce;
+    int nx;
+    parameters->get("fn", topLoadingForce);
+    parameters->get("d", d);
+    parameters->get("density", density);
+    parameters->get("hZ", hZ);
+    parameters->get("nx", nx);
     const double mass            = density*d*d*hZ/4.0 * pi;
     const double eta             = sqrt(0.1*mass*m_k);
-    const double topLoadingForce = parameters->m_fn;
 
     m_lattice      = std::make_shared<UnstructuredLattice>();
     m_lattice->populate(parameters);
@@ -40,10 +46,10 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 
     // Add top loading force
-    double N = -topLoadingForce/parameters->m_nx;
+    double N = -topLoadingForce/nx;
     for (auto & node : m_lattice->topNodes)
     {
-        std::unique_ptr<ConstantForce> force = std::make_unique<ConstantForce>(vec3(0, N, 0));
+        std::shared_ptr<ConstantForce> force = std::make_shared<ConstantForce>(vec3(0, N, 0));
         node->addModifier(std::move(force));
     }
 
@@ -58,10 +64,10 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     // Add dampning force
     for (auto & node : m_lattice->nodes)
     {
-        std::unique_ptr<RelativeVelocityDamper> damper = std::make_unique<RelativeVelocityDamper>(eta);
+        std::shared_ptr<RelativeVelocityDamper> damper = std::make_shared<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(damper));
         // TODO: Why is there a magic number 1e-5 here?
-        std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_unique<AbsoluteOmegaDamper>(1e-5);
+        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(omegaDamper));
     }
     addDriver();

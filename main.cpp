@@ -8,6 +8,7 @@
 #include <memory>
 #include <time.h>
 #include <omp.h>
+#include "InputManagement/Parameters/parameter.h"
 // #include <boost/filesystem.hpp>
 // #include <boost/program_options.hpp>
 // #include "ForceModifier/ConstantForce/constantforce.h"
@@ -78,9 +79,12 @@ int main(int argc, char *argv[])
         spParameters->dumpParameters();
     }
 
-    int    nt          = spParameters->m_nt;
-    int    releaseTime = spParameters->m_releaseTime;
-    double step        = spParameters->m_step;
+    int    nt;
+    int    releaseTime;
+    double step;
+    spParameters->get("nt", nt);
+    spParameters->get("releaseTime", releaseTime);
+    spParameters->get("step", step);
 
     // For the progress output
     float progress     = 0;

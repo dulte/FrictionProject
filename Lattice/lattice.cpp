@@ -43,17 +43,24 @@ void Lattice::step(double dt)
     m_t += dt*0.5;
 }
 std::shared_ptr<LatticeInfo> Lattice::latticeInfoFromParameters(std::shared_ptr<Parameters> parameters){
-    return std::make_shared<LatticeInfo>(parameters->m_E, parameters->m_nu,
-                                         parameters->m_d, parameters->m_hZ);
+    double E; double nu; double d; double hZ;
+    parameters->get("E", E);
+    parameters->get("nu", nu);
+    parameters->get("d", d);
+    parameters->get("hZ", hZ);
+    return std::make_shared<LatticeInfo>(E, nu, d, hZ);
 }
 
 
 std::shared_ptr<Node> Lattice::newNode(std::shared_ptr<Parameters>  parameters,
                                        std::shared_ptr<LatticeInfo> latticeInfo,
                                        double x, double y) {
-    double mass = parameters->m_density * parameters->m_d * parameters->m_d *
-        parameters->m_hZ / 4 * pi;
-    double momentOfInertia = parameters->m_d * parameters->m_d / 8;
+    double d; double density; double hZ;
+    parameters->get("d", d);
+    parameters->get("density", density);
+    parameters->get("hZ", hZ);
+    double mass = density * d * d * hZ/ 4* pi;
+    double momentOfInertia = d*d / 8;
     vec3 pos(x, y, 0);
     std::shared_ptr<Node> node = std::make_shared<Node>(pos, mass, momentOfInertia, latticeInfo);
     return node;

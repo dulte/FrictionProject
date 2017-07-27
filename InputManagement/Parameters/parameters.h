@@ -3,152 +3,37 @@
 
 #include <fstream>
 #include <iostream>
+#include <map>
 #include <sstream>
 #include <string>
+#include <memory>
+#include "parameter.h"
+#include <vector>
 
 class Parameters{
 public:
     explicit Parameters(const std::string &filenameConfig);
-    ~Parameters();
+    virtual ~Parameters();
     void readParameters(std::string filenameConfig);
     void checkThatAllParametersAreSet();
     int dumpParameters();
+    template <typename T>
+    void get(std::string name, T& var){
+        if (m_parameters.find(name) == m_parameters.end()){
+            std::cerr << name << " is not in parameters" << std::endl;
+            throw std::exception();
+        }
+        m_parameters[name]->copyTo(var);
+    }
+
 
     std::string m_dumpFilename = "paramdump.txt";
 
-    // Simulation Parameters
-    int    m_nx;
-    int    m_ny;
-    int    m_writingFreq;
-    int    m_nt;
-    int    m_releaseTime;
-    double m_fn;
-    double m_ns;
-    double m_tau;
-    double m_d;
-    double m_E;
-    double m_k;
-    double m_nu;
-    double m_hZ;
-    double m_density;
-    double m_step;
-    double m_staticCoefficient;
-
-    // Filenames
-    std::string m_latticeFilename;
-
-    // Grooves
-    int    m_grooveSize;
-    int    m_grooveHeight;
-
-    // Pusher
-    double m_vD;
-    double m_pK;
-    int    m_pusherStartHeight;
-    int    m_pusherEndHeight;
-
-    // Beam
-    double m_beamMass;
-    double m_beamAngle;
-    int    m_beamRotTime;
-
-    // Writer Frequencies
-    int    m_writeNodePositionInterface;
-    int    m_writeNodeVelocityInterface;
-    int    m_writeNodeSpringsAttachedInterface;
-    int    m_writeNodePositionAll;
-    int    m_writeNodeVelocityAll;
-    int    m_writeTotalEnergyAll;
-    int    m_writeNodeForceAll;
-    int    m_writePusherForce;
-    int    m_writeNormalForce;
-    int    m_writeShearForce;
-    int    m_writeBeamTorque;
-    int    m_writeBeamShearForce;
-    int    m_writeXYZ;
-
-    int    m_freqNodePositionInterface;
-    int    m_freqNodeVelocityInterface;
-    int    m_freqNodeSpringsAttachedInterface;
-    int    m_freqNodePositionAll;
-    int    m_freqNodeVelocityAll;
-    int    m_freqTotalEnergyAll;
-    int    m_freqNodeForceAll;
-    int    m_freqPusherForce;
-    int    m_freqNormalForce;
-    int    m_freqShearForce;
-    int    m_freqBeamTorque;
-    int    m_freqBeamShearForce;
-    int    m_freqXYZ;
 
 private:
+    void constructMap();
     std::ifstream m_infileParameters;
-
-    // Bools to verify that parameters are set
-    // Simulation Parameters
-    bool m_bnx                                = 0;
-    bool m_bny                                = 0;
-    bool m_bwritingFreq                       = 0;
-    bool m_bnt                                = 0;
-    bool m_breleaseTime                       = 0;
-    bool m_bfn                                = 0;
-    bool m_bns                                = 0;
-    bool m_btau                               = 0;
-    bool m_bd                                 = 0;
-    bool m_bE                                 = 0;
-    bool m_bk                                 = 0;
-    bool m_bnu                                = 0;
-    bool m_bhZ                                = 0;
-    bool m_bdensity                           = 0;
-    bool m_bstep                              = 0;
-    bool m_bstaticCoefficient                 = 0;
-
-    // Filenames
-    bool m_blatticeFilename                   = 0;
-
-    // Grooves
-    bool m_bgrooveSize                        = 0;
-    bool m_bgrooveHeight                      = 0;
-
-    // Pusher
-    bool m_bvD                                = 0;
-    bool m_bpK                                = 0;
-    bool m_bpusherStartHeight                 = 0;
-    bool m_bpusherEndHeight                   = 0;
-
-    // Beam
-    bool m_bbeamMass                          = 0;
-    bool m_bbeamAngle                         = 0;
-    bool m_bbeamRotTime                       = 0;
-
-    // Writer Frequencies
-    bool m_bwriteNodePositionInterface        = 0;
-    bool m_bwriteNodeVelocityInterface        = 0;
-    bool m_bwriteNodeSpringsAttachedInterface = 0;
-    bool m_bwriteNodePositionAll              = 0;
-    bool m_bwriteNodeVelocityAll              = 0;
-    bool m_bwriteTotalEnergyAll               = 0;
-    bool m_bwriteNodeForceAll                = 0;
-    bool m_bwritePusherForce                  = 0;
-    bool m_bwriteNormalForce                  = 0;
-    bool m_bwriteShearForce                   = 0;
-    bool m_bwriteXYZ                          = 0;
-    bool m_bwriteBeamShearForce               = 0;
-    bool m_bwriteBeamTorque                   = 0;
-
-    bool m_bfreqNodePositionInterface         = 0;
-    bool m_bfreqNodeVelocityInterface         = 0;
-    bool m_bfreqNodeSpringsAttachedInterface  = 0;
-    bool m_bfreqNodePositionAll               = 0;
-    bool m_bfreqNodeVelocityAll               = 0;
-    bool m_bfreqTotalEnergyAll                = 0;
-    bool m_bfreqNodeForceAll                 = 0;
-    bool m_bfreqPusherForce                   = 0;
-    bool m_bfreqNormalForce                   = 0;
-    bool m_bfreqShearForce                    = 0;
-    bool m_bfreqXYZ                           = 0;
-    bool m_bfreqBeamShearForce                = 0;
-    bool m_bfreqBeamTorque                    = 0;
+    std::map<std::string, std::unique_ptr<ParameterInterface>> m_parameters;
 };
 
 #endif /* PARAMETERS_H */

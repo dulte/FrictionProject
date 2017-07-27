@@ -11,5 +11,5 @@ FrictionSystem/
 InputManagement/
 CMakeLists.txt
 input/
-scripts/
+scripts/klyngeyngler.py
 DriverBeam/

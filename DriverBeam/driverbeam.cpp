@@ -14,17 +14,22 @@
 #define pi 3.14159265358979323
 
 DriverBeam::DriverBeam(std::shared_ptr<Parameters>  parameters,
-                       std::shared_ptr<Lattice>     lattice):
+                       std::shared_ptr<Lattice>     lattice)
+    :
+    Node(vec3(), 0, 0, lattice->latticeInfo),
     m_lattice(lattice),
-    m_nx(parameters->m_nx),
-    m_ny(parameters->m_ny),
-    m_vD(parameters->m_vD),
-    m_angle(parameters->m_beamAngle/180*pi), // convert from degrees to radians
-    m_rotTime(parameters->m_beamRotTime),
-    m_phiStep(m_angle/m_rotTime),
-    m_parameters(parameters),
-    Node(vec3(), parameters->m_beamMass, parameters->m_beamMass*(parameters->m_d*m_nx)*(parameters->m_d*m_nx)/12.0, lattice->latticeInfo)
+    m_parameters(parameters)
 {
+    parameters->get("nx", m_nx);
+    parameters->get("ny", m_ny);
+    parameters->get("vD", m_vD);
+    parameters->get("beamAngle", m_angle);
+    parameters->get("beamRotTime", m_rotTime);
+    m_phiStep = m_angle/m_rotTime;
+    parameters->get("beamMass", m_mass);
+    double d;
+    parameters->get("d", d);
+    m_moment = m_mass*d*m_nx*d*m_nx/12.0;
 }
 
 DriverBeam::~DriverBeam(){}

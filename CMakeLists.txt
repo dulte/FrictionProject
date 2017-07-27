@@ -3,7 +3,7 @@ project("Friction")
 # INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 include_directories(".")
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS "-g -O3 -Wall -fopenmp -std=c++14")
+set(CMAKE_CXX_FLAGS "-g -O3 -Wall -fopenmp -std=c++11")
 message("CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 add_executable(simulate main.cpp
     Lattice/lattice.cpp
@@ -29,5 +29,6 @@ add_executable(simulate main.cpp
     Lattice/simplelattice.cpp
     Lattice/UnstructuredLattice/unstructuredlattice.cpp
     InputManagement/LatticeScanner/latticescanner.cpp
+    InputManagement/Parameters/parameter.cpp
   )
 # TARGET_LINK_LIBRARIES( simulate LINK_PUBLIC ${Boost_LIBRARIES} )

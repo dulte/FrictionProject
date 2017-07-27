@@ -44,7 +44,7 @@ private:
     bool m_writeNodePositionAll              = true;
     bool m_writeNodeVelocityAll              = true;
     bool m_writeTotalEnergyAll               = true;
-    bool m_writeNodeForceAll                = true;
+    bool m_writeNodeForceAll                 = true;
     bool m_writePusherForce                  = true;
     bool m_writeNormalForce                  = true;
     bool m_writeShearForce                   = true;

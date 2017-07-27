@@ -106,7 +106,7 @@ bool Node::connectToNode(std::shared_ptr<Node> other)
     vec3 rDiff = other->r()-r();
     double phiDiff = atan2(rDiff[1], rDiff[0]);
     double d0 = rDiff.length();
-    neighborInfo.push_back(std::make_unique<NodeInfo>(other, d0, phiDiff));
+    neighborInfo.push_back(std::make_shared<NodeInfo>(other, d0, phiDiff));
     return true;
 }
 
@@ -114,7 +114,7 @@ bool Node::connectToNode(std::shared_ptr<Node> other, double distance)
 {
     vec3 rDiff = other->r()-r();
     double phiDiff = atan2(rDiff[1], rDiff[0]);
-    neighborInfo.push_back(std::make_unique<NodeInfo>(other, distance, phiDiff));
+    neighborInfo.push_back(std::make_shared<NodeInfo>(other, distance, phiDiff));
     return true;
 }
 

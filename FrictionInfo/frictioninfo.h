@@ -13,7 +13,7 @@ public:
     double m_fnAvg;
     double m_kNormal;
     double m_ns;
-    double m_nx;
+    int m_nx;
     double m_tau;
     double m_staticCoefficient;
 };

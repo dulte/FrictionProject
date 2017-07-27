@@ -50,7 +50,7 @@ writeNodeForceAll                 1
 writePusherForce                  0
 writeNormalForce                  0
 writeShearForce                   0
-writeXYZ                          0
+writeXYZ                          1
 writeBeamTorque                   0
 writeBeamShearForce               1
 

@@ -83,7 +83,8 @@ class MultiprocessingSupport:
         self.use_multiprocessing = doUseMultiprocessing
         self.running_children = multiprocessing.Value('i', 0)
         self.mps_list = multiprocessing.Manager().list()
-        self.num_processes = (numProcesses if numProcesses > 0
+        self.num_processes = (numProcesses if numProcesses is not None
+                              and numProcesses > 0
                               else multiprocessing.cpu_count())
         self.queue = multiprocessing.Queue()
 
@@ -141,7 +142,9 @@ class Parser:
             # Extract the substring between the final character and the comment
             value = exp[:exp.find(self.comment)].rstrip()
         try:
-            value = eval(value)
+            value = eval(exp)
+        except Exception as err:
+            logger.error(err)
         finally:
             return value
 
@@ -207,7 +210,7 @@ class Jobfile:
                 env += 'cp -r $SUBMITDIR/{} $SCRATCH\n'.format(f)
             env += '# Mark outfiles for automatic copying to $SUBMITDIR\n'
             if len(self.outfiles) == 1:
-                env += 'cleanup "cp -r $SCRATCH/{o} $SUBMITDIR/{o}"'.format(o=self.outfiles)
+                env += 'cleanup "cp -r $SCRATCH/{o} $SUBMITDIR/{o}"\n'.format(o=self.outfiles[0])
             else:
                 env += 'chkfile {}\n'.format(' '.join(self.outfiles))
             env += 'cd $SCRATCH\n'

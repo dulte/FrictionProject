@@ -35,11 +35,11 @@ public :
 
 protected :
     // Read from parameters
-    const unsigned int m_nx;
-    const unsigned int m_ny;
-    const double       m_vD;              // Velocity of the beam
-    const double       m_angle;           // Wanted angle
-    const int          m_rotTime;         // Time it takes for the beam to go from 0 to angle
+    int m_nx;
+    int m_ny;
+    double       m_vD;              // Velocity of the beam
+    double       m_angle;           // Wanted angle
+    int          m_rotTime;         // Time it takes for the beam to go from 0 to angle
     // Not read from parameters
     double             m_phiStep;         // Change in angle required to reach angle after rotTime
     double             m_velocity;        // Current velocity of the driver in the x-direction

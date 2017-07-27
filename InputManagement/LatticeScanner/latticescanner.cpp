@@ -32,7 +32,12 @@ void LatticeScanner::scan(){
     /* Reads the inital block of a xyz file and constructs
        nodes accordingly
     */
-    std::string filename = m_parameters->m_latticeFilename;
+    std::string filename;
+    int nx; int ny; double d;
+    m_parameters->get("d", d);
+    m_parameters->get("nx", nx);
+    m_parameters->get("ny", ny);
+    m_parameters->get("latticefilename", filename);
     std::ifstream latticeFile(filename);
 
     if (!latticeFile) {
@@ -47,9 +52,9 @@ void LatticeScanner::scan(){
     parseComment(comment);
 
     // Confirm that the scanned lattice is the same as described in the parameter file
-    if (!validateLattice(m_parameters->m_nx, m_parameters->m_ny, m_parameters->m_d)){
+    if (!validateLattice(nx, ny, d)){
         std::string msg = "The parameter file and the lattice file are not equivalent.\nReason:\n";
-        msg += reasonForInvalidation(m_parameters->m_nx, m_parameters->m_ny, m_parameters->m_d);
+        msg += reasonForInvalidation(nx, ny, d);
         throw std::runtime_error(msg);
     }
 

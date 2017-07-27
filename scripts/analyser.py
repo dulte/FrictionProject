@@ -3,6 +3,7 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.cm as cm
 import argparse
 import os
 import sys
@@ -480,7 +481,7 @@ class FrictionAnalyzer(Analyzer):
         data, time = self.getLocalMax()
         error = (data - dataRegression)**2
         coeff = data[np.argwhere(error <= maxErrorAllowed)[-1]][0]
-        print(coeff)
+        return coeff
 
 
     def plotStartOfPush(self,data,freqName):
@@ -575,12 +576,83 @@ class Compare:
             self.staticCoefficiantArray[i,1] = self.instanceList[j].getGrooveDim()[0]
             self.staticCoefficiantArray[i,2] = self.instanceList[j].getGrooveDim()[1]
 
+
+    def makeStaticCoeffArrayFromLinReg(self, endTimes,maxErrorAllowed, useAngleGreaterThanZero = False):
+        instanceLength = len(self.instanceList)
+        instanceIndex = range(instanceLength)
+        if(not useAngleGreaterThanZero):
+            instanceLength = 0
+            instanceIndex = []
+            for i in range(len(self.instanceList)):
+                if self.instanceList[i].parameters['beamAngle'] == 0:
+                    instanceLength += 1
+                    instanceIndex.append(i)
+
+        self.staticCoefficiantArray = np.zeros([len(self.instanceList),3])
+        for i,j in zip(range(instanceLength), instanceIndex):
+            try:
+                self.staticCoefficiantArray[i,0] = self.instanceList[j].findCoeffFromSquareError(endTimes = endTimes, maxErrorAllowed = maxErrorAllowed)
+            except:
+                self.staticCoefficiantArray[i,0] = np.nan
+            self.staticCoefficiantArray[i,1] = self.instanceList[j].getGrooveDim()[0]
+            self.staticCoefficiantArray[i,2] = self.instanceList[j].getGrooveDim()[1]
+
     def plotCoeffHeight(self):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArray()
 
         plt.plot(self.staticCoefficiantArray[:,1],self.staticCoefficiantArray[:,0])
         plt.show()
+
+
+    def plotCoeffLinRegSize(self, endTimes = [0.05,0.2], maxErrorAllowed = 0.001,certainHeight = None):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
+        if certainHeight is not None:
+            plotIndex = np.where(self.staticCoefficiantArray[:,1] == certainHeight)
+            plt.scatter(self.staticCoefficiantArray[plotIndex,2][0],self.staticCoefficiantArray[plotIndex,0][0])
+
+        else:
+            plottedHeights = []
+            colors = iter(cm.jet(np.linspace(0, 1, 9)))
+            for h in self.staticCoefficiantArray[:,1]:
+                if h not in plottedHeights:
+                    HIndex = np.where(self.staticCoefficiantArray[:,1] == h)
+                    plt.scatter(self.staticCoefficiantArray[HIndex,2][0],self.staticCoefficiantArray[HIndex,0][0], label = "height %g" %h, color = next(colors))
+                    plottedHeights.append(h)
+            print(plottedHeights)
+
+        plt.xlabel("Groove Size")
+        plt.ylabel(r"$F_s/F_N$")
+        plt.legend()
+        plt.show()
+
+
+    def plotCoeffLinRegHeight(self, endTimes = [0.05,0.2], maxErrorAllowed = 0.001,certainSize = None):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
+        if certainSize is not None:
+            plotIndex = np.where(self.staticCoefficiantArray[:,2] == certainSize)
+            plt.scatter(self.staticCoefficiantArray[plotIndex,1][0],self.staticCoefficiantArray[plotIndex,0][0])
+
+        else:
+            plottedSizes = []
+            colors = iter(cm.jet(np.linspace(0, 1, 9)))
+            for s in self.staticCoefficiantArray[:,2]:
+                if s not in plottedSizes:
+                    SIndex = np.where(self.staticCoefficiantArray[:,2] == s)
+                    plt.scatter(self.staticCoefficiantArray[SIndex,1][0],self.staticCoefficiantArray[SIndex,0][0], label = "size %g" %s, color = next(colors))
+                    plottedSizes.append(s)
+            print(plottedSizes)
+
+        plt.xlabel("Groove Height")
+        plt.ylabel(r"$F_s/F_N$")
+        plt.legend()
+        plt.show()
+
+
+
+
 
     def plotCoeffSize(self):
         if not hasattr(self, "staticCoefficiantArray"):
@@ -670,12 +742,14 @@ if __name__ == '__main__':
     #manager.plotAttachedSprings(show=True)
     #manager.plotRodShearForceTimeSeries(show = True,certainSize = 1)
     #manager.plotYForceBeam(show = True,certainSize = 1)
-    manager.findCoeffFromSquareError(endTimes = [0.05,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    manager.plotRegressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    manager.plotLocalMax(certainSize = 1, certainHeight = 1,certainAngle = 0)
-    plt.show()
+    # manager.findCoeffFromSquareError(endTimes = [0.05,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
+    # manager.plotRegressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
+    # manager.plotLocalMax(certainSize = 1, certainHeight = 1,certainAngle = 0)
+    # plt.show()
+
     # manager.getRigressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    #comp = Compare(instanceList)
+    comp = Compare(manager.analyzers)
+    comp.plotCoeffLinRegHeight(certainSize = 3)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()
     #comp.plotCoeff3D()

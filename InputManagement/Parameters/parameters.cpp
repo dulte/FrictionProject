@@ -13,8 +13,8 @@
 #include "parameter.h"
 
 template <typename T>
-std::unique_ptr<ParameterInterface> newParam(){
-    return std::unique_ptr<ParameterInterface>(new Parameter<T>());
+std::unique_ptr<Parameter<T>> newParam(){
+    return std::unique_ptr<Parameter<T>>(new Parameter<T>());
 }
 
 Parameters::Parameters(const std::string &filenameConfig){
@@ -28,62 +28,119 @@ Parameters::~Parameters(){
 
 }
 
-void Parameters::constructMap(){
-      m_parameters["nx"]                                = newParam<int>();
-      m_parameters["ny"]                                = newParam<int>();
-      m_parameters["nt"]                                = newParam<int>();
-      m_parameters["releaseTime"]                       = newParam<int>();
-      m_parameters["nt"]                                = newParam<int>();
-      m_parameters["releaseTime"]                       = newParam<int>();
-      m_parameters["fn"]                                = newParam<double>();
-      m_parameters["fn"]                                = newParam<double>();
-      m_parameters["ns"]                                = newParam<double>();
-      m_parameters["tau"]                               = newParam<double>();
-      m_parameters["d"]                                 = newParam<double>();
-      m_parameters["E"]                                 = newParam<double>();
-      m_parameters["k"]                                 = newParam<double>();
-      m_parameters["nu"]                                = newParam<double>();
-      m_parameters["hZ"]                                = newParam<double>();
-      m_parameters["density"]                           = newParam<double>();
-      m_parameters["step"]                              = newParam<double>();
-      m_parameters["staticCoefficient"]                 = newParam<double>();
-      m_parameters["latticefilename"]                   = newParam<std::string>();
-      m_parameters["grooveSize"]                        = newParam<int>();
-      m_parameters["grooveHeight"]                      = newParam<int>();
-      m_parameters["vD"]                                = newParam<double>();
-      m_parameters["pK"]                                = newParam<double>();
-      m_parameters["pusherStartHeight"]                 = newParam<int>();
-      m_parameters["pusherEndHeight"]                   = newParam<int>();
-      m_parameters["beamMass"]                          = newParam<double>();
-      m_parameters["beamAngle"]                         = newParam<double>();
-      m_parameters["beamRotTime"]                       = newParam<int>();
-      m_parameters["writeNodePositionInterface"]        = newParam<bool>();
-      m_parameters["writeNodeVelocityInterface"]        = newParam<bool>();
-      m_parameters["writeNodeSpringsAttachedInterface"] = newParam<bool>();
-      m_parameters["writeNodePositionAll"]              = newParam<bool>();
-      m_parameters["writeNodeVelocityAll"]              = newParam<bool>();
-      m_parameters["writeTotalEnergyAll"]               = newParam<bool>();
-      m_parameters["writeNodeForceAll"]                 = newParam<bool>();
-      m_parameters["writePusherForce"]                  = newParam<bool>();
-      m_parameters["writeNormalForce"]                  = newParam<bool>();
-      m_parameters["writeShearForce"]                   = newParam<bool>();
-      m_parameters["writeBeamTorque"]                   = newParam<bool>();
-      m_parameters["writeBeamShearForce"]               = newParam<bool>();
-      m_parameters["writeXYZ"]                          = newParam<bool>();
-      m_parameters["freqNodePositionInterface"]         = newParam<int>();
-      m_parameters["freqNodeVelocityInterface"]         = newParam<int>();
-      m_parameters["freqNodeSpringsAttachedInterface"]  = newParam<int>();
-      m_parameters["freqNodePositionAll"]               = newParam<int>();
-      m_parameters["freqNodeVelocityAll"]               = newParam<int>();
-      m_parameters["freqTotalEnergyAll"]                = newParam<int>();
-      m_parameters["freqNodeForceAll"]                  = newParam<int>();
-      m_parameters["freqPusherForce"]                   = newParam<int>();
-      m_parameters["freqNormalForce"]                   = newParam<int>();
-      m_parameters["freqShearForce"]                    = newParam<int>();
-      m_parameters["freqBeamTorque"]                    = newParam<int>();
-      m_parameters["freqBeamShearForce"]                = newParam<int>();
-      m_parameters["freqXYZ"]                           = newParam<int>();
+template <>
+void Parameters::addParameter<double>(std::string name){
+    m_doubleparams[name] = newParam<double>();
 }
+
+template <>
+void Parameters::addParameter<int>(std::string name){
+    m_intparams[name] = newParam<int>();
+}
+
+template <>
+void Parameters::addParameter<std::string>(std::string name){
+    m_stringparams[name] = newParam<std::string>();
+}
+
+template <>
+void Parameters::addParameter<bool>(std::string name){
+    m_boolparams[name] = newParam<bool>();
+}
+
+template <>
+int Parameters::get(std::string name){
+    if (m_intparams.find(name) == m_intparams.end()){
+        std::cerr << "Tried to get a non-existent int paramter: " << name << std::endl;
+        throw std::exception();
+    }
+    return m_intparams[name]->get();
+}
+
+template <>
+double Parameters::get(std::string name){
+    if (m_doubleparams.find(name) == m_doubleparams.end()){
+        std::cerr << "Tried to get a non-existent double paramter: " << name << std::endl;
+        throw std::exception();
+    }
+    return m_doubleparams[name]->get();
+}
+
+template <>
+std::string Parameters::get(std::string name){
+    if (m_stringparams.find(name) == m_stringparams.end()){
+        std::cerr << "Tried to get a non-existent string paramter: " << name << std::endl;
+        throw std::exception();
+    }
+    return m_stringparams[name]->get();
+}
+
+template <>
+bool Parameters::get(std::string name){
+    if (m_boolparams.find(name) == m_boolparams.end()){
+        std::cerr << "Tried to get a non-existent bool paramter: " << name << std::endl;
+        throw std::exception();
+    }
+    return m_boolparams[name]->get();
+}
+
+void Parameters::constructMap(){
+    addParameter<int>("nx");
+    addParameter<int>("ny");
+    addParameter<int>("nt");
+    addParameter<int>("releaseTime");
+    addParameter<int>("nt");
+    addParameter<int>("releaseTime");
+    addParameter<double>("fn");
+    addParameter<double>("fn");
+    addParameter<int>("ns");
+    addParameter<double>("tau");
+    addParameter<double>("d");
+    addParameter<double>("E");
+    addParameter<double>("k");
+    addParameter<double>("nu");
+    addParameter<double>("hZ");
+    addParameter<double>("density");
+    addParameter<double>("step");
+    addParameter<double>("staticCoefficient");
+    addParameter<std::string>("latticefilename");
+    addParameter<int>("grooveSize");
+    addParameter<int>("grooveHeight");
+    addParameter<double>("vD");
+    addParameter<double>("pK");
+    addParameter<int>("pusherStartHeight");
+    addParameter<int>("pusherEndHeight");
+    addParameter<double>("beamMass");
+    addParameter<double>("beamAngle");
+    addParameter<int>("beamRotTime");
+    addParameter<bool>("writeNodePositionInterface");
+    addParameter<bool>("writeNodeVelocityInterface");
+    addParameter<bool>("writeNodeSpringsAttachedInterface");
+    addParameter<bool>("writeNodePositionAll");
+    addParameter<bool>("writeNodeVelocityAll");
+    addParameter<bool>("writeTotalEnergyAll");
+    addParameter<bool>("writeNodeForceAll");
+    addParameter<bool>("writePusherForce");
+    addParameter<bool>("writeNormalForce");
+    addParameter<bool>("writeShearForce");
+    addParameter<bool>("writeBeamTorque");
+    addParameter<bool>("writeBeamShearForce");
+    addParameter<bool>("writeXYZ");
+    addParameter<int>("freqNodePositionInterface");
+    addParameter<int>("freqNodeVelocityInterface");
+    addParameter<int>("freqNodeSpringsAttachedInterface");
+    addParameter<int>("freqNodePositionAll");
+    addParameter<int>("freqNodeVelocityAll");
+    addParameter<int>("freqTotalEnergyAll");
+    addParameter<int>("freqNodeForceAll");
+    addParameter<int>("freqPusherForce");
+    addParameter<int>("freqNormalForce");
+    addParameter<int>("freqShearForce");
+    addParameter<int>("freqBeamTorque");
+    addParameter<int>("freqBeamShearForce");
+    addParameter<int>("freqXYZ");
+}
+
 
 int Parameters::dumpParameters(){
     std::ofstream dumpFile(m_dumpFilename);
@@ -164,16 +221,45 @@ void Parameters::readParameters(std::string filenameConfig){
         // Parse the substrings
         if (tokens.size() == 0 || tokens[0][0] == '\n' || tokens[0][0] == '#')
           continue;
-        if (m_parameters.find(tokens[0]) == m_parameters.end()){
+        if (m_intparams.find(tokens[0]) != m_intparams.end()) {
+            m_intparams[tokens[0]]->read(tokens[1]);
+        }
+        else if (m_doubleparams.find(tokens[0]) != m_doubleparams.end()){
+            m_doubleparams[tokens[0]]->read(tokens[1]);
+        }
+        else if (m_stringparams.find(tokens[0]) != m_stringparams.end()){
+            m_stringparams[tokens[0]]->read(tokens[1]);
+        }
+        else if (m_boolparams.find(tokens[0]) != m_boolparams.end()){
+            m_boolparams[tokens[0]]->read(tokens[1]);
+        }
+        else {
             std::cerr << "Unknown token in parameters: " << tokens[0] << std::endl;
             continue;
         }
-        m_parameters[tokens[0]]->read(tokens[1]);
     }
 }
 
 void Parameters::checkThatAllParametersAreSet(){
-    for (auto& param: m_parameters){
+    for (auto& param: m_intparams){
+        if (!param.second->isSet()){
+            std::cerr << param.first << " is not set.";
+            throw std::exception();
+        }
+    }
+    for (auto& param: m_doubleparams){
+        if (!param.second->isSet()){
+            std::cerr << param.first << " is not set.";
+            throw std::exception();
+        }
+    }
+    for (auto& param: m_stringparams){
+        if (!param.second->isSet()){
+            std::cerr << param.first << " is not set.";
+            throw std::exception();
+        }
+    }
+    for (auto& param: m_boolparams){
         if (!param.second->isSet()){
             std::cerr << param.first << " is not set.";
             throw std::exception();

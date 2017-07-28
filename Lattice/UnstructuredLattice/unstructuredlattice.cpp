@@ -9,9 +9,9 @@
 
 
 void UnstructuredLattice::populate(std::shared_ptr<Parameters> parameters){
-    parameters->get("nx", m_nx);
-    parameters->get("ny", m_ny);
-    parameters->get("d", m_d);
+    m_nx = parameters->get<int>("nx");
+    m_ny = parameters->get<int>("ny");
+    m_d  = parameters->get<double>("d");
     latticeInfo = latticeInfoFromParameters(parameters);
 
     LatticeScanner scanner = LatticeScanner(parameters,

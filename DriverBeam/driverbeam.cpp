@@ -20,16 +20,15 @@ DriverBeam::DriverBeam(std::shared_ptr<Parameters>  parameters,
     m_lattice(lattice),
     m_parameters(parameters)
 {
-    parameters->get("nx", m_nx);
-    parameters->get("ny", m_ny);
-    parameters->get("vD", m_vD);
-    parameters->get("beamAngle", m_angle);
-    parameters->get("beamRotTime", m_rotTime);
+    m_nx      = parameters->get<int>("nx");
+    m_ny      = parameters->get<int>("ny");
+    m_vD      = parameters->get<double>("vD");
+    m_angle   = parameters->get<double>("beamAngle");
+    m_rotTime = parameters->get<int>("beamRotTime");
     m_phiStep = m_angle/m_rotTime;
-    parameters->get("beamMass", m_mass);
-    double d;
-    parameters->get("d", d);
-    m_moment = m_mass*d*m_nx*d*m_nx/12.0;
+    m_mass    = parameters->get<double>("beamMass");
+    double d  = parameters->get<double>("d");
+    m_moment  = m_mass*d*m_nx*d*m_nx/12.0;
 }
 
 DriverBeam::~DriverBeam(){}

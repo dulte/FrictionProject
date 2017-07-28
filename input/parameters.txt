@@ -7,8 +7,8 @@
 nx                   64    # Number of nodes in the x direction
 ny                   31    # Number of nodes in the y direction
 writingFreq          100   # Useless??
-nt                   5e5  # Total number of time steps 
-releaseTime          1e4   # Number of steps before the springs are released 
+nt                   1e4  # Total number of time steps 
+releaseTime          1e3   # Number of steps before the springs are released 
 fn                   1920 
 ns                   50
 tau                  0.002

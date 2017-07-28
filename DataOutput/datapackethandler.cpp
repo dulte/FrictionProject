@@ -4,33 +4,33 @@
 DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<Parameters> pParameters)
 {
     m_pParameters                       = pParameters; // Copy
-    pParameters->get("writeNodePositionInterface"        , m_writeNodePositionInterface);
-    pParameters->get("writeNodeVelocityInterface"        , m_writeNodeVelocityInterface);
-    pParameters->get("writeNodeSpringsAttachedInterface" , m_writeNodeSpringsAttachedInterface);
-    pParameters->get("writeNodePositionAll"              , m_writeNodePositionAll);
-    pParameters->get("writeNodeVelocityAll"              , m_writeNodeVelocityAll);
-    pParameters->get("writeTotalEnergyAll"               , m_writeTotalEnergyAll);
-    pParameters->get("writeNodeForceAll"                 , m_writeNodeForceAll);
-    pParameters->get("writePusherForce"                  , m_writePusherForce);
-    pParameters->get("writeNormalForce"                  , m_writeNormalForce);
-    pParameters->get("writeShearForce"                   , m_writeShearForce);
-    pParameters->get("writeXYZ"                          , m_writeXYZ);
-    pParameters->get("writeBeamTorque"                   , m_writeBeamTorque);
-    pParameters->get("writeBeamShearForce"               , m_writeBeamShearForce);
+    m_writeNodePositionInterface        = pParameters->get<bool>("writeNodePositionInterface");
+    m_writeNodeVelocityInterface        = pParameters->get<bool>("writeNodeVelocityInterface");
+    m_writeNodeSpringsAttachedInterface = pParameters->get<bool>("writeNodeSpringsAttachedInterface");
+    m_writeNodePositionAll              = pParameters->get<bool>("writeNodePositionAll");
+    m_writeNodeVelocityAll              = pParameters->get<bool>("writeNodeVelocityAll");
+    m_writeTotalEnergyAll               = pParameters->get<bool>("writeTotalEnergyAll");
+    m_writeNodeForceAll                 = pParameters->get<bool>("writeNodeForceAll");
+    m_writePusherForce                  = pParameters->get<bool>("writePusherForce");
+    m_writeNormalForce                  = pParameters->get<bool>("writeNormalForce");
+    m_writeShearForce                   = pParameters->get<bool>("writeShearForce");
+    m_writeXYZ                          = pParameters->get<bool>("writeXYZ");
+    m_writeBeamTorque                   = pParameters->get<bool>("writeBeamTorque");
+    m_writeBeamShearForce               = pParameters->get<bool>("writeBeamShearForce");
 
-    pParameters->get("freqNodePositionInterface"         , m_freqNodePositionInterface);
-    pParameters->get("freqNodeVelocityInterface"         , m_freqNodeVelocityInterface);
-    pParameters->get("freqNodeSpringsAttachedInterface"  , m_freqNodeSpringsAttachedInterface);
-    pParameters->get("freqNodePositionAll"               , m_freqNodePositionAll);
-    pParameters->get("freqNodeVelocityAll"               , m_freqNodeVelocityAll);
-    pParameters->get("freqTotalEnergyAll"                , m_freqTotalEnergyAll);
-    pParameters->get("freqNodeForceAll"                  , m_freqNodeForceAll);
-    pParameters->get("freqPusherForce"                   , m_freqPusherForce);
-    pParameters->get("freqNormalForce"                   , m_freqNormalForce);
-    pParameters->get("freqShearForce"                    , m_freqShearForce);
-    pParameters->get("freqXYZ"                           , m_freqXYZ);
-    pParameters->get("freqBeamShearForce"                , m_freqBeamShearForce);
-    pParameters->get("freqBeamTorque"                    , m_freqBeamTorque);
+    m_freqNodePositionInterface         = pParameters->get<int>("freqNodePositionInterface");
+    m_freqNodeVelocityInterface         = pParameters->get<int>("freqNodeVelocityInterface");
+    m_freqNodeSpringsAttachedInterface  = pParameters->get<int>("freqNodeSpringsAttachedInterface");
+    m_freqNodePositionAll               = pParameters->get<int>("freqNodePositionAll");
+    m_freqNodeVelocityAll               = pParameters->get<int>("freqNodeVelocityAll");
+    m_freqTotalEnergyAll                = pParameters->get<int>("freqTotalEnergyAll");
+    m_freqNodeForceAll                  = pParameters->get<int>("freqNodeForceAll");
+    m_freqPusherForce                   = pParameters->get<int>("freqPusherForce");
+    m_freqNormalForce                   = pParameters->get<int>("freqNormalForce");
+    m_freqShearForce                    = pParameters->get<int>("freqShearForce");
+    m_freqXYZ                           = pParameters->get<int>("freqXYZ");
+    m_freqBeamShearForce                = pParameters->get<int>("freqBeamShearForce");
+    m_freqBeamTorque                    = pParameters->get<int>("freqBeamTorque");
 
     if (outputFolder.back() != '/') {
         std::cerr << "Forgot final '/'" << std::endl;

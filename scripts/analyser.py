@@ -15,7 +15,12 @@ from mpl_toolkits.mplot3d import Axes3D
 from scipy.signal import argrelmax
 from scipy.stats import linregress
 
-# Global variables
+try:
+    import seaborn as sns
+except ImportError:
+    pass
+
+    # Global variables
 join = os.path.join
 
 
@@ -195,7 +200,7 @@ class Analyzer:
         return decorator
 
     def restrictHeightAndSize(fn):
-        decoratorKeywords = ('certainSize','certainHeight','certainAngle')
+        decoratorKeywords = ('certainSize', 'certainHeight', 'certainAngle')
         def decorator(*args, **kwargs):
             self = args[0]
             res = None
@@ -209,8 +214,6 @@ class Analyzer:
                         res = fn(*args, **fnKwargs)
             return res
         return decorator
-
-
 
 
 class AnalyzerManager:
@@ -353,7 +356,7 @@ class FrictionAnalyzer(Analyzer):
         data = self.getReducedSpringAttachments(cutoffPoint)
         v = np.zeros(len(data) - 2)
         h = self.parameters["step"]*self.parameters['freqNodeSpringsAttachedInterface']
-        for i in range(1,len(data) -1):
+        for i in range(1, len(data)-1):
             v[i-1] = (data[i+1] - data[i-1])/(2.0*h)
 
         del data
@@ -365,7 +368,7 @@ class FrictionAnalyzer(Analyzer):
         """
         data = self.getFrontVelocities(cutoffPoint)
         time = np.arange(len(data))*self.parameters['step']*self.parameters['freqNodeSpringsAttachedInterface']
-        plt.plot(time,data)
+        plt.plot(time, data)
         plt.title("Front Velocity for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
         plt.xlabel("Time [s]")
         plt.ylabel("Velocity [m/s]")
@@ -385,11 +388,13 @@ class FrictionAnalyzer(Analyzer):
         and use that to normalize the static friction for grooves.
         """
         shearForce_on_rod = self.read('beam_shear_force.bin')
-        shearForce_on_rod = np.reshape(shearForce_on_rod, (len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx']))
+        shearForce_on_rod = np.reshape(shearForce_on_rod,
+                                       len(shearForce_on_rod)/self.parameters['nx'],
+                                       self.parameters['nx'])
         if mean:
-            shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
+            shearForce_on_rod = np.mean(shearForce_on_rod, axis=1)
         else:
-            shearForce_on_rod = np.sum(shearForce_on_rod,axis = 1)
+            shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
 
         staticCoefficiant = np.max(shearForce_on_rod)/np.float(self.parameters['fn'])
         del shearForce_on_rod
@@ -425,7 +430,6 @@ class FrictionAnalyzer(Analyzer):
                     else:
                         plt.ylabel(r"Total $F_T/F_N$")
 
-
     def getYForceBeam(self):
         force = self.read('node_force_all.bin')
         readStep = 2*(self.parameters['numNodes'] - self.parameters['nx'] + 1)
@@ -437,28 +441,30 @@ class FrictionAnalyzer(Analyzer):
     @Analyzer.plotable
     def plotYForceBeam(self):
         data = self.getYForceBeam()
-        timeArray = self.getTimeArray(data,'freqNodeForceAll')
-        plt.plot(timeArray,data)
-        plt.title("Force In Y for size %g height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
-        self.plotStartOfPush(data,'freqNodeForceAll')
+        timeArray = self.getTimeArray(data, 'freqNodeForceAll')
+        plt.plot(timeArray, data)
+        plt.title("Force In Y for size %g height %g"%(self.getGrooveDim()[1],
+                                                      self.getGrooveDim()[0]))
+        self.plotStartOfPush(data, 'freqNodeForceAll')
 
     def getLocalMax(self):
         data = self.getRodShearForceTimeSeries()
         locMaxIndex = argrelmax(data)[0]
-        timeArray = self.getTimeArray(data,'freqBeamShearForce')[argrelmax(data)[0]]
+        timeArray = self.getTimeArray(data, 'freqBeamShearForce')[argrelmax(data)[0]]
         locMax = np.copy(data[locMaxIndex])
         return locMax, timeArray
 
     @Analyzer.plotable
     @Analyzer.restrictHeightAndSize
     def plotLocalMax(self):
-        data, time= self.getLocalMax()
-        plt.plot(time,data)
-        plt.title("Local Max for Beam Shear Force for size %g height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
+        data, time = self.getLocalMax()
+        plt.plot(time, data)
+        plt.title("Local Max for Beam Shear Force for size %g height %g"%(self.getGrooveDim()[1],
+                                                                          self.getGrooveDim()[0]))
 
     @Analyzer.restrictHeightAndSize
-    def getRigressionLine(self,endTimes = [0,0]):
-        data,time = self.getLocalMax()
+    def getRigressionLine(self, endTimes=[0, 0]):
+        data, time = self.getLocalMax()
         startIndex = np.argwhere(time >= endTimes[0])[0]
         endIndex = np.argwhere(time >= endTimes[1])[0]
         data = np.copy(data[startIndex:endIndex])
@@ -468,14 +474,15 @@ class FrictionAnalyzer(Analyzer):
 
     @Analyzer.restrictHeightAndSize
     @Analyzer.plotable
-    def plotRegressionLine(self,endTimes = [0,0]):
+    def plotRegressionLine(self, endTimes=[0, 0]):
         data, time = self.getRigressionLine(endTimes)
-        plt.plot(time,data)
+        plt.plot(time, data)
 
     @Analyzer.restrictHeightAndSize
-    def findCoeffFromSquareError(self, endTimes = [0,0], maxErrorAllowed = 0.001):
+    def findCoeffFromSquareError(self, endTimes=[0, 0], maxErrorAllowed=0.001):
         """
-        This function uses a regresssion line to find the first major slip event by using the square error
+        This function uses a regresssion line to find the
+        first major slip event by using the square error
         """
         dataRegression, timeRegression = self.getRigressionLine(endTimes)
         data, time = self.getLocalMax()
@@ -483,11 +490,10 @@ class FrictionAnalyzer(Analyzer):
         coeff = data[np.argwhere(error <= maxErrorAllowed)[-1]][0]
         return coeff
 
-
-    def plotStartOfPush(self,data,freqName):
-        plt.plot(self.parameters['releaseTime']*self.parameters['step'],data[int(self.parameters['ns']/self.parameters[freqName])],"*")
-
-
+    def plotStartOfPush(self, data, freqName):
+        plt.plot(self.parameters['releaseTime']*self.parameters['step'],
+                 data[int(self.parameters['ns']/self.parameters[freqName])],
+                 "*")
 
     def getGrooveDim(self):
         return self.parameters["grooveHeight"], self.parameters["grooveSize"]
@@ -510,8 +516,6 @@ class FrictionAnalyzer(Analyzer):
         self.shearForce = self.readAndResize('shear_force.bin')
         self.plotShearForce()
         del self.shearForce
-
-
 
 
 class SortingHelpFormatter(argparse.RawTextHelpFormatter):
@@ -556,10 +560,10 @@ class Globbler:
 
 
 class Compare:
-    def __init__(self,instanceList):
+    def __init__(self, instanceList):
         self.instanceList = instanceList
 
-    def makeStaticCoeffArray(self, useAngleGreaterThanZero = False):
+    def makeStaticCoeffArray(self, useAngleGreaterThanZero=False):
         instanceLength = len(self.instanceList)
         instanceIndex = range(instanceLength)
         if(not useAngleGreaterThanZero):
@@ -570,14 +574,14 @@ class Compare:
                     instanceLength += 1
                     instanceIndex.append(i)
 
-        self.staticCoefficiantArray = np.zeros([len(self.instanceList),3])
-        for i,j in zip(range(instanceLength), instanceIndex):
-            self.staticCoefficiantArray[i,0] = self.instanceList[j].getStaticFrictionCoefficient()
-            self.staticCoefficiantArray[i,1] = self.instanceList[j].getGrooveDim()[0]
-            self.staticCoefficiantArray[i,2] = self.instanceList[j].getGrooveDim()[1]
+        self.staticCoefficiantArray = np.zeros([len(self.instanceList), 3])
+        for i, j in zip(range(instanceLength), instanceIndex):
+            self.staticCoefficiantArray[i, 0] = self.instanceList[j].getStaticFrictionCoefficient()
+            self.staticCoefficiantArray[i, 1] = self.instanceList[j].getGrooveDim()[0]
+            self.staticCoefficiantArray[i, 2] = self.instanceList[j].getGrooveDim()[1]
 
-
-    def makeStaticCoeffArrayFromLinReg(self, endTimes,maxErrorAllowed, useAngleGreaterThanZero = False):
+    def makeStaticCoeffArrayFromLinReg(self, endTimes, maxErrorAllowed,
+                                       useAngleGreaterThanZero=False):
         instanceLength = len(self.instanceList)
         instanceIndex = range(instanceLength)
         if(not useAngleGreaterThanZero):
@@ -588,26 +592,27 @@ class Compare:
                     instanceLength += 1
                     instanceIndex.append(i)
 
-        self.staticCoefficiantArray = np.zeros([len(self.instanceList),3])
-        for i,j in zip(range(instanceLength), instanceIndex):
+        self.staticCoefficiantArray = np.zeros([len(self.instanceList), 3])
+        for i, j in zip(range(instanceLength), instanceIndex):
             try:
-                self.staticCoefficiantArray[i,0] = self.instanceList[j].findCoeffFromSquareError(endTimes = endTimes, maxErrorAllowed = maxErrorAllowed)
+                self.staticCoefficiantArray[i, 0] = self.instanceList[j].findCoeffFromSquareError(endTimes=endTimes, maxErrorAllowed=maxErrorAllowed)
             except:
-                self.staticCoefficiantArray[i,0] = np.nan
-            self.staticCoefficiantArray[i,1] = self.instanceList[j].getGrooveDim()[0]
-            self.staticCoefficiantArray[i,2] = self.instanceList[j].getGrooveDim()[1]
+                self.staticCoefficiantArray[i, 0] = np.nan
+            self.staticCoefficiantArray[i, 1] = self.instanceList[j].getGrooveDim()[0]
+            self.staticCoefficiantArray[i, 2] = self.instanceList[j].getGrooveDim()[1]
 
     def plotCoeffHeight(self):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArray()
 
-        plt.plot(self.staticCoefficiantArray[:,1],self.staticCoefficiantArray[:,0])
+        plt.plot(self.staticCoefficiantArray[:, 1],
+                 self.staticCoefficiantArray[:, 0])
         plt.show()
 
     @Analyzer.plotable
     def plotCoeffLinRegSize(self, endTimes = [0.05,0.2], maxErrorAllowed = 0.001,certainHeight = None):
         if not hasattr(self, "staticCoefficiantArray"):
-            self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
+            self.makeStaticCoeffArrayFromLinReg(endTimes, maxErrorAllowed)
         if certainHeight is not None:
             plotIndex = np.where(self.staticCoefficiantArray[:,1] == certainHeight)
             plt.scatter(self.staticCoefficiantArray[plotIndex,2][0],self.staticCoefficiantArray[plotIndex,0][0])
@@ -631,7 +636,7 @@ class Compare:
     @Analyzer.plotable
     def plotCoeffLinRegHeight(self, endTimes=[0.05,0.2], maxErrorAllowed=0.001,certainSize=None):
         if not hasattr(self, "staticCoefficiantArray"):
-            self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
+            self.makeStaticCoeffArrayFromLinReg(endTimes, maxErrorAllowed)
         if certainSize is not None:
             plotIndex = np.where(self.staticCoefficiantArray[: ,2] == certainSize)
             plt.scatter(self.staticCoefficiantArray[plotIndex, 1][0],self.staticCoefficiantArray[plotIndex,0][0])
@@ -661,14 +666,12 @@ class Compare:
         np.histogram(differentCoeff, bins = 10)
         plt.show()
 
-
-
-
     def plotCoeffSize(self):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArray()
 
-        plt.plot(self.staticCoefficiantArray[:,2],self.staticCoefficiantArray[:,0])
+        plt.plot(self.staticCoefficiantArray[:, 2],
+                 self.staticCoefficiantArray[:, 0])
         plt.show()
 
     def plotCoeff3D(self):
@@ -678,7 +681,9 @@ class Compare:
         fig = plt.figure()
         ax = fig.add_subplot(111, projection='3d')
 
-        ax.scatter(self.staticCoefficiantArray[:,2],self.staticCoefficiantArray[:,1],self.staticCoefficiantArray[:,0])
+        ax.scatter(self.staticCoefficiantArray[:, 2],
+                   self.staticCoefficiantArray[:, 1],
+                   self.staticCoefficiantArray[:, 0])
         ax.set_xlabel("Size")
         ax.set_ylabel("Height")
         ax.set_zlabel(r"$\mu_s$")
@@ -693,7 +698,9 @@ class Compare:
     def plotPushers(self):
 
         for i in self.instanceList:
-            plt.plot(i.read('pusher_force.bin'), label= "size: %g, height: %g"%(i.getGrooveDim()[1],i.getGrooveDim()[0]))
+            plt.plot(i.read('pusher_force.bin'),
+                     label="size: %g, height: %g" % (i.getGrooveDim()[1],
+                                                     i.getGrooveDim()[0]))
 
         plt.legend()
         plt.show()
@@ -706,12 +713,10 @@ class Compare:
         """
         for i in self.instanceList:
             timeSeries = i.getRodShearForceTimeSeries
-            time = np.arange(0,len(timeSeries))*i.parameters['dt']*i.parameters['freq...']
-            plt.plot(timeSeries, label="Rod Velocity: %g m/s"%i.parameters['driverVD'])
+            time = np.arange(0, len(timeSeries))*i.parameters['dt']*i.parameters['freq...']
+            plt.plot(timeSeries, label="Rod Velocity: %g m/s" % i.parameters['driverVD'])
         plt.legend()
         plt.show()
-
-
 
 ######################
 #  GLOBAL FUNCTIONS  #

@@ -604,52 +604,62 @@ class Compare:
         plt.plot(self.staticCoefficiantArray[:,1],self.staticCoefficiantArray[:,0])
         plt.show()
 
-
+    @Analyzer.plotable
     def plotCoeffLinRegSize(self, endTimes = [0.05,0.2], maxErrorAllowed = 0.001,certainHeight = None):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
         if certainHeight is not None:
             plotIndex = np.where(self.staticCoefficiantArray[:,1] == certainHeight)
             plt.scatter(self.staticCoefficiantArray[plotIndex,2][0],self.staticCoefficiantArray[plotIndex,0][0])
-
+            plt.title("Static Coefficent for Height %g" %certainHeight)
         else:
             plottedHeights = []
-            colors = iter(cm.jet(np.linspace(0, 1, 9)))
             for h in self.staticCoefficiantArray[:,1]:
                 if h not in plottedHeights:
-                    HIndex = np.where(self.staticCoefficiantArray[:,1] == h)
-                    plt.scatter(self.staticCoefficiantArray[HIndex,2][0],self.staticCoefficiantArray[HIndex,0][0], label = "height %g" %h, color = next(colors))
                     plottedHeights.append(h)
-            print(plottedHeights)
+            colors = iter(cm.jet(np.linspace(0, 1, len(plottedHeights))))
+            for h in sorted(plottedHeights):
+                HIndex = np.where(self.staticCoefficiantArray[:,1] == h)
+                plt.scatter(self.staticCoefficiantArray[HIndex,2][0],self.staticCoefficiantArray[HIndex,0][0], label = "height %g" %h, color = next(colors))
+
 
         plt.xlabel("Groove Size")
         plt.ylabel(r"$F_s/F_N$")
         plt.legend()
-        plt.show()
 
 
-    def plotCoeffLinRegHeight(self, endTimes = [0.05,0.2], maxErrorAllowed = 0.001,certainSize = None):
+    @Analyzer.plotable
+    def plotCoeffLinRegHeight(self, endTimes=[0.05,0.2], maxErrorAllowed=0.001,certainSize=None):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
         if certainSize is not None:
-            plotIndex = np.where(self.staticCoefficiantArray[:,2] == certainSize)
-            plt.scatter(self.staticCoefficiantArray[plotIndex,1][0],self.staticCoefficiantArray[plotIndex,0][0])
-
+            plotIndex = np.where(self.staticCoefficiantArray[: ,2] == certainSize)
+            plt.scatter(self.staticCoefficiantArray[plotIndex, 1][0],self.staticCoefficiantArray[plotIndex,0][0])
+            plt.title("Static Coefficent for Size %g" %certainSize)
         else:
             plottedSizes = []
-            colors = iter(cm.jet(np.linspace(0, 1, 9)))
-            for s in self.staticCoefficiantArray[:,2]:
+            for s in self.staticCoefficiantArray[: ,2]:
                 if s not in plottedSizes:
-                    SIndex = np.where(self.staticCoefficiantArray[:,2] == s)
-                    plt.scatter(self.staticCoefficiantArray[SIndex,1][0],self.staticCoefficiantArray[SIndex,0][0], label = "size %g" %s, color = next(colors))
                     plottedSizes.append(s)
-            print(plottedSizes)
+
+
+            colors = iter(cm.jet(np.linspace(0, 1, len(plottedSizes))))
+            for s in sorted(plottedSizes):
+                SIndex = np.where(self.staticCoefficiantArray[:, 2] == s)
+                plt.scatter(self.staticCoefficiantArray[SIndex, 1][0],self.staticCoefficiantArray[SIndex, 0][0], label = "size %g" %s, color = next(colors))
 
         plt.xlabel("Groove Height")
         plt.ylabel(r"$F_s/F_N$")
         plt.legend()
-        plt.show()
 
+
+    def degDist(self,endTimes=[0.05,0.2], maxErrorAllowed=0.001):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
+
+        differentCoeff = self.staticCoefficiantArray[:,0]
+        np.histogram(differentCoeff, bins = 10)
+        plt.show()
 
 
 
@@ -749,7 +759,8 @@ if __name__ == '__main__':
 
     # manager.getRigressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
     comp = Compare(manager.analyzers)
-    comp.plotCoeffLinRegHeight(certainSize = 3)
+    #comp.plotCoeffLinRegHeight(certainSize=3, show=True)
+    comp.degDist()
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()
     #comp.plotCoeff3D()

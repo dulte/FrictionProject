@@ -12,15 +12,6 @@
 #include "parameters.h"
 #include "parameter.h"
 
-/*
-  Idea: A parameter-manager using the syntax
-  template <typename T>
-  T get(std::string name)
-      return this-><T>[name]
-
-  template <typename T>
-  op
-*/
 template <typename T>
 std::unique_ptr<Parameter<T>> newParam(){
     return std::unique_ptr<Parameter<T>>(new Parameter<T>());

@@ -16,29 +16,24 @@
 
 #define pi 3.14159265358979323
 
-std::string xyzNodeString(std::string c, const std::shared_ptr<Node>& node);
+std::string xyzNodeString(const std::string& c, const std::shared_ptr<Node>& node);
 
 SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameters)
 {
     // Set all member variables
     m_parameters           = parameters;
-    parameters->get("k", m_k);
-    parameters->get("pusherStartHeight", m_pusherStartHeight);
-    parameters->get("pusherEndHeight", m_pusherEndHeight);
-    parameters->get("vD", m_vD);
+    m_k                    = parameters->get<double>("k");
+    m_pusherStartHeight    = parameters->get<int>("pusherStartHeight");
+    m_pusherEndHeight      = parameters->get<int>("pusherEndHeight");
+    m_vD                   = parameters->get<double>("vD");
 
-    double d;
-    double density;
-    double hZ;
-    double topLoadingForce;
-    int nx;
-    parameters->get("fn", topLoadingForce);
-    parameters->get("d", d);
-    parameters->get("density", density);
-    parameters->get("hZ", hZ);
-    parameters->get("nx", nx);
-    const double mass            = density*d*d*hZ/4.0 * pi;
-    const double eta             = sqrt(0.1*mass*m_k);
+    int nx                 = parameters->get<int>("nx");
+    double topLoadingForce = parameters->get<double>("fn");
+    double d               = parameters->get<double>("d");
+    double density         = parameters->get<double>("density");
+    double hZ              = parameters->get<double>("hZ");
+    const double mass      = density*d*d*hZ/4.0 * pi;
+    const double eta       = sqrt(0.1*mass*m_k);
 
     m_lattice      = std::make_shared<UnstructuredLattice>();
     m_lattice->populate(parameters);
@@ -168,12 +163,11 @@ std::string SidePotentialLoading::xyzString() const
 }
 
 
-std::string xyzNodeString(std::string c, const std::shared_ptr<Node>& node)
+std::string xyzNodeString(const std::string& c, const std::shared_ptr<Node>& node)
 {
     std::stringstream ss;
-    vec3 r = node->r()+node->r_offset();
+    vec3 r = node->r();
     vec3 f = node->f();
-    // double phi = node->phi();
     ss << c << " " << r[0] << " " << r[1] << " " << node->v().length() << " " << f[0] << " " << f[1] << '\n';
     return ss.str();
 }

@@ -32,14 +32,13 @@ public:
     vec3    &r()              {return m_r;}
     vec3    &v()              {return m_v;}
     vec3    &f()              {return m_f;}
-    vec3    r_offset()        {return m_r_offset;}
     double  t();
     double  phi()             {return m_phi;}
     double  omega()           {return m_omega;}
     double  moment()          {return m_moment;}
     double  mass()            {return m_mass;}
     double  momentOfInertia() {return m_momentOfInertia;}
-    double  numNeighbors()    {return neighborInfo.size();}
+    size_t  numNeighbors()    {return neighborInfo.size();}
     const   std::vector<std::shared_ptr<NodeInfo>> & getNeighborInfo() const {return neighborInfo;}
     void    addModifier(std::shared_ptr<ForceModifier> modifier);
     void    clearModifiers();
@@ -51,7 +50,6 @@ public:
 
 protected:
     vec3   m_r;
-    vec3   m_r_offset;
     vec3   m_v;
     vec3   m_f;
     double m_phi;

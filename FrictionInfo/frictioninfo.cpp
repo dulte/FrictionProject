@@ -1,13 +1,12 @@
 #include "frictioninfo.h"
 FrictionInfo::FrictionInfo(std::shared_ptr<Parameters> spParameters)
 {
-  spParameters->get("k", m_k);
-  spParameters->get("ns", m_ns);
-  spParameters->get("nx", m_nx);
-  spParameters->get("tau", m_tau);
-  spParameters->get("staticCoefficient", m_staticCoefficient);
-  double Fn;
-  spParameters->get("fn", Fn);
+  m_k                 = spParameters->get<double>("k");
+  m_ns                = spParameters->get<int>("ns");
+  m_nx                = spParameters->get<int>("nx");
+  m_tau               = spParameters->get<double>("tau");
+  m_staticCoefficient = spParameters->get<double>("staticCoefficient");
+  double Fn           = spParameters->get<double>("fn");
 
   //TODO: Loads of magic numbers
   m_fs      = Fn/m_nx/m_ns*m_staticCoefficient; //0.4;

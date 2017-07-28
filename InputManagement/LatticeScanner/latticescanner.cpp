@@ -32,12 +32,10 @@ void LatticeScanner::scan(){
     /* Reads the inital block of a xyz file and constructs
        nodes accordingly
     */
-    std::string filename;
-    int nx; int ny; double d;
-    m_parameters->get("d", d);
-    m_parameters->get("nx", nx);
-    m_parameters->get("ny", ny);
-    m_parameters->get("latticefilename", filename);
+    std::string filename = m_parameters->get<std::string>("latticefilename");
+    int nx               = m_parameters->get<int>("nx");
+    int ny               = m_parameters->get<int>("ny");
+    double d             = m_parameters->get<double>("d");
     std::ifstream latticeFile(filename);
 
     if (!latticeFile) {
@@ -118,11 +116,11 @@ void LatticeScanner::parseComment(std::string &comment){
 
 bool LatticeScanner::validateLattice(int nx, int ny, double d){
     bool intTest    = (nx == m_readnx && ny == m_readny);
+    d = 0;
     // TODO: This test doesn't work. Too sleepy to fix
-    // bool doubleTest = (d == m_readd || // <- Quick, failable test and v slow, comprehensive test
-                       // std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
-    bool doubleTest = 1;
-    return (intTest && doubleTest);
+    bool doubleTest = (std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
+    if (doubleTest){};
+    return (intTest);
 }
 
 std::string LatticeScanner::reasonForInvalidation(int nx, int ny, double d){
@@ -131,9 +129,8 @@ std::string LatticeScanner::reasonForInvalidation(int nx, int ny, double d){
         reason << "Parameter nx = " << nx << " != " << m_readnx << " = scanned nx" << std::endl;
     if (ny != m_readny)
         reason << "Parameter ny = " << ny << " != " << m_readny << " = scanned ny" << std::endl;
-    // bool doubleTest = (d == m_readd || // <- Quick, failable test and v slow, comprehensive test
-                       // std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
-    // if (!doubleTest)
+    bool doubleTest = (std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
+    if (!doubleTest){};
         // reason << "Parameter d = " << d << " != " << m_readd << " = scanned d" << std::endl;
     return reason.str();
 }

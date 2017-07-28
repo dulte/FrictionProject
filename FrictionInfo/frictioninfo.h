@@ -12,7 +12,7 @@ public:
     double m_fk;
     double m_fnAvg;
     double m_kNormal;
-    double m_ns;
+    int m_ns;
     int m_nx;
     double m_tau;
     double m_staticCoefficient;

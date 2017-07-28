@@ -18,22 +18,19 @@ public:
     void checkThatAllParametersAreSet();
     int dumpParameters();
     template <typename T>
-    void get(std::string name, T& var){
-        if (m_parameters.find(name) == m_parameters.end()){
-            std::cerr << name << " is not in parameters" << std::endl;
-            throw std::exception();
-        }
-        m_parameters[name]->copyTo(var);
-    }
-
-
+    T get(std::string);
+    template <typename T>
+    void addParameter(std::string name);
     std::string m_dumpFilename = "paramdump.txt";
 
 
 private:
     void constructMap();
     std::ifstream m_infileParameters;
-    std::map<std::string, std::unique_ptr<ParameterInterface>> m_parameters;
+    std::map<std::string, std::unique_ptr<Parameter<int>>> m_intparams;
+    std::map<std::string, std::unique_ptr<Parameter<std::string>>> m_stringparams;
+    std::map<std::string, std::unique_ptr<Parameter<bool>>> m_boolparams;
+    std::map<std::string, std::unique_ptr<Parameter<double>>> m_doubleparams;
 };
 
 #endif /* PARAMETERS_H */

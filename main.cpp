@@ -79,16 +79,13 @@ int main(int argc, char *argv[])
         spParameters->dumpParameters();
     }
 
-    int    nt;
-    int    releaseTime;
-    double step;
-    spParameters->get("nt", nt);
-    spParameters->get("releaseTime", releaseTime);
-    spParameters->get("step", step);
+    int    nt          = spParameters->get<int>("nt");
+    int    releaseTime = spParameters->get<int>("releaseTime");
+    double step        = spParameters->get<double>("step");
 
     // For the progress output
-    float progress     = 0;
-    float prevProgress = 0;
+    double progress     = 0;
+    double prevProgress = 0;
 
     SidePotentialLoading mySystem(spParameters);
     DataPacketHandler    dataPacketHandler(outputDirectory, spParameters);

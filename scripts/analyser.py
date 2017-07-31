@@ -494,12 +494,16 @@ class FrictionAnalyzer(Analyzer):
 
     @Analyzer.plotable
     @Analyzer.restrict
-    def plotLocalMax(self):
+    def plotLocalMax(self, i=[0]):
+        lines = ['-', '--', '-.']
         data, time = self.getLocalMax()
-        plt.plot(time, data)
+        size, height = self.getGrooveDim()[1], self.getGrooveDim()[0]
+        plt.plot(time, data, label='Size {}, height {}'.format(size, height),
+                 linestyle=lines[i])
         self.plotReleaseTime()
-        plt.title("Local Max for Beam Shear Force for size %g height %g"%(self.getGrooveDim()[1],
-                                                                          self.getGrooveDim()[0]))
+        plt.title("Local Max for Beam Shear Force for size %g height %g"%(size, height))
+        i += 1
+        i %= len(lines)
 
     @Analyzer.restrict
     def getRigressionLine(self, endTimes=[0, 0]):

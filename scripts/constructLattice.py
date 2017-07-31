@@ -36,7 +36,7 @@ import argparse
 import inspect
 import re
 from itertools import product
-from math import sin, cos, pi
+from math import sin, cos, pi, floor
 
 BOTTOM_NODE_CHAR = 'B'
 TOP_NODE_CHAR = 'T'
@@ -192,7 +192,8 @@ class Geometry(metaclass=Meta):
         # A 1D bool list indicating whether or not a node is to be placed
         # at an i-index along nx when j < grooveHeight
         self.doPlaceBottomNodeHere = []
-        self.makeGrooveList()
+        #self.makeGrooveList()
+        self.makeToothList()
 
     def makeGeometry(self):
         # Iterates over the cartesian product of nx×ny
@@ -351,6 +352,36 @@ class SymmetricGroovesByReverseConstruction(GeometryExtension):
         #     nearMiddle = int(self.nx/2+self.grooveSize/2)
         #     pieces[nearMiddle:nearMiddle+self.grooveSize//2] = [1]*self.grooveSize
 
+        self.doPlaceBottomNodeHere = grooves
+
+
+    def makeToothList(self):
+
+        toothSize = self.grooveSize-1
+        iterations = self.nx//(toothSize*4)
+
+        restLength = self.nx
+        grooves = [0]*self.nx
+        prev = 0
+        next = 2*toothSize
+        piece = [1]*toothSize+[0]*toothSize;
+        for j in range(iterations):
+            for i in range(2):
+                grooves[prev:next] = piece
+                grooves.reverse()
+            prev = next
+            next += 2*toothSize
+            restLength -= 4*toothSize
+
+        halfGrooveSize = floor(toothSize/2.)
+        print(restLength,(toothSize+1)*2)
+        if restLength >= (toothSize+1):
+            print("hei")
+            grooves.reverse()
+            for i in range(2):
+                grooves[-self.nx//2-halfGrooveSize:-self.nx//2] = [1]*halfGrooveSize
+                grooves.reverse()
+        
         self.doPlaceBottomNodeHere = grooves
 
 

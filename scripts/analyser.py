@@ -215,6 +215,29 @@ class Analyzer:
             return res
         return decorator
 
+    def restrict(fn):
+        def decorator(*args, **kwargs):
+            cls = args[0]
+            res = None
+            dcKwargs = {}
+            if 'restrict' in kwargs:
+                for k, v in kwargs['restrict'].items():
+                    dcKwargs[k] = v if isinstance(v, (list, set, tuple)) else [v]
+
+            flag = True
+            for key, vals in dcKwargs.items():
+                if key in cls.parameters and cls.parameters[key] not in vals:
+                    flag = False
+                    break
+
+            fnKwargs = {k: v for k, v in kwargs.items()
+                        if k !='restrict'}
+
+            if flag:
+                res = fn(*args, **fnKwargs)
+            return res
+        return decorator
+
 
 class AnalyzerManager:
     def __init__(self):
@@ -241,6 +264,7 @@ class AnalyzerManager:
             analyzer.setPlotPath(args.plotpath)
             analyzer.readParameters(args.paramname)
             analyzer.readNumberOfBottomNodes()
+            analyzer.addAlias()
 
 
 class FrictionAnalyzer(Analyzer):
@@ -284,6 +308,12 @@ class FrictionAnalyzer(Analyzer):
         self.attachedSprings = self.readAndResize(
             'node_springs_attached_interface.bin')
         # self.shearForce = self.readAndResize('shear_force.bin')
+
+    def addAlias(self):
+        self.parameters['size'] = self.parameters['grooveSize']
+        self.parameters['height'] = self.parameters['grooveHeight']
+        self.parameters['angle'] = self.parameters['beamAngle']
+        self.parameters['speed'] = self.parameters['vD']
 
     @Analyzer.plotable
     def plotNormalForce(self):
@@ -349,7 +379,13 @@ class FrictionAnalyzer(Analyzer):
     def getFrontVelocities(self, cutoffPoint=0.1):
         """Finds the front velocity of the rapture of the springs.
 
-        'h' is the time step used for integration, and is the between
+
+       def addAlias(self):
+        self.parameters['size]
+ = self.parameters['grooveSize]
+        self.parameters['height]' = self.parameters['grooveHeight]h
+        self.parameters['angle]' = self.parameters['beamAngle]
+        self.parameters['speed]i = self.parameters['vD]s the time step used for integration, and is the between
         each measurment dt*freq.
         Symmetric differentiation is used to find the velocity.
         """
@@ -369,10 +405,10 @@ class FrictionAnalyzer(Analyzer):
         data = self.getFrontVelocities(cutoffPoint)
         time = np.arange(len(data))*self.parameters['step']*self.parameters['freqNodeSpringsAttachedInterface']
         plt.plot(time, data)
-        plt.title("Front Velocity for size %g and height %g"%(self.getGrooveDim()[1],self.getGrooveDim()[0]))
+        plt.title("Front Velocity for size %g and height %g" % (self.getGrooveDim()[1],
+                                                                self.getGrooveDim()[0]))
         plt.xlabel("Time [s]")
         plt.ylabel("Velocity [m/s]")
-
 
     def getStaticFrictionCoefficient(self, mean=False):
         """Reads the shear forces on the top rod.
@@ -407,11 +443,13 @@ class FrictionAnalyzer(Analyzer):
         """
 
         shearForce_on_rod = self.read('beam_shear_force.bin')
-        shearForce_on_rod = -1*np.reshape(shearForce_on_rod, (len(shearForce_on_rod)/self.parameters['nx'],self.parameters['nx']))
+        shearForce_on_rod = -1*np.reshape(shearForce_on_rod,
+                                          (len(shearForce_on_rod)/self.parameters['nx'],
+                                           self.parameters['nx']))
         if mean:
-            shearForce_on_rod = np.mean(shearForce_on_rod,axis = 1)
+            shearForce_on_rod = np.mean(shearForce_on_rod, axis=1)
         else:
-            shearForce_on_rod = np.sum(shearForce_on_rod,axis = 1)
+            shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
 
         return shearForce_on_rod/np.float(self.parameters['fn'])
 
@@ -437,7 +475,7 @@ class FrictionAnalyzer(Analyzer):
         del force
         return beamForceY
 
-    @Analyzer.restrictHeightAndSize
+    @Analyzer.restrict
     @Analyzer.plotable
     def plotYForceBeam(self):
         data = self.getYForceBeam()
@@ -455,14 +493,15 @@ class FrictionAnalyzer(Analyzer):
         return locMax, timeArray
 
     @Analyzer.plotable
-    @Analyzer.restrictHeightAndSize
+    @Analyzer.restrict
     def plotLocalMax(self):
         data, time = self.getLocalMax()
         plt.plot(time, data)
+        self.plotReleaseTime()
         plt.title("Local Max for Beam Shear Force for size %g height %g"%(self.getGrooveDim()[1],
                                                                           self.getGrooveDim()[0]))
 
-    @Analyzer.restrictHeightAndSize
+    @Analyzer.restrict
     def getRigressionLine(self, endTimes=[0, 0]):
         data, time = self.getLocalMax()
         startIndex = np.argwhere(time >= endTimes[0])[0]
@@ -472,13 +511,13 @@ class FrictionAnalyzer(Analyzer):
         slope, intercept, r_value, p_value, std_err = linregress(timeReduced,data)
         return time*slope + intercept, time
 
-    @Analyzer.restrictHeightAndSize
+    @Analyzer.restrict
     @Analyzer.plotable
     def plotRegressionLine(self, endTimes=[0, 0]):
         data, time = self.getRigressionLine(endTimes)
         plt.plot(time, data)
 
-    @Analyzer.restrictHeightAndSize
+    @Analyzer.restrict
     def findCoeffFromSquareError(self, endTimes=[0, 0], maxErrorAllowed=0.001):
         """
         This function uses a regresssion line to find the
@@ -489,6 +528,10 @@ class FrictionAnalyzer(Analyzer):
         error = (data - dataRegression)**2
         coeff = data[np.argwhere(error <= maxErrorAllowed)[-1]][0]
         return coeff
+
+    def plotReleaseTime(self):
+        plt.axvline(x=self.parameters['releaseTime']*self.parameters['step'],
+                    linestyle='--', color='k')
 
     def plotStartOfPush(self, data, freqName):
         plt.plot(self.parameters['releaseTime']*self.parameters['step'],
@@ -643,7 +686,6 @@ class Compare:
             plotIndex = np.where(self.staticCoefficiantArray[:, 2] == certainSize)
             plt.scatter(self.staticCoefficiantArray[plotIndex, 1][0],
                         self.staticCoefficiantArray[plotIndex, 0][0])
-
         else:
             plottedSizes = []
             colors = iter(cm.jet(np.linspace(0, 1, 9)))
@@ -754,12 +796,12 @@ if __name__ == '__main__':
     #manager.plotYForceBeam(show = True,certainSize = 1)
     # manager.findCoeffFromSquareError(endTimes = [0.05,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
     # manager.plotRegressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    # manager.plotLocalMax(certainSize = 1, certainHeight = 1,certainAngle = 0)
+    manager.plotLocalMax(show=True, restrict={'size':[1,2], 'height':1, 'angle':0})
     # plt.show()
 
     # manager.getRigressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
     comp = Compare(manager.analyzers)
-    comp.plotCoeffLinRegHeight(certainSize = 3)
+    # comp.plotCoeffLinRegHeight(certainSize = 3)
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()
     #comp.plotCoeff3D()

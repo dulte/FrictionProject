@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
     }
 
     if (doDumpParameters){
-        std::cout << "Dumping parameters to " << spParameters->m_dumpFilename << std::endl;
+        std::cout << "Dumping parameters to " << spParameters->get<std::string>("dumpfilename") << std::endl;
         spParameters->dumpParameters();
     }
 

@@ -104,6 +104,7 @@ void Parameters::constructMap(){
     addParameter<double>("step");
     addParameter<double>("staticCoefficient");
     addParameter<std::string>("latticefilename");
+    addParameter<std::string>("dumpfilename");
     addParameter<int>("grooveSize");
     addParameter<int>("grooveHeight");
     addParameter<double>("vD");
@@ -143,7 +144,7 @@ void Parameters::constructMap(){
 
 
 int Parameters::dumpParameters(){
-    std::ofstream dumpFile(m_dumpFilename);
+    std::ofstream dumpFile(get<std::string>("dumpfilename"));
     if (!dumpFile.is_open()){
         std::cerr << "Could not dump parameters to file" << std::endl;
         return -1;

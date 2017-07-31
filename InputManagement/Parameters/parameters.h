@@ -21,7 +21,6 @@ public:
     T get(std::string);
     template <typename T>
     void addParameter(std::string name);
-    std::string m_dumpFilename = "paramdump.txt";
 
 
 private:

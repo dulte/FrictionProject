@@ -662,8 +662,9 @@ class Compare:
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
 
-        differentCoeff = self.staticCoefficiantArray[:,0]
-        np.histogram(differentCoeff, bins = 10)
+        differentCoeff = np.trim_zeros(self.staticCoefficiantArray[:,0])
+        print(len(differentCoeff))
+        plt.hist(differentCoeff)
         plt.show()
 
     def plotCoeffSize(self):

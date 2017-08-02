@@ -1,159 +1,106 @@
-#include "datapackethandler.h"
 #include <iostream>
+#include <memory>
+#include <stdio.h>
+#include <stdexcept>
+#include "datapackethandler.h"
+#include "filewrapper.h"
+#include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
+#include "mkdir.h"
 
-DataPacketHandler::DataPacketHandler(std::string outputFolder, std::shared_ptr<Parameters> pParameters)
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique( Args&& ...args )
 {
-    m_pParameters                       = pParameters; // Copy
-    m_writeNodePositionInterface        = pParameters->get<bool>("writeNodePositionInterface");
-    m_writeNodeVelocityInterface        = pParameters->get<bool>("writeNodeVelocityInterface");
-    m_writeNodeSpringsAttachedInterface = pParameters->get<bool>("writeNodeSpringsAttachedInterface");
-    m_writeNodePositionAll              = pParameters->get<bool>("writeNodePositionAll");
-    m_writeNodeVelocityAll              = pParameters->get<bool>("writeNodeVelocityAll");
-    m_writeTotalEnergyAll               = pParameters->get<bool>("writeTotalEnergyAll");
-    m_writeNodeForceAll                 = pParameters->get<bool>("writeNodeForceAll");
-    m_writePusherForce                  = pParameters->get<bool>("writePusherForce");
-    m_writeNormalForce                  = pParameters->get<bool>("writeNormalForce");
-    m_writeShearForce                   = pParameters->get<bool>("writeShearForce");
-    m_writeXYZ                          = pParameters->get<bool>("writeXYZ");
-    m_writeBeamTorque                   = pParameters->get<bool>("writeBeamTorque");
-    m_writeBeamShearForce               = pParameters->get<bool>("writeBeamShearForce");
+    return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+}
 
-    m_freqNodePositionInterface         = pParameters->get<int>("freqNodePositionInterface");
-    m_freqNodeVelocityInterface         = pParameters->get<int>("freqNodeVelocityInterface");
-    m_freqNodeSpringsAttachedInterface  = pParameters->get<int>("freqNodeSpringsAttachedInterface");
-    m_freqNodePositionAll               = pParameters->get<int>("freqNodePositionAll");
-    m_freqNodeVelocityAll               = pParameters->get<int>("freqNodeVelocityAll");
-    m_freqTotalEnergyAll                = pParameters->get<int>("freqTotalEnergyAll");
-    m_freqNodeForceAll                  = pParameters->get<int>("freqNodeForceAll");
-    m_freqPusherForce                   = pParameters->get<int>("freqPusherForce");
-    m_freqNormalForce                   = pParameters->get<int>("freqNormalForce");
-    m_freqShearForce                    = pParameters->get<int>("freqShearForce");
-    m_freqXYZ                           = pParameters->get<int>("freqXYZ");
-    m_freqBeamShearForce                = pParameters->get<int>("freqBeamShearForce");
-    m_freqBeamTorque                    = pParameters->get<int>("freqBeamTorque");
-
-    if (outputFolder.back() != '/') {
-        std::cerr << "Forgot final '/'" << std::endl;
-        outputFolder += '/';
+void makeDirectory(const std::string& path){
+    int rc = mkpath(path.c_str(), 0755);
+    if (rc != 0){
+        fprintf(stderr, "Failed to create (%d: %s): %s\n",
+                errno, strerror(errno), path.c_str());
+        throw std::runtime_error("Failed to make directory");
     }
-    m_ofNodePositionInterface.open(outputFolder        + "/node_position_interface.bin",         std::ios::out | std::ios::binary);
-    m_ofNodeVelocityInterface.open(outputFolder        + "/node_velocity_interface.bin",         std::ios::out | std::ios::binary);
-    m_ofNodeSpringsAttachedInterface.open(outputFolder + "/node_springs_attached_interface.bin", std::ios::out | std::ios::binary);
-    m_ofNodePositionAll.open(outputFolder              + "/node_position_all.bin",               std::ios::out | std::ios::binary);
-    m_ofNodeVelocityAll.open(outputFolder              + "/node_velocity_all.bin",               std::ios::out | std::ios::binary);
-    m_ofTotalEnergyAll.open(outputFolder               + "/node_total_energy_all.bin",           std::ios::out | std::ios::binary);
-    m_ofNodeForceAll.open(outputFolder                 + "/node_force_all.bin",                  std::ios::out | std::ios::binary);
-    m_ofPusherForce.open(outputFolder                  + "/pusher_force.bin",                    std::ios::out | std::ios::binary);
-    m_ofNormalForce.open(outputFolder                  + "/normal_force.bin",                    std::ios::out | std::ios::binary);
-    m_ofShearForce.open(outputFolder                   + "/shear_force.bin",                     std::ios::out | std::ios::binary);
-    m_ofXYZ.open(outputFolder                          + "/positions.xyz",                       std::ofstream::out);
-    m_ofBeamShearForce.open(outputFolder               + "/beam_shear_force.bin",                std::ios::out | std::ios::binary);
-    m_ofBeamTorque.open(outputFolder                   + "/beam_torque.bin",                     std::ios::out | std::ios::binary);
+}
 
-    // Check that the directory is writable
-    if(!m_ofNodePositionInterface.is_open())
-        throw runtime_error("Could not open output files");
+DataPacketHandler::DataPacketHandler(const std::string &outputFolder, std::shared_ptr<Parameters> pParameters)
+{
+    outputDirectory = outputFolder;
+    if (outputDirectory.back() != '/') {
+        outputDirectory += '/';
+    }
+    snapshotDirectory = outputDirectory+"/snapshot/";
+    // Create the output and snapshot directories
+    makeDirectory(outputDirectory);
+    makeDirectory(snapshotDirectory);
+    parameters = pParameters;
+    // Handle binary files
+    addBinary(DataPacket::dataId::INTERFACE_POSITION         , "interfacePosition");
+    addBinary(DataPacket::dataId::INTERFACE_VELOCITY         , "interfaceVelocity");
+    addBinary(DataPacket::dataId::INTERFACE_ATTACHED_SPRINGS , "interfaceAttachedSprings");
+    addBinary(DataPacket::dataId::INTERFACE_NORMAL_FORCE     , "interfaceNormalForce");
+    addBinary(DataPacket::dataId::INTERFACE_SHEAR_FORCE      , "interfaceShearForce");
+    addBinary(DataPacket::dataId::ALL_POSITION               , "allPosition");
+    addBinary(DataPacket::dataId::ALL_VELOCITY               , "allVelocity");
+    addBinary(DataPacket::dataId::ALL_ENERGY                 , "allEnergy");
+    addBinary(DataPacket::dataId::ALL_FORCE                  , "allForce");
+    addBinary(DataPacket::dataId::BEAM_SHEAR_FORCE           , "beamShearForce");
+    addBinary(DataPacket::dataId::BEAM_TORQUE                , "beamTorque");
+    addBinary(DataPacket::dataId::PUSHER_FORCE               , "pusherForce");
+    // Handle xyz files
+    doWriteXYZ = parameters->get<bool>("writeXYZ");
+    if (doWriteXYZ){
+        ofXYZ.open(outputDirectory+"model.xyz", std::ofstream::out);
+        freqXYZ = parameters->get<int>("freqXYZ");
+    }
 }
 
 DataPacketHandler::~DataPacketHandler()
 {
-    m_ofNodePositionInterface.close();
-    m_ofNodeVelocityInterface.close();
-    m_ofNodeSpringsAttachedInterface.close();
-    m_ofNodePositionAll.close();
-    m_ofNodeVelocityAll.close();
-    m_ofTotalEnergyAll.close();
-    m_ofNodeForceAll.close();
-    m_ofPusherForce.close();
-    m_ofNormalForce.close();
-    m_ofShearForce.close();
-    m_ofXYZ.close();
+    for(auto& element: fileMap)
+        element.second->stream.close();
+}
+
+void DataPacketHandler::addBinary(DataPacket::dataId id, const std::string &name){
+    std::string path = outputDirectory + name + ".bin";
+    std::string Name = name;
+    Name[0] = toupper(name[0]);
+
+    auto file = make_unique<FileWrapper>();
+    file->name = name;
+    file->period = parameters->get<int>("freq"+Name);
+    if (parameters->get<bool>("write"+Name))
+        file->open(path, std::ios::out | std::ios::binary);
+    fileMap[id] = std::move(file);
 }
 
 void DataPacketHandler::step(std::vector<DataPacket> packets)
 {
     for (DataPacket & packet: packets)
-    {
-        switch(packet.id()){
-        case DataPacket::dataId::NODE_POSITION_INTERFACE:
-        {
-            if(m_writeNodePositionInterface && packet.timestep()%m_freqNodePositionInterface == 0)
-                m_ofNodePositionInterface.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NODE_VELOCITY_INTERFACE:
-        {
-            if(m_writeNodeVelocityInterface && packet.timestep()%m_freqNodeVelocityInterface == 0)
-                m_ofNodeVelocityInterface.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE:
-        {
-            if(m_writeNodeSpringsAttachedInterface && packet.timestep()%m_freqNodeSpringsAttachedInterface == 0)
-                m_ofNodeSpringsAttachedInterface.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NODE_POSITION_ALL:
-        {
-            if(m_writeNodePositionAll && packet.timestep()%m_freqNodePositionAll == 0)
-                m_ofNodePositionAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NODE_VELOCITY_ALL:
-        {
-            if(m_writeNodeVelocityAll && packet.timestep()%m_freqNodeVelocityAll == 0)
-                m_ofNodeVelocityAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NODE_TOTAL_ENERGY_ALL:
-        {
-            if(m_writeTotalEnergyAll && packet.timestep()%m_freqTotalEnergyAll == 0)
-                m_ofTotalEnergyAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NODE_FORCE_ALL:
-        {
-            if(m_writeNodeForceAll && packet.timestep()%m_freqNodeForceAll == 0)
-                m_ofNodeForceAll.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::PUSHER_FORCE:
-        {
-            if(m_writePusherForce && packet.timestep()%m_freqPusherForce == 0)
-                m_ofPusherForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::NORMAL_FORCE:
-        {
-            if(m_writeNormalForce && packet.timestep()%m_freqNormalForce == 0)
-                m_ofNormalForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::SHEAR_FORCE:
-        {
-            if(m_writeShearForce && packet.timestep()%m_freqShearForce == 0)
-                m_ofShearForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::BEAM_TORQUE: {
-            if (m_writeBeamTorque && packet.timestep()%m_freqBeamTorque == 0)
-                m_ofBeamTorque.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        case DataPacket::dataId::BEAM_SHEAR_FORCE: {
-            if (m_writeBeamShearForce && packet.timestep()%m_freqBeamShearForce == 0)
-                m_ofBeamShearForce.write((char*)&packet.data()[0], packet.data().size()*sizeof(double));
-            break;
-        }
-        default: {
-            std::cerr << "Unknown data packet sent" << std::endl;
-        }
-        }
-    }
+        fileMap[packet.id()]->write(packet);
 }
 
-void DataPacketHandler::dumpXYZ(const SidePotentialLoading& system, int timestep){
-    if (m_writeXYZ && timestep%m_freqXYZ == 0){
-        m_ofXYZ << system.xyzString();
+void DataPacketHandler::dumpXYZ(const std::string &xyzstring){
+    ofXYZ << xyzstring;
+}
+
+void DataPacketHandler::dumpSnapshot(std::vector<DataPacket> packets,
+                                     const std::string& xyz){
+    // Create a map from all types of packets to the files in the snapshot directory
+    std::map<DataPacket::dataId, std::unique_ptr<FileWrapper>> snapshotFiles;
+    for(const auto& element: fileMap){
+        snapshotFiles[element.first] = make_unique<FileWrapper>();
+        snapshotFiles[element.first]->open(snapshotDirectory+element.second->name+".bin",
+                                          element.second->modes);
     }
+    std::cout << "Writing packets " << packets.size() << std::endl;
+    std::cout << "Writing xyz" << xyz.size() << std::endl;
+    for(const auto& packet: packets)
+        snapshotFiles[packet.id()]->write(packet);
+    for(auto& element: snapshotFiles)
+        element.second->stream.close();
+
+    std::ofstream xyzStream;
+    xyzStream.open(snapshotDirectory+"model.xyz", std::ofstream::out);
+    xyzStream << xyz;
+    xyzStream.close();
 }

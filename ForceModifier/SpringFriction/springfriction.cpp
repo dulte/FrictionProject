@@ -12,9 +12,9 @@ SpringFriction::SpringFriction(std::shared_ptr<FrictionInfo> frictionInfo)
 
 void SpringFriction::initialize()
 {
-  m_tau      = m_frictionInfo->m_tau;
+  m_meantime = m_frictionInfo->m_meantime;
+  m_stdtime  = m_frictionInfo->m_stdtime;
   m_ns       = m_frictionInfo->m_ns;
-  m_coverage = 0.5;
   m_fnAvg    = m_frictionInfo->m_fnAvg;
   m_kNormal  = m_frictionInfo->m_kNormal;
 
@@ -34,13 +34,14 @@ void SpringFriction::initialize()
 vec3 SpringFriction::getForceModification()
 {
     vec3 resultantForce(0, 0, 0);
+    std::normal_distribution<> nd(m_meantime, m_stdtime);
     m_normalForce = 0;
 
-#pragma omp parallel for
     // TODO: Comment, comment, comment!
+#pragma omp parallel for
     for (int i = 0; i<m_ns; i++)
     {
-        double x_node = m_node->r().x();//+offsetVector*(i+0.5)/m_ns*m_coverage;
+        double x_node = m_node->r().x();
         double y_node = m_node->r().y();
         double fn = 0;
         double ft = 0;
@@ -57,7 +58,6 @@ vec3 SpringFriction::getForceModification()
                         m_isConnected[i] = false;
                         ft = ft/fabs(ft)*m_fk[i]*fn/m_fnAvg;
                         m_x0[i] = x_node+ft/m_k[i]*sqrt(m_fnAvg/fn);
-                        std::normal_distribution<> nd(m_tau, 0.3*m_tau);
                         m_tReattach[i] = m_node->t() + nd(gen);
                         //std::cout << "Detached spring, " << m_tReattach[i]-m_node->t() << std::endl;
                         m_numSpringsAttached --;
@@ -98,21 +98,4 @@ vec3 SpringFriction::getForceModification()
     }
 
     return resultantForce;
-}
-
-std::vector<DataPacket> SpringFriction::getDataPackets(int timestep, double time)
-{
-    std::vector<DataPacket> packetvec = std::vector<DataPacket>();
-    DataPacket numberOfSprings        = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
-    DataPacket normalForce            = DataPacket(DataPacket::dataId::NORMAL_FORCE, timestep, time);
-    DataPacket shearForce             = DataPacket(DataPacket::dataId::SHEAR_FORCE, timestep, time);
-
-    numberOfSprings.push_back(m_numSpringsAttached);
-    normalForce.push_back(m_normalForce);
-    shearForce.push_back(m_shearForce);
-
-    packetvec.push_back(numberOfSprings);
-    packetvec.push_back(normalForce);
-    packetvec.push_back(shearForce);
-    return packetvec;
 }

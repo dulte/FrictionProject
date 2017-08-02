@@ -14,6 +14,7 @@ public:
     double m_kNormal;
     int m_ns;
     int m_nx;
-    double m_tau;
-    double m_staticCoefficient;
+    double m_meantime;
+    double m_stdtime;
+    double m_mus;
 };

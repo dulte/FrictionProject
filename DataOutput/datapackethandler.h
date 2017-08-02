@@ -1,70 +1,34 @@
 #ifndef DATAPACKETHANDLER_H
 #define DATAPACKETHANDLER_H
 
+#include <iostream>
 #include <fstream>
+#include <map>
 #include <memory>
 #include "datapacket.h"
 #include "InputManagement/Parameters/parameters.h"
-#include "Lattice/TriangularLattice/triangularlattice.h"
-#include "Lattice/TriangularLattice/triangularlatticewithgrooves.h"
-#include "Lattice/SquareLattice/squarelattice.h"
-#include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
-#include <iostream>
-#include "InputManagement/Parameters/parameters.h"
 
-class TriangularLatticeWithGrooves;
+class FileWrapper;
+class SidePotentialLoading;
 class DataPacketHandler
 {
 public:
-  DataPacketHandler(std::string outputfolder, std::shared_ptr<Parameters> pParameters);
+  DataPacketHandler(const std::string &outputfolder, std::shared_ptr<Parameters> pParameters);
     ~DataPacketHandler();
     void step(std::vector<DataPacket> packets);
-    void dumpXYZ(const SidePotentialLoading& system, int timestep);
+    void dumpXYZ(const std::string& xyzstring);
+    void dumpSnapshot(std::vector<DataPacket> packets, const std::string& xyz);
+    bool doDumpXYZ(int timestep) const {return doWriteXYZ && timestep%freqXYZ == 0;};
 
 private:
-    std::shared_ptr<Parameters> m_pParameters;
-
-    std::ofstream m_ofNodePositionInterface;
-    std::ofstream m_ofNodeVelocityInterface;
-    std::ofstream m_ofNodeSpringsAttachedInterface;
-    std::ofstream m_ofNodePositionAll;
-    std::ofstream m_ofNodeVelocityAll;
-    std::ofstream m_ofTotalEnergyAll;
-    std::ofstream m_ofNodeForceAll;
-    std::ofstream m_ofPusherForce;
-    std::ofstream m_ofNormalForce;
-    std::ofstream m_ofShearForce;
-    std::ofstream m_ofBeamTorque;
-    std::ofstream m_ofXYZ;
-    std::ofstream m_ofBeamShearForce;
-
-    bool m_writeNodePositionInterface        = true;
-    bool m_writeNodeVelocityInterface        = true;
-    bool m_writeNodeSpringsAttachedInterface = true;
-    bool m_writeNodePositionAll              = true;
-    bool m_writeNodeVelocityAll              = true;
-    bool m_writeTotalEnergyAll               = true;
-    bool m_writeNodeForceAll                 = true;
-    bool m_writePusherForce                  = true;
-    bool m_writeNormalForce                  = true;
-    bool m_writeShearForce                   = true;
-    bool m_writeBeamTorque                   = true;
-    bool m_writeXYZ                          = true;
-    bool m_writeBeamShearForce               = true;
-
-    int m_freqNodePositionInterface          = 1000;
-    int m_freqNodeVelocityInterface          = 1000;
-    int m_freqNodeSpringsAttachedInterface   = 1000;
-    int m_freqNodePositionAll                = 1000;
-    int m_freqNodeVelocityAll                = 1000;
-    int m_freqTotalEnergyAll                 = 1000;
-    int m_freqNodeForceAll                   = 1000;
-    int m_freqPusherForce                    = 1000;
-    int m_freqNormalForce                    = 1000;
-    int m_freqShearForce                     = 1000;
-    int m_freqBeamTorque                     = 1000;
-    int m_freqBeamShearForce                 = 1000;
-    int m_freqXYZ                            = 1000;
+    void addBinary(DataPacket::dataId, const std::string &path);
+    std::string outputDirectory;
+    std::string snapshotDirectory;
+    std::shared_ptr<Parameters> parameters;
+    std::map<DataPacket::dataId, std::unique_ptr<FileWrapper>> fileMap;
+    bool doWriteXYZ;
+    std::ofstream ofXYZ;
+    unsigned int freqXYZ;
 };
 
 

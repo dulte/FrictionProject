@@ -9,7 +9,6 @@ LatticeInfo::LatticeInfo(double E, double nu, double d, double hZ)
      m_hY(d/2),
      m_d(d)
 {
-    m_hY      = m_d/2.0;
     m_G       = m_E/(2*(1+m_nu));
     m_A       = m_hZ*m_hY;
     m_I       = m_hZ*m_hY*m_hY*m_hY/12;

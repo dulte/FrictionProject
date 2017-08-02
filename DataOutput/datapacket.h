@@ -7,16 +7,16 @@ class DataPacket
 {
 public:
     enum class dataId {
-        NODE_POSITION_INTERFACE,
-        NODE_VELOCITY_INTERFACE,
-        NODE_SPRINGS_ATTACHED_INTERFACE,
-        NODE_POSITION_ALL,
-        NODE_VELOCITY_ALL,
-        NODE_TOTAL_ENERGY_ALL,
-        NODE_FORCE_ALL,
+        INTERFACE_POSITION,
+        INTERFACE_VELOCITY,
+        INTERFACE_ATTACHED_SPRINGS,
+        INTERFACE_NORMAL_FORCE,
+        INTERFACE_SHEAR_FORCE,
+        ALL_POSITION,
+        ALL_VELOCITY,
+        ALL_ENERGY,
+        ALL_FORCE,
         PUSHER_FORCE,
-        NORMAL_FORCE,
-        SHEAR_FORCE,
         BEAM_TORQUE,
         BEAM_SHEAR_FORCE
     };
@@ -25,10 +25,10 @@ public:
     DataPacket(DataPacket::dataId id, int timeStep, double time);
     void push_back(double number);
 
-    dataId id()                {return m_id;}
-    int    timestep()          {return m_timeStep;}
-    double time()              {return m_time;}
-    std::vector<double> data() {return m_data;}
+    dataId id()                const {return m_id;}
+    int    timestep()          const {return m_timeStep;}
+    double time()              const {return m_time;}
+    std::vector<double> data() const {return m_data;}
 
 private:
     dataId m_id;

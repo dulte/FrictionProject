@@ -23,11 +23,11 @@ public :
 
     void attachToLattice();
     std::vector<DataPacket> getDataPackets(int timestep, double time);
-    void startDriving(){m_velocity = m_vD;};
+    void startDriving(){m_velocity = m_vD; m_isDriving=true;};
     void stealTopNodes(std::shared_ptr<Lattice>);
-    void checkRotation(); //TODO: This is a stupid solution
     void updateForcesAndMoments();
     void vvstep(double dt);
+    double totalShearForce();
 
     // The top nodes of to lattice to which the attachment nodes are attached
     std::vector<std::shared_ptr<Node> > m_nodes;
@@ -45,4 +45,5 @@ protected :
     double             m_velocity;        // Current velocity of the driver in the x-direction
     std::vector<double> m_distFromCenter;
     std::shared_ptr<Parameters> m_parameters;
+    bool m_isDriving = false;
 };

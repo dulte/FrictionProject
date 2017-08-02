@@ -192,7 +192,10 @@ class Geometry(metaclass=Meta):
         # A 1D bool list indicating whether or not a node is to be placed
         # at an i-index along nx when j < grooveHeight
         self.doPlaceBottomNodeHere = []
-        self.makeGrooveList()
+        if self.grooveSize > 0 and self.grooveHeight > 0:
+            self.makeGrooveList()
+        else:
+            self.doPlaceBottomNodeHere = [True for i in range(self.nx)]
 
     def makeGeometry(self):
         # Iterates over the cartesian product of nx×ny
@@ -233,6 +236,7 @@ class Geometry(metaclass=Meta):
 
     def makeXYfromIJ(self):
         raise NotImplementedError("Geometry is an abstract class")
+
 
 class SquareGeometry(Geometry):
     """ Implements a nx×ny square geometry """

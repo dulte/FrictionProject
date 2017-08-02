@@ -5,13 +5,13 @@
 
 struct NotImplementedException: public std::exception {
     const char* what () const throw () {
-        return "Tried to get parameter with wrong type";
+        return "Tried to get parameter with wrong type\n";
     }
 };
 
 struct UnsetException: public std::exception{
     const char* what () const throw (){
-        return "Tried to get unset parameter";
+        return "Tried to get unset parameter\n";
     }
 };
 

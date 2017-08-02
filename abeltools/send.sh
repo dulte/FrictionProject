@@ -51,11 +51,11 @@ fi
 while read line; do
     if   [ -d "${SOURCE}/${line}" ]
     then # It is a directory
-        echo "Dir ${line}"
+        echo "Sending directory ${line}"
         scp -r $SOURCE/$line $HOST:~/$DESTINATION/
     elif [ -f "${SOURCE}/${line}" ]
     then # It is a file
-        echo "File ${line}"
+        echo "Sending file ${line}"
         scp $SOURCE/$line $HOST:~/$DESTINATION/$line
     else # It does not exist
         echo "${line} is not valid";

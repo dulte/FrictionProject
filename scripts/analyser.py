@@ -57,6 +57,79 @@ class DataReader:
         return np.reshape(array, (x, y))
 
 
+class File:
+    def __init__(self, filename, parameters, src):
+        self.filename = filename
+        self.parameters = parameters
+        self.reader = DataReader(parameters, src)
+        if 'bin' in self.filename:
+            self.frequency = self.parameters['freq' +
+                                             self.filename[0].upper() +
+                                             self.filename[1:-4]]
+        elif 'xyz' in self.filename:
+            self.frequency = self.parameters['freqXYZ']
+        else:
+            raise RuntimeError("Don't know how to read {}".format(filename))
+
+    def get(self, persistent=True):
+        if persistent is True and hasattr(self, 'data'):
+            return self.data
+
+        sys.stdout.write("Reading {}...".format(self.filename))
+        data = self.reader.read(self.filename)
+        sys.stdout.write("done.\n")
+        if 'interface' in self.filename.lower():
+            y = self.parameters['numBottomNodes']
+            x = len(data)/y
+            if int(x) != x:
+                raise RuntimeError(("Could not resize {}. len={}, "
+                                    "x={} and y={}".format(self.filename,
+                                                           len(data),
+                                                           x, y)))
+            x = int(x)
+            data.resize((x, y))
+        elif 'beam' in self.filename.lower():
+            y = self.parameters['numTopNodes']
+            x = len(data)/y
+            if int(x) != x:
+                raise RuntimeError(("Could not resize {}. len={}, "
+                                    "x={} and y={}".format(self.filename,
+                                                           len(data),
+                                                           x, y)))
+            x = int(x)
+            data.resize((x, y))
+        elif 'all' in self.filename.lower():
+            pass
+        self.xlength = data.shape[0]
+
+        if persistent:
+            self.data = data
+
+        return data
+
+    def delete(self):
+        del self.data
+
+    def time(self):
+        assert self.xlength is not None, "Read the file before requesting time"
+        dt = self.frequency*self.parameters['step']
+        return dt*np.arange(0, self.xlength, 1)
+
+
+class Lattice:
+    """ Wrapper around useful parameters """
+    def __init__(self, parameters):
+        self.nx = parameters['nx']
+        self.ny = parameters['ny']
+        self.numBottom = parameters['numBottomNodes']
+        self.numTop = parameters['numTopNodes']
+        self.numNodes = parameters['numNodes']
+        self.height = parameters['grooveHeight']
+        self.size = parameters['grooveSize']
+        self.speed = parameters['vD']
+        self.angle = parameters['beamAngle']
+
+
 class Parser:
     @staticmethod
     def parse(path, delimiter=r'\s+', comment='#'):
@@ -83,7 +156,7 @@ class Parser:
         lines = filter(lambda l: len(l) > 0 and
                        not l.startswith(comment),
                        lines)
-        # Remove on-line comments
+        # Remove inline comments
         temp = []
         for line in lines:
             if comment in line:
@@ -199,26 +272,10 @@ class Analyzer:
             return res
         return decorator
 
-    def restrictHeightAndSize(fn):
-        decoratorKeywords = ('certainSize', 'certainHeight', 'certainAngle')
-        def decorator(*args, **kwargs):
-            self = args[0]
-            res = None
-            fnKwargs = {k: v for k, v in kwargs.items()
-                        if k not in decoratorKeywords}
-            dcKwargs = {k: v for k, v in kwargs.items()
-                        if k in decoratorKeywords}
-            if (('certainSize' in dcKwargs) and (dcKwargs['certainSize'] == self.parameters['grooveSize'])) or ('certainSize' not in dcKwargs):
-                if (('certainHeight' in dcKwargs) and (dcKwargs['certainHeight'] == self.parameters['grooveHeight'])) or ('certainHeight' not in dcKwargs):
-                    if (('certainAngle' in dcKwargs) and (dcKwargs['certainAngle'] == self.parameters['beamAngle'])) or ('certainAngle' not in dcKwargs):
-                        res = fn(*args, **fnKwargs)
-            return res
-        return decorator
-
     def restrict(fn):
         def decorator(*args, **kwargs):
             cls = args[0]
-            res = None
+            result = None
             dcKwargs = {}
             if 'restrict' in kwargs:
                 for k, v in kwargs['restrict'].items():
@@ -231,11 +288,11 @@ class Analyzer:
                     break
 
             fnKwargs = {k: v for k, v in kwargs.items()
-                        if k !='restrict'}
+                        if k != 'restrict'}
 
             if flag:
-                res = fn(*args, **fnKwargs)
-            return res
+                result = fn(*args, **fnKwargs)
+            return result
         return decorator
 
 
@@ -250,7 +307,7 @@ class AnalyzerManager:
                 try:
                     returnVals.append(getattr(analyzer, name)(*args, **kwargs))
                 except AttributeError as attrErr:
-                    print(attrErr)
+                    raise attrErr
             return returnVals
         return func
 
@@ -263,13 +320,15 @@ class AnalyzerManager:
         for analyzer in self.analyzers:
             analyzer.setPlotPath(args.plotpath)
             analyzer.readParameters(args.paramname)
-            analyzer.readNumberOfBottomNodes()
+            analyzer.readNumberOfNodes()
             analyzer.addAlias()
+            analyzer.lattice = Lattice(analyzer.parameters)
+            analyzer.setUpFiles()
 
 
 class FrictionAnalyzer(Analyzer):
-    def readNumberOfBottomNodes(self):
-        filename = 'lattice.txt'
+    def readNumberOfNodes(self):
+        filename = 'lattice.xyz'
         blockSize = 10000  # Each xyz-block is atleast larger than 0
         numberOfBottomNodes = 0
         numberofTopNodes = 0
@@ -277,18 +336,48 @@ class FrictionAnalyzer(Analyzer):
             for i, line in enumerate(xyz):
                 if i == 0:
                     blockSize = int(line)
-                elif 1 < i < blockSize:  # Second line is the comment
+                elif 1 < i < blockSize+2:  # Second line is the comment
                     if 'B' in line:
                         numberOfBottomNodes += 1
-                    elif 'T' in line:
+                    if 'T' in line:
                         numberofTopNodes += 1
-                elif i > blockSize:
+                elif i > blockSize+2:
                     break
         # Since dicts are muteable, self.datareader.params is
         # simulanously updated.
         self.parameters['numBottomNodes'] = numberOfBottomNodes
         self.parameters['numTopNodes'] = numberofTopNodes
         self.parameters['numNodes'] = blockSize
+
+    def setUpFiles(self):
+        self.interfacePosition = File('interfacePosition.bin',
+                                      self.parameters, self.output)
+        self.interfaceVelocity = File('interfaceVelocity.bin',
+                                      self.parameters, self.output)
+        self.interfaceAttachedSprings = File('interfaceAttachedSprings.bin',
+                                             self.parameters, self.output)
+        self.allPosition = File('allPosition.bin',
+                                self.parameters, self.output)
+        self.allVelocity = File('allVelocity.bin',
+                                self.parameters, self.output)
+        self.allEnergy = File('allEnergy.bin',
+                              self.parameters, self.output)
+        self.allForce = File('allForce.bin',
+                             self.parameters, self.output)
+        self.pusherForce = File('pusherForce.bin',
+                                self.parameters, self.output)
+        self.xyz = File('model.xyz',
+                        self.parameters, self.output)
+        self.beamTorque = File('beamTorque.bin',
+                               self.parameters, self.output)
+        self.beamShearForce = File('beamShearForce.bin',
+                                   self.parameters, self.output)
+        self.activeFiles = []
+        self.files = [self.interfacePosition, self.interfaceVelocity,
+                      self.interfaceAttachedSprings, self.allPosition,
+                      self.allVelocity, self.allEnergy, self.allForce,
+                      self.pusherForce, self.xyz, self.beamTorque,
+                      self.beamShearForce]
 
     def readAll(self):
         """ Reads all binary files available as described in parameters.
@@ -301,14 +390,6 @@ class FrictionAnalyzer(Analyzer):
                          if param.startswith('write')
                          and flag == 1}
 
-        # self.normalForce = self.readAndResize('normal_force.bin')
-        # self.pusherForce = self.readAndResize('pusher_force.bin')
-        self.positionInterface = self.readAndResize(
-            'node_position_interface.bin')
-        self.attachedSprings = self.readAndResize(
-            'node_springs_attached_interface.bin')
-        # self.shearForce = self.readAndResize('shear_force.bin')
-
     def addAlias(self):
         self.parameters['size'] = self.parameters['grooveSize']
         self.parameters['height'] = self.parameters['grooveHeight']
@@ -316,32 +397,30 @@ class FrictionAnalyzer(Analyzer):
         self.parameters['speed'] = self.parameters['vD']
 
     @Analyzer.plotable
-    def plotNormalForce(self):
-        plt.pcolormesh(self.normalForce)
-        plt.title("Normal force")
-
-    @Analyzer.plotable
-    def plotPusherForce(self):
-        plt.plot(self.pusherForce)
-        plt.title("Force on pusher")
-
-    @Analyzer.plotable
     def plotPositionInterface(self):
-        pos = self.positionInterface - self.positionInterface[0, :]
-        plt.pcolormesh(pos)
+        pos = self.interfacePosition.get() - self.interfacePosition.get()[0, :]
+        print(pos.shape)
+        plt.pcolormesh(pos[:, :, 1], cmap=plt.get_cmap('jet'))
+        plt.colorbar()
         plt.title("Relative position of the interface")
 
+    @Analyzer.restrict
     @Analyzer.plotable
     def plotAttachedSprings(self):
         savepath = 'attachedSprings.png'
-        plt.pcolormesh(self.attachedSprings)
-        plt.title("Percent of attached springs")
-        plt.xlabel("Block")
+        data = self.interfaceAttachedSprings.get()
+        time = self.interfaceAttachedSprings.time()
+        plt.pcolormesh(data, cmap=plt.get_cmap('jet'))
+        ticks = [int(t) for t in np.linspace(0, data.shape[0]-1, 10)]
+        print(ticks, time.shape)
+        plt.yticks(ticks, time[ticks])
+        plt.colorbar()
+        plt.title(("Percent of attached springs for "
+                   "size {} and height {}".format(self.lattice.size,
+                                                  self.lattice.height)))
+        plt.xlabel("Block index")
+        plt.ylabel("Time [s]")
 
-    @Analyzer.plotable
-    def plotShearForce(self, show=False, save=True):
-        plt.pcolormesh(self.shearForce)
-        plt.title("Shear force")
 
     def getTimeArray(self, data, freqName):
         """Method for quickly getting a time array for a spesific type of data.
@@ -363,6 +442,7 @@ class FrictionAnalyzer(Analyzer):
         """
         return np.sum(np.where(self.readAndResize('node_springs_attached_interface.bin') >= self.parameters['ns']*cutoffPoint,0,1))
 
+    @Analyzer.restrict
     @Analyzer.plotable
     def plotReducedSpringAttachments(self, cutoffPoint=0.1):
         """Plots the number of attached nodes
@@ -379,14 +459,6 @@ class FrictionAnalyzer(Analyzer):
     def getFrontVelocities(self, cutoffPoint=0.1):
         """Finds the front velocity of the rapture of the springs.
 
-
-       def addAlias(self):
-        self.parameters['size]
- = self.parameters['grooveSize]
-        self.parameters['height]' = self.parameters['grooveHeight]h
-        self.parameters['angle]' = self.parameters['beamAngle]
-        self.parameters['speed]i = self.parameters['vD]s the time step used for integration, and is the between
-        each measurment dt*freq.
         Symmetric differentiation is used to find the velocity.
         """
         data = self.getReducedSpringAttachments(cutoffPoint)
@@ -425,33 +497,16 @@ class FrictionAnalyzer(Analyzer):
         """
         shearForce_on_rod = self.read('beam_shear_force.bin')
         shearForce_on_rod = np.reshape(shearForce_on_rod,
-                                       len(shearForce_on_rod)/self.parameters['nx'],
-                                       self.parameters['nx'])
+                                       (len(shearForce_on_rod)/self.parameters['nx'],
+                                       self.parameters['nx']))
         if mean:
             shearForce_on_rod = np.mean(shearForce_on_rod, axis=1)
         else:
             shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
 
-        staticCoefficiant = np.max(shearForce_on_rod)/np.float(self.parameters['fn'])
+        staticCoefficient = np.max(-shearForce_on_rod)/np.float(self.parameters['fn'])
         del shearForce_on_rod
-        return staticCoefficiant
-
-    def getRodShearForceTimeSeries(self, mean=False):
-        """Returns a time serier of the shear force on the rod.
-
-        Much of the processing is the same as for the method above.
-        """
-
-        shearForce_on_rod = self.read('beam_shear_force.bin')
-        shearForce_on_rod = -1*np.reshape(shearForce_on_rod,
-                                          (len(shearForce_on_rod)/self.parameters['nx'],
-                                           self.parameters['nx']))
-        if mean:
-            shearForce_on_rod = np.mean(shearForce_on_rod, axis=1)
-        else:
-            shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
-
-        return shearForce_on_rod/np.float(self.parameters['fn'])
+        return staticCoefficient
 
     @Analyzer.plotable
     def plotRodShearForceTimeSeries(self, mean=False, useAngleGreaterThanZero = True, certainHeight = None,certainSize = None):
@@ -475,35 +530,50 @@ class FrictionAnalyzer(Analyzer):
         del force
         return beamForceY
 
-    @Analyzer.restrict
-    @Analyzer.plotable
-    def plotYForceBeam(self):
-        data = self.getYForceBeam()
-        timeArray = self.getTimeArray(data, 'freqNodeForceAll')
-        plt.plot(timeArray, data)
-        plt.title("Force In Y for size %g height %g"%(self.getGrooveDim()[1],
-                                                      self.getGrooveDim()[0]))
-        self.plotStartOfPush(data, 'freqNodeForceAll')
+
+    def getRodShearForceTimeSeries(self, mean=False):
+        """Returns a time serier of the shear force on the rod.
+
+        Much of the processing is the same as for the method above.
+        """
+
+        shearForce_on_rod = self.read('beam_shear_force.bin')
+        shearForce_on_rod = -1*np.reshape(shearForce_on_rod,
+                                          (len(shearForce_on_rod)/self.parameters['nx'],
+                                           self.parameters['nx']))
+        if mean:
+            shearForce_on_rod = np.mean(shearForce_on_rod, axis=1)
+        else:
+            shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
+
+        return shearForce_on_rod/np.float(self.parameters['fn'])
 
     def getLocalMax(self):
-        data = self.getRodShearForceTimeSeries()
-        locMaxIndex = argrelmax(data)[0]
-        timeArray = self.getTimeArray(data, 'freqBeamShearForce')[argrelmax(data)[0]]
-        locMax = np.copy(data[locMaxIndex])
-        return locMax, timeArray
+        shearForce = -1*self.beamShearForce.get()
+        force = np.sum(shearForce, axis=1)/self.parameters['fn']
+        locMaxIndex = argrelmax(force)[0]
+        # timeArray = self.getTimeArray(force, 'freqBeamShearForce')[argrelmax(force)[0]]
+        time = self.beamShearForce.time()[locMaxIndex]
+        locMax = force[locMaxIndex]
+        # return time, locMax
+        return self.beamShearForce.time(), force
 
     @Analyzer.plotable
     @Analyzer.restrict
     def plotLocalMax(self, i=[0]):
         lines = ['-', '--', '-.']
-        data, time = self.getLocalMax()
-        size, height = self.getGrooveDim()[1], self.getGrooveDim()[0]
-        plt.plot(time, data, label='Size {}, height {}'.format(size, height),
-                 linestyle=lines[i])
+        time, data = self.getLocalMax()
+        plt.plot(time, data,
+                 label='Size {}, height {}'.format(self.lattice.size,
+                                                   self.lattice.height),
+                 linestyle=lines[i[0]])
         self.plotReleaseTime()
-        plt.title("Local Max for Beam Shear Force for size %g height %g"%(size, height))
-        i += 1
-        i %= len(lines)
+        plt.xlabel("Time [s]")
+        plt.ylabel(r"$F_S/F_N$")
+        plt.title("Local Max for Beam Shear Force for size %g height %g"%(self.lattice.size,
+                                                                          self.lattice.height))
+        i[0] += 1
+        i[0] %= len(lines)
 
     @Analyzer.restrict
     def getRigressionLine(self, endTimes=[0, 0]):
@@ -537,14 +607,6 @@ class FrictionAnalyzer(Analyzer):
         plt.axvline(x=self.parameters['releaseTime']*self.parameters['step'],
                     linestyle='--', color='k')
 
-    def plotStartOfPush(self, data, freqName):
-        plt.plot(self.parameters['releaseTime']*self.parameters['step'],
-                 data[int(self.parameters['ns']/self.parameters[freqName])],
-                 "*")
-
-    def getGrooveDim(self):
-        return self.parameters["grooveHeight"], self.parameters["grooveSize"]
-
     def makePlots(self):
         self.normalForce = self.readAndResize('normal_force.bin')
         self.plotNormalForce()
@@ -575,7 +637,6 @@ class SortingHelpFormatter(argparse.RawTextHelpFormatter):
 
 class Globbler:
     def __init__(self, searchPath):
-        "docstring"
         self.searchPath = searchPath
 
     def glob(self, className, pattern,
@@ -641,10 +702,13 @@ class Compare:
 
         self.staticCoefficiantArray = np.zeros([len(self.instanceList), 3])
         for i, j in zip(range(instanceLength), instanceIndex):
+            self.staticCoefficiantArray[i, 0] = self.instanceList[j].getStaticFrictionCoefficient()#findCoeffFromSquareError(endTimes=endTimes, maxErrorAllowed=maxErrorAllowed)
+            """
             try:
-                self.staticCoefficiantArray[i, 0] = self.instanceList[j].findCoeffFromSquareError(endTimes=endTimes, maxErrorAllowed=maxErrorAllowed)
+                self.staticCoefficiantArray[i, 0] = self.instanceList[j].getStaticFrictionCoefficient()#findCoeffFromSquareError(endTimes=endTimes, maxErrorAllowed=maxErrorAllowed)
             except:
                 self.staticCoefficiantArray[i, 0] = np.nan
+            """
             self.staticCoefficiantArray[i, 1] = self.instanceList[j].getGrooveDim()[0]
             self.staticCoefficiantArray[i, 2] = self.instanceList[j].getGrooveDim()[1]
 
@@ -656,55 +720,63 @@ class Compare:
                  self.staticCoefficiantArray[:, 0])
         plt.show()
 
-    def plotCoeffLinRegSize(self, endTimes=[0.05, 0.2],
-                            maxErrorAllowed=0.001, certainHeight=None):
+    @Analyzer.restrict
+    @Analyzer.plotable
+    def plotCoeffLinRegSize(self, endTimes = [0.05,0.2], maxErrorAllowed = 0.001,certainHeight = None):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArrayFromLinReg(endTimes, maxErrorAllowed)
         if certainHeight is not None:
-            plotIndex = np.where(self.staticCoefficiantArray[:, 1] == certainHeight)
-            plt.scatter(self.staticCoefficiantArray[plotIndex, 2][0],
-                        self.staticCoefficiantArray[plotIndex, 0][0])
-
+            plotIndex = np.where(self.staticCoefficiantArray[:,1] == certainHeight)
+            plt.scatter(self.staticCoefficiantArray[plotIndex,2][0],self.staticCoefficiantArray[plotIndex,0][0])
+            plt.title("Static Coefficent for Height %g" %certainHeight)
         else:
             plottedHeights = []
-            colors = iter(cm.jet(np.linspace(0, 1, 9)))
-            for h in self.staticCoefficiantArray[:, 1]:
+            for h in self.staticCoefficiantArray[:,1]:
                 if h not in plottedHeights:
-                    HIndex = np.where(self.staticCoefficiantArray[:, 1] == h)
-                    plt.scatter(self.staticCoefficiantArray[HIndex, 2][0],
-                                self.staticCoefficiantArray[HIndex, 0][0],
-                                label="height %g" % h, color=next(colors))
                     plottedHeights.append(h)
-            print(plottedHeights)
+            colors = iter(cm.jet(np.linspace(0, 1, len(plottedHeights))))
+            for h in sorted(plottedHeights):
+                HIndex = np.where(self.staticCoefficiantArray[:,1] == h)
+                plt.scatter(self.staticCoefficiantArray[HIndex,2][0],self.staticCoefficiantArray[HIndex,0][0], label = "height %g" %h, color = next(colors))
+
 
         plt.xlabel("Groove Size")
         plt.ylabel(r"$F_s/F_N$")
         plt.legend()
-        plt.show()
 
-    def plotCoeffLinRegHeight(self, endTimes=[0.05, 0.2],
-                              maxErrorAllowed=0.001, certainSize=None):
+    @Analyzer.restrict
+    @Analyzer.plotable
+    def plotCoeffLinRegHeight(self, endTimes=[0.05,0.2], maxErrorAllowed=0.001,certainSize=None):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArrayFromLinReg(endTimes, maxErrorAllowed)
         if certainSize is not None:
-            plotIndex = np.where(self.staticCoefficiantArray[:, 2] == certainSize)
-            plt.scatter(self.staticCoefficiantArray[plotIndex, 1][0],
-                        self.staticCoefficiantArray[plotIndex, 0][0])
+            plotIndex = np.where(self.staticCoefficiantArray[: ,2] == certainSize)
+            plt.scatter(self.staticCoefficiantArray[plotIndex, 1][0],self.staticCoefficiantArray[plotIndex,0][0])
+            plt.title("Static Coefficent for Size %g" %certainSize)
         else:
             plottedSizes = []
-            colors = iter(cm.jet(np.linspace(0, 1, 9)))
-            for s in self.staticCoefficiantArray[:, 2]:
+            for s in self.staticCoefficiantArray[: ,2]:
                 if s not in plottedSizes:
-                    SIndex = np.where(self.staticCoefficiantArray[:, 2] == s)
-                    plt.scatter(self.staticCoefficiantArray[SIndex, 1][0],
-                                self.staticCoefficiantArray[SIndex, 0][0],
-                                label="size %g" % s, color=next(colors))
                     plottedSizes.append(s)
-            print(plottedSizes)
+
+
+            colors = iter(cm.jet(np.linspace(0, 1, len(plottedSizes))))
+            for s in sorted(plottedSizes):
+                SIndex = np.where(self.staticCoefficiantArray[:, 2] == s)
+                plt.scatter(self.staticCoefficiantArray[SIndex, 1][0],self.staticCoefficiantArray[SIndex, 0][0], label = "size %g" %s, color = next(colors))
 
         plt.xlabel("Groove Height")
         plt.ylabel(r"$F_s/F_N$")
         plt.legend()
+
+
+    def degDist(self,endTimes=[0.05,0.2], maxErrorAllowed=0.001):
+        if not hasattr(self, "staticCoefficiantArray"):
+            self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
+
+        differentCoeff = np.trim_zeros(self.staticCoefficiantArray[:,0])
+        print(differentCoeff)
+        plt.hist(differentCoeff[~np.isnan(differentCoeff)])
         plt.show()
 
     def plotCoeffSize(self):
@@ -795,17 +867,32 @@ if __name__ == '__main__':
     manager = AnalyzerManager()
     manager.setUp(args)
     #manager.readAll()
-    #manager.plotAttachedSprings(show=True)
+    #manager.plotAttachedSprings(show=True, restrict = {'size':[2,8], 'height':[1,2]})
     #manager.plotRodShearForceTimeSeries(show = True,certainSize = 1)
     #manager.plotYForceBeam(show = True,certainSize = 1)
     # manager.findCoeffFromSquareError(endTimes = [0.05,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
     # manager.plotRegressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    manager.plotLocalMax(show=True, restrict={'size':[1,2], 'height':1, 'angle':0})
+    # manager.plotLocalMax(show=False, restrict={'size':[i for i in range(11)],'height':4	,'angle':0})
+    # manager.plotPositionInterface(show=True)
+    manager.plotAttachedSprings(show=True)
+    manager.plotLocalMax(show=True)
+    # plt.legend()
     # plt.show()
 
     # manager.getRigressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    comp = Compare(manager.analyzers)
-    # comp.plotCoeffLinRegHeight(certainSize = 3)
+    # comp = Compare(manager.analyzers)
+    #comp.degDist()
+    #comp.plotCoeffLinRegHeight(show = True,certainSize = 1, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegHeight(show = True,certainSize = 2, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegHeight(show = True,certainSize = 3, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegHeight(show = True,certainSize = 4, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegHeight(show = True,certainSize = 5, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegSize(show = True, certainHeight=1, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegSize(show = True, certainHeight=2, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegSize(show = True, certainHeight=3, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegSize(show = True, certainHeight=4, endTimes = [0.03,0.06])
+    #comp.plotCoeffLinRegSize(show = True, certainHeight=5, endTimes = [0.03,0.06])
+    # comp.plotCoeffLinRegHeight(show = True, endTimes = [0.03,0.06])
     #comp.makeStaticCoeffArray()
     #comp.printStaticCoeffArray()
     #comp.plotCoeff3D()

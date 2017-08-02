@@ -7,7 +7,7 @@
 #include <random>
 
 
-class SpringFriction : public ForceModifier, public Dumpable
+class SpringFriction : public ForceModifier
 {
 public:
     SpringFriction(std::shared_ptr<FrictionInfo>);
@@ -24,8 +24,8 @@ public:
     std::vector<double> m_k;
     std::vector<double> m_fs;
     std::vector<double> m_fk;
-    double              m_tau;
-    double              m_coverage;
+    double              m_meantime;
+    double              m_stdtime;
     int                 m_ns;
     double              m_fnAvg;
     double              m_kNormal;
@@ -38,5 +38,4 @@ public:
     static thread_local std::mt19937 gen;
 
     std::shared_ptr<FrictionInfo> m_frictionInfo;
-    virtual std::vector<DataPacket> getDataPackets(int timestep, double time) override;
 };

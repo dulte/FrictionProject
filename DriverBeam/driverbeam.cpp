@@ -29,6 +29,7 @@ DriverBeam::DriverBeam(std::shared_ptr<Parameters>  parameters,
     m_mass    = parameters->get<double>("beamMass");
     double d  = parameters->get<double>("d");
     m_moment  = m_mass*d*m_nx*d*m_nx/12.0;
+    m_velocity = 0;
 }
 
 DriverBeam::~DriverBeam(){}
@@ -90,9 +91,13 @@ void DriverBeam::updateForcesAndMoments(){
 }
 
 void DriverBeam::vvstep(double dt){
-    m_phi += m_phiStep;
     m_v   += (m_f/m_mass)*0.5*dt;
-    m_v[0] = m_velocity;
+    if (m_isDriving){
+        m_v[0] = m_velocity;
+        m_phi = m_angle;
+    }
+    else
+        m_phi += m_phiStep;
     m_r   += m_v*dt;
 
 #pragma omp parallel for
@@ -119,9 +124,9 @@ std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){
     return packetvec;
 }
 
-void DriverBeam::checkRotation(){
-    if (m_phi >= m_angle){
-        m_phiStep = 0;
-        m_phi = m_angle;
-    }
+double DriverBeam::totalShearForce(){
+    double force = 0;
+    for (const auto& node : m_nodes)
+        force += node->f().x();
+    return force;
 }

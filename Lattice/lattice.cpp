@@ -31,7 +31,6 @@ void Lattice::step(double dt)
 #pragma omp parallel for
     for (size_t i = 0; i<nodes.size(); i++)
     {
-
         nodes[i]->updateForcesAndMoments();
     }
 

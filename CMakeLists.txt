@@ -23,6 +23,8 @@ add_executable(simulate main.cpp
     DataOutput/datapacket.cpp
     DataOutput/datapackethandler.cpp
     DataOutput/dumpable.cpp
+    DataOutput/filewrapper.cpp
+    DataOutput/mkdir.h
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp
     InputManagement/Parameters/parameters.cpp
     DriverBeam/driverbeam.cpp

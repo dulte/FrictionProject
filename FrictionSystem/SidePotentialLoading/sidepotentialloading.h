@@ -7,6 +7,7 @@
 #include <string>
 #include "DriverBeam/driverbeam.h"
 #include "Lattice/UnstructuredLattice/unstructuredlattice.h"
+#include "DataOutput/datapackethandler.h"
 
 class SpringFriction;
 class PotentialPusher;
@@ -18,18 +19,14 @@ class SidePotentialLoading : public Dumpable
 public:
     SidePotentialLoading(std::shared_ptr<Parameters> parameters);
     ~SidePotentialLoading();
-    // Add pusher force to the driver beam
-    // void addDriverForce(double);
-    // Add the pusher nodes as described by pusherStartHeight and pusherEndHeight
     void addPusher(double tInit);
     void startDriving();
     void addDriver();
-    // Un/lock springs
     void isLockFrictionSprings(bool);
-    // Call the lattice and driverbeam's step
-    void step(double);
+    void step(double step, unsigned int timestep);
     virtual std::vector<DataPacket> getDataPackets(int timestep, double time) override;
-    virtual std::string xyzString() const;
+    virtual std::string xyzString(double time) const;
+    bool doDumpSnapshot(double step, unsigned int timestep);
 
     std::vector<std::shared_ptr<SpringFriction>> frictionElements;
     std::vector<std::shared_ptr<PotentialPusher>> pusherNodes;
@@ -38,10 +35,18 @@ public:
     std::shared_ptr<DriverBeam> m_driverBeam;
 
 protected:
-    int    m_pusherStartHeight;
-    int    m_pusherEndHeight;
-    double m_vD;
-    double m_k;
+    int                                m_pusherStartHeight;
+    int                                m_pusherEndHeight;
+    double                             m_vD;
+    double                             m_k;
+    double                             m_maxRecordedDriveForce = 0;
+    std::vector<DataPacket>            m_currentPackets;
+    std::vector<DataPacket>            m_snapshotPackets;
+    std::string                        m_snapshotxyz;
+    unsigned int                       m_snapshotBufferTime = 1;
+    unsigned int                       m_snapshotBeginTime = 0;
+    std::unique_ptr<DataPacketHandler> m_dataHandler;
+    bool                               m_newMaximum = false;
 };
 
 #endif // SIDEPOTENTIALLOADING_H

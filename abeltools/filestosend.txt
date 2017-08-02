@@ -1,3 +1,4 @@
+foo.txt
 main.cpp
 Lattice/
 Node/

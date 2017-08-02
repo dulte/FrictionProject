@@ -48,12 +48,11 @@ std::vector<DataPacket> UnstructuredLattice::getDataPackets(int timestep, double
 {
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
 
-    DataPacket position_interface_packet = DataPacket(DataPacket::dataId::NODE_POSITION_INTERFACE, timestep, time);
-    DataPacket velocity_interface_packet = DataPacket(DataPacket::dataId::NODE_VELOCITY_INTERFACE, timestep, time);
-    DataPacket num_springs_attached_interface_packet = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
-    DataPacket position_all = DataPacket(DataPacket::dataId::NODE_POSITION_ALL, timestep, time);
-    DataPacket velocity_all = DataPacket(DataPacket::dataId::NODE_VELOCITY_ALL, timestep, time);
-    DataPacket force_all    = DataPacket(DataPacket::dataId::NODE_FORCE_ALL, timestep, time);
+    DataPacket position_interface_packet = DataPacket(DataPacket::dataId::INTERFACE_POSITION, timestep, time);
+    DataPacket velocity_interface_packet = DataPacket(DataPacket::dataId::INTERFACE_VELOCITY, timestep, time);
+    DataPacket position_all = DataPacket(DataPacket::dataId::ALL_POSITION, timestep, time);
+    DataPacket velocity_all = DataPacket(DataPacket::dataId::ALL_VELOCITY, timestep, time);
+    DataPacket force_all    = DataPacket(DataPacket::dataId::ALL_FORCE, timestep, time);
 //    DataPacket energy_all = DataPachet(DataPacket::dataId::NODE_TOTAL_ENERGY_ALL,timestep,time);
 
     for (std::shared_ptr<Node> node : bottomNodes)

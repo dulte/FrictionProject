@@ -1,0 +1,15 @@
+prisme.uio.no
+oscilloskop.uio.no
+signalgenerator.uio.no
+mosfet.uio.no
+laser.uio.no
+geigerteller.uio.no
+forsterker.uio.no
+transistor.uio.no
+motstand.uio.no
+mikroprosessor.uio.no
+kondensator.uio.no
+kretskort.uio.no
+multimeter.uio.no
+scintillator.uio.no
+likning.uio.no

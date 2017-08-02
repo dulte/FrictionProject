@@ -118,8 +118,8 @@ bool LatticeScanner::validateLattice(int nx, int ny, double d){
     bool intTest    = (nx == m_readnx && ny == m_readny);
     d = 0;
     // TODO: This test doesn't work. Too sleepy to fix
-    bool doubleTest = (std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
-    if (doubleTest){};
+    // bool doubleTest = (std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
+    // if (doubleTest){};
     return (intTest);
 }
 
@@ -129,8 +129,8 @@ std::string LatticeScanner::reasonForInvalidation(int nx, int ny, double d){
         reason << "Parameter nx = " << nx << " != " << m_readnx << " = scanned nx" << std::endl;
     if (ny != m_readny)
         reason << "Parameter ny = " << ny << " != " << m_readny << " = scanned ny" << std::endl;
-    bool doubleTest = (std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
-    if (!doubleTest){};
+    // bool doubleTest = (std::abs(d-m_readd)>std::abs(std::min(d,m_readd))*std::numeric_limits<double>::epsilon());
+    // if (!doubleTest){};
         // reason << "Parameter d = " << d << " != " << m_readd << " = scanned d" << std::endl;
     return reason.str();
 }

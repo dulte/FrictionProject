@@ -89,12 +89,10 @@ void Parameters::constructMap(){
     addParameter<int>("ny");
     addParameter<int>("nt");
     addParameter<int>("releaseTime");
-    addParameter<int>("nt");
-    addParameter<int>("releaseTime");
-    addParameter<double>("fn");
     addParameter<double>("fn");
     addParameter<int>("ns");
-    addParameter<double>("tau");
+    addParameter<double>("tRmean");
+    addParameter<double>("tRstd");
     addParameter<double>("d");
     addParameter<double>("E");
     addParameter<double>("k");
@@ -102,7 +100,13 @@ void Parameters::constructMap(){
     addParameter<double>("hZ");
     addParameter<double>("density");
     addParameter<double>("step");
-    addParameter<double>("staticCoefficient");
+    addParameter<double>("mud");
+    addParameter<double>("mus");
+    addParameter<double>("absDampCoeff");
+    addParameter<double>("relVelDampCoeff");
+    addParameter<int>("snapshotstart");
+    addParameter<int>("snapshotbuftime");
+    addParameter<std::string>("outputpath");
     addParameter<std::string>("latticefilename");
     addParameter<std::string>("dumpfilename");
     addParameter<int>("grooveSize");
@@ -114,32 +118,32 @@ void Parameters::constructMap(){
     addParameter<double>("beamMass");
     addParameter<double>("beamAngle");
     addParameter<int>("beamRotTime");
-    addParameter<bool>("writeNodePositionInterface");
-    addParameter<bool>("writeNodeVelocityInterface");
-    addParameter<bool>("writeNodeSpringsAttachedInterface");
-    addParameter<bool>("writeNodePositionAll");
-    addParameter<bool>("writeNodeVelocityAll");
-    addParameter<bool>("writeTotalEnergyAll");
-    addParameter<bool>("writeNodeForceAll");
+    addParameter<bool>("writeInterfacePosition");
+    addParameter<bool>("writeInterfaceVelocity");
+    addParameter<bool>("writeInterfaceAttachedSprings");
+    addParameter<bool>("writeInterfaceNormalForce");
+    addParameter<bool>("writeInterfaceShearForce");
+    addParameter<bool>("writeAllPosition");
+    addParameter<bool>("writeAllVelocity");
+    addParameter<bool>("writeAllEnergy");
+    addParameter<bool>("writeAllForce");
     addParameter<bool>("writePusherForce");
-    addParameter<bool>("writeNormalForce");
-    addParameter<bool>("writeShearForce");
+    addParameter<bool>("writeXYZ");
     addParameter<bool>("writeBeamTorque");
     addParameter<bool>("writeBeamShearForce");
-    addParameter<bool>("writeXYZ");
-    addParameter<int>("freqNodePositionInterface");
-    addParameter<int>("freqNodeVelocityInterface");
-    addParameter<int>("freqNodeSpringsAttachedInterface");
-    addParameter<int>("freqNodePositionAll");
-    addParameter<int>("freqNodeVelocityAll");
-    addParameter<int>("freqTotalEnergyAll");
-    addParameter<int>("freqNodeForceAll");
+    addParameter<int>("freqInterfacePosition");
+    addParameter<int>("freqInterfaceVelocity");
+    addParameter<int>("freqInterfaceAttachedSprings");
+    addParameter<int>("freqInterfaceNormalForce");
+    addParameter<int>("freqInterfaceShearForce");
+    addParameter<int>("freqAllPosition");
+    addParameter<int>("freqAllVelocity");
+    addParameter<int>("freqAllEnergy");
+    addParameter<int>("freqAllForce");
     addParameter<int>("freqPusherForce");
-    addParameter<int>("freqNormalForce");
-    addParameter<int>("freqShearForce");
+    addParameter<int>("freqXYZ");
     addParameter<int>("freqBeamTorque");
     addParameter<int>("freqBeamShearForce");
-    addParameter<int>("freqXYZ");
 }
 
 
@@ -149,55 +153,6 @@ int Parameters::dumpParameters(){
         std::cerr << "Could not dump parameters to file" << std::endl;
         return -1;
     }
-
-
-    // dumpFile << "nx\t" << m_nx << "\n"
-    //          << "ny\t" << m_ny << "\n"
-    //          << "writingFreq\t" << m_writingFreq << "\n"
-    //          << "nt\t" << m_nt << "\n"
-    //          << "releaseTime\t" << m_releaseTime << "\n"
-    //          << "fn\t" << m_fn << "\n"
-    //          << "ns\t" << m_ns << "\n"
-    //          << "tau\t" << m_tau << "\n"
-    //          << "d\t" << m_d << "\n"
-    //          << "E\t" << m_E << "\n"
-    //          << "k\t" << m_k << "\n"
-    //          << "nu\t" << m_nu << "\n"
-    //          << "hZ\t" << m_hZ << "\n"
-    //          << "density\t" << m_density << "\n"
-    //          << "step\t" << m_step << "\n"
-    //          << "latticeFilename\t" << m_latticeFilename << "\n"
-    //          << "grooveSize\t" << m_grooveSize << "\n"
-    //          << "grooveHeight\t" << m_grooveHeight << "\n"
-    //          << "vD\t" << m_vD << "\n"
-    //          << "pK\t" << m_pK << "\n"
-    //          << "pusherStartHeight\t" << m_pusherStartHeight << "\n"
-    //          << "pusherEndHeight\t" << m_pusherEndHeight << "\n"
-    //          << "beamMass\t" << m_beamMass << "\n"
-    //          << "beamAngle\t" << m_beamAngle << "\n"
-    //          << "beamRotTime\t" << m_beamRotTime << "\n"
-    //          << "writeNodePositionInterface\t" << m_writeNodePositionInterface << "\n"
-    //          << "writeNodeVelocityInterface\t" << m_writeNodeVelocityInterface << "\n"
-    //          << "writeNodeSpringsAttachedInterface\t" << m_writeNodeSpringsAttachedInterface << "\n"
-    //          << "writeNodePositionAll\t" << m_writeNodePositionAll << "\n"
-    //          << "writeNodeVelocityAll\t" << m_writeNodeVelocityAll << "\n"
-    //          << "writeTotalEnergyAll\t" << m_writeTotalEnergyAll << "\n"
-    //          << "writeNodeForceAll\t" << m_writeNodeForceAll << "\n"
-    //          << "writePusherForce\t" << m_writePusherForce << "\n"
-    //          << "writeNormalForce\t" << m_writeNormalForce << "\n"
-    //          << "writeShearForce\t" << m_writeShearForce << "\n"
-    //          << "writeXYZ\t" << m_writeXYZ << "\n"
-    //          << "freqNodePositionInterface\t" << m_freqNodePositionInterface << "\n"
-    //          << "freqNodeVelocityInterface\t" << m_freqNodeVelocityInterface << "\n"
-    //          << "freqNodeSpringsAttachedInterface\t" << m_freqNodeSpringsAttachedInterface << "\n"
-    //          << "freqNodePositionAll\t" << m_freqNodePositionAll << "\n"
-    //          << "freqNodeVelocityAll\t" << m_freqNodeVelocityAll << "\n"
-    //          << "freqTotalEnergyAll\t" << m_freqTotalEnergyAll << "\n"
-    //          << "freqNodeForceAll\t" << m_freqNodeForceAll << "\n"
-    //          << "freqPusherForce\t" << m_freqPusherForce << "\n"
-    //          << "freqNormalForce\t" << m_freqNormalForce << "\n"
-    //          << "freqShearForce\t" << m_freqShearForce << "\n"
-    //          << "freqXYZ\t" << m_freqXYZ << std::endl;
     dumpFile.close();
     return 0;
 }

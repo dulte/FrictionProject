@@ -775,8 +775,8 @@ class Compare:
             self.makeStaticCoeffArrayFromLinReg(endTimes,maxErrorAllowed)
 
         differentCoeff = np.trim_zeros(self.staticCoefficiantArray[:,0])
-        print(differentCoeff)
-        plt.hist(differentCoeff[~np.isnan(differentCoeff)])
+        print(len(differentCoeff))
+        plt.hist(differentCoeff)
         plt.show()
 
     def plotCoeffSize(self):

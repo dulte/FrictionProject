@@ -101,7 +101,7 @@ class Lattice:
 
                 # Strings can't be evaluated.
                 # All (current) strings are something-filename
-                if 'filename' in tokens[0]:
+                if 'filename' in tokens[0] or 'path' in tokens[0]:
                     self.parameters[tokens[0]] = tokens[1]
                 else:
                     # Otherwise, evaluate the expression to get
@@ -193,7 +193,7 @@ class Geometry(metaclass=Meta):
         # at an i-index along nx when j < grooveHeight
         self.doPlaceBottomNodeHere = []
         if self.grooveSize > 0 and self.grooveHeight > 0:
-            self.makeToothList()
+            self.makeGrooveList()
         else:
             self.doPlaceBottomNodeHere = [True for i in range(self.nx)]
 
@@ -207,6 +207,12 @@ class Geometry(metaclass=Meta):
             node = Node(x, y)
             self.markNode(node, i, j)
             self.nodes.append(node)
+
+        x, y = self.makeXYfromIJ(self.nx, 0)
+        node = Node(x, y)
+        self.markNode(node, self.nx, 0)
+        self.nodes.append(node)
+
         return self.nodes
 
     def doMakeNode(self, i, j):
@@ -358,10 +364,12 @@ class SymmetricGroovesByReverseConstruction(GeometryExtension):
         self.doPlaceBottomNodeHere = grooves
 
 
-    def makeToothList(self):
+class SymmetricGroovesEqual(GeometryExtension):
+    def makeGrooveList(self):
 
         toothSize = self.grooveSize-1
         iterations = self.nx//(toothSize*4)
+
 
         restLength = self.nx
         grooves = [0]*self.nx
@@ -376,15 +384,14 @@ class SymmetricGroovesByReverseConstruction(GeometryExtension):
             next += 2*toothSize
             restLength -= 4*toothSize
 
-        halfGrooveSize = floor(toothSize/2.)
-        print(restLength,(toothSize+1)*2)
-        if restLength >= (toothSize+1):
-            print("hei")
+        halfGrooveSize = floor((toothSize+1)/2.)
+
+        if restLength >= 0.5*(toothSize+1):
+            grooves[-self.nx//2-(halfGrooveSize-1):-self.nx//2] = [1]*halfGrooveSize
             grooves.reverse()
-            for i in range(2):
-                grooves[-self.nx//2-halfGrooveSize:-self.nx//2] = [1]*halfGrooveSize
-                grooves.reverse()
-        
+            grooves[-self.nx//2-(halfGrooveSize):-self.nx//2] = [1]*halfGrooveSize
+            grooves.reverse()
+
         self.doPlaceBottomNodeHere = grooves
 
 
@@ -495,5 +502,5 @@ if __name__ == '__main__':
     lattice = Lattice(args.parampath, args.outputpath)
     geometry = (TriangleGeometry
                 + SymmetricLegs()
-                + SymmetricGroovesByReverseConstruction())
+                + SymmetricGroovesEqual())
     lattice.makeLattice(geometry)

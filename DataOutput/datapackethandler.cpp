@@ -28,7 +28,7 @@ DataPacketHandler::DataPacketHandler(const std::string &outputFolder, std::share
     if (outputDirectory.back() != '/') {
         outputDirectory += '/';
     }
-    snapshotDirectory = outputDirectory+"/snapshot/";
+    snapshotDirectory = outputDirectory+"snapshot/";
     // Create the output and snapshot directories
     makeDirectory(outputDirectory);
     makeDirectory(snapshotDirectory);

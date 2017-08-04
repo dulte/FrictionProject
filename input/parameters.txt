@@ -15,16 +15,16 @@ tRstd                0.0006 # Standard deviation slipping time for interface spr
 d                    0.005  # Distance between neighbour nodes [m]
 E                    3e9    # Youngs modul [Pa]
 k                    4e6    # Driving spring modulus [N/m]
-nu                   0.33  
-hZ                   0.006
+nu                   0.33   # Poisson's modulus, 1/3 
+hZ                   0.006  # Depth in the z-direction
 density              1300
-absDampCoeff         40     # Divisor for absolute damping, eta/40
+absDampCoeff         40     # Divisor for absolute omega damping, eta/40
 relVelDampCoeff      1      # Multiplicator for relative velocity damping
 mud                  0.17   # Slipping force coefficient
 mus                  0.4    # Threshold force coefficient
 step                 2e-7   # Time step [s]
 vD                   4e-3   # Driving speed [m/s]
-pK                   4e5
+pK                   4e5    # Spring coefficient of the pusher nodes, if any
 
 # Snapshot
 snapshotstart        5e5    # When to start finding and saving snapshots of maximum

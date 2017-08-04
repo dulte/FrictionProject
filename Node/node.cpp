@@ -38,11 +38,9 @@ void Node::updateForcesAndMoments(){
 
             double dij = rDiff.length();
             double neighborPhi = neighbor->node()->phi();
-            double phiCorrection = 0;//neighbor->phiOffset();
 
-
-            double phi_ij           = phi()+phiCorrection;
-            double phi_ji           = neighborPhi+phiCorrection;
+            double phi_ij           = phi();
+            double phi_ji           = neighborPhi;
 
             double fn               = m_latticeInfo->kappa_n()*(dij-d0);
             double fs               = -m_latticeInfo->kappa_s()*0.5*(phi_ij + phi_ji);

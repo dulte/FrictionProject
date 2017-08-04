@@ -1,6 +1,6 @@
 TEMPLATE = app
 TARGET = simulate
-CONFIG += console c++14
+CONFIG += console c++11
 CONFIG -= app_bundle
 CONFIG -= qt
 
@@ -38,8 +38,10 @@ SOURCES += main.cpp \
     DataOutput/datapacket.cpp \
     DataOutput/datapackethandler.cpp \
     DataOutput/dumpable.cpp \
+    DataOutput/filewrapper.cpp \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp \
     InputManagement/Parameters/parameters.cpp \
+    InputManagement/Parameters/parameter.cpp \
     DriverBeam/driverbeam.cpp \
     Lattice/simplelattice.cpp \
     # ForceModifier/StraightenerForce/straightenerforce.cpp \
@@ -56,12 +58,15 @@ HEADERS += \
     ForceModifier/forcemodifier.h \
     InputManagement/ConfigReader/configreader.h \
     InputManagement/Parameters/parameters.h \
+    InputManagement/Parameters/parameter.h \
     FrictionSystem/SidePotentialLoading/sidepotentialloading.h \
     FrictionInfo/frictioninfo.h \
     ForceModifier/PotentialPusher/potentialpusher.h \
     DataOutput/dumpable.h \
     DataOutput/datapackethandler.h \
     DataOutput/datapacket.h \
+    DataOutput/filewrapper.h \
+    DataOutput/mkdir.h \
     ForceModifier/SpringFriction/springfriction.h \
     DriverBeam/driverbeam.h \
     Lattice/simplelattice.h \
@@ -70,6 +75,3 @@ HEADERS += \
     InputManagment/LatticeScanner/latticescanner.h
 
 LIBS += \
-        -lboost_system\
-        -lboost_filesystem\
-        -lboost_program_options\

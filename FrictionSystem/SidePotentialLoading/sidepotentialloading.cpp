@@ -46,9 +46,7 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     m_lattice = std::make_shared<UnstructuredLattice>();
     m_lattice->populate(parameters);
 
-    std::cout << m_lattice->latticeInfo->kappa_n() << std::endl;
-    std::cout << m_lattice->latticeInfo->kappa_s() << std::endl;
-    const double kappa     = m_lattice->latticeInfo->kappa_n();
+    const double kappa = m_lattice->latticeInfo->kappa_n();
     const double eta       = sqrt(0.1*mass*kappa) * relVelDampCoeff;
     const double alpha     = eta/parameters->get<double>("absDampCoeff");
 

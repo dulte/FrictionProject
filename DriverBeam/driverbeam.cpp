@@ -74,14 +74,15 @@ void DriverBeam::stealTopNodes(std::shared_ptr<Lattice> lattice){
     // then, clear the topNodes (is this necessary??) YES!
     lattice->topNodes.clear();
     // Distribute the mass of the driver beam onto the nodes
-    for (auto& node: m_nodes)
+    for (auto& node: m_nodes){
         node->setMass(m_mass/m_nodes.size());
+    }
 }
 
 void DriverBeam::updateForcesAndMoments(){
     m_moment = 0;
     m_f      = 0;
-#pragma omp parallel for
+// #pragma omp parallel for
     for (size_t i = 0; i < m_nodes.size(); i++){
         m_nodes[i]->updateForcesAndMoments();
         m_moment += m_nodes[i]->f().cross2d(m_r);
@@ -92,15 +93,18 @@ void DriverBeam::updateForcesAndMoments(){
 
 void DriverBeam::vvstep(double dt){
     m_v   += (m_f/m_mass)*0.5*dt;
+
     if (m_isDriving){
         m_v[0] = m_velocity;
-        m_phi = m_angle;
+        m_phi  = m_angle;
     }
     else
         m_phi += m_phiStep;
+
     m_r   += m_v*dt;
 
-#pragma omp parallel for
+// #pragma omp parallel for
+    // Align the top nodes along the axis of the beam
     for (size_t i = 0; i < m_nodes.size(); i++){
         vec3 r = m_r;
         r[0] -= cos(m_phi)*m_distFromCenter[i];

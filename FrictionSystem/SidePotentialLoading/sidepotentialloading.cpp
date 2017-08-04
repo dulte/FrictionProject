@@ -27,7 +27,6 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
 {
     // Set all member variables
     m_parameters           = parameters;
-    m_k                    = parameters->get<double>("k");
     m_pusherStartHeight    = parameters->get<int>("pusherStartHeight");
     m_pusherEndHeight      = parameters->get<int>("pusherEndHeight");
     m_vD                   = parameters->get<double>("vD");
@@ -41,13 +40,17 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     double hZ              = parameters->get<double>("hZ");
     double relVelDampCoeff = parameters->get<double>("relVelDampCoeff");
     const double mass      = density*d*d*hZ/4.0 * pi;
-    const double eta       = sqrt(0.1*mass*m_k) * relVelDampCoeff;
-    const double alpha     = eta/parameters->get<double>("absDampCoeff");
 
     m_dataHandler = make_unique<DataPacketHandler>(parameters->get<std::string>("outputpath"), parameters);
 
     m_lattice = std::make_shared<UnstructuredLattice>();
     m_lattice->populate(parameters);
+
+    std::cout << m_lattice->latticeInfo->kappa_n() << std::endl;
+    std::cout << m_lattice->latticeInfo->kappa_s() << std::endl;
+    const double kappa     = m_lattice->latticeInfo->kappa_n();
+    const double eta       = sqrt(0.1*mass*kappa) * relVelDampCoeff;
+    const double alpha     = eta/parameters->get<double>("absDampCoeff");
 
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 

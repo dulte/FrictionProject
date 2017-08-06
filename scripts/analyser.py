@@ -412,7 +412,7 @@ class FrictionAnalyzer(Analyzer):
         time = self.interfaceAttachedSprings.time()
         plt.pcolormesh(data, cmap=plt.get_cmap('jet'))
         ticks = [int(t) for t in np.linspace(0, data.shape[0]-1, 10)]
-        print(ticks, time.shape)
+        # print(ticks, time.shape)
         plt.yticks(ticks, time[ticks])
         plt.colorbar()
         plt.title(("Percent of attached springs for "
@@ -495,10 +495,8 @@ class FrictionAnalyzer(Analyzer):
         TODO: Get the friction force from the flat case,
         and use that to normalize the static friction for grooves.
         """
-        shearForce_on_rod = self.read('beam_shear_force.bin')
-        shearForce_on_rod = np.reshape(shearForce_on_rod,
-                                       (len(shearForce_on_rod)/self.parameters['nx'],
-                                       self.parameters['nx']))
+        shearForce_on_rod = self.beamShearForce.get()
+
         if mean:
             shearForce_on_rod = np.mean(shearForce_on_rod, axis=1)
         else:
@@ -627,6 +625,115 @@ class FrictionAnalyzer(Analyzer):
         del self.shearForce
 
 
+class interActiveGUI():
+    def __init__(self, manager, comparer):
+        self.manager = manager
+        self.comparer = comparer
+        self.instanceList = self.manager.analyzers
+
+        self.comparer.makeStaticCoeffArray()
+
+        self.button = 0
+        self.xdata = 0
+        self.ydata = 0
+        self.loop = False
+
+        self.ydataType = np.zeros(1)
+        self.xdataType = np.zeros(1)
+
+        self.nearestX = 0
+        self.nearestY = 0
+        self.dist = 1e6
+
+        self.clickDistance = 0.3
+
+
+    def onClick(self,event):
+        # print('button=%d, x=%d, y=%d, xdata=%f, ydata=%f' %
+        #   (event.button, event.x, event.y, event.xdata, event.ydata))
+
+        self.xdata = event.xdata
+        self.ydata = event.ydata
+        if event.button == 1:
+            self.findNearestDataPoint(event.xdata,event.ydata)
+            if self.dist <= self.clickDistance:
+                plt.close('all')
+        elif event.button == 3:
+            plt.close('all')
+            self.loop = False
+
+    def plotSomePlot(self):
+        self.plotCoeffHeight(size=14)
+
+    def somePlot(self):
+        pass
+    def makeFalseArrays(self):
+        self.coeff = np.array([.1,.3,.56,.12,.24,.17])
+        self.size = np.array([1,1,2,2,3,3])
+        self.height = np.array([1,2,1,2,1,2])
+
+
+    def plotFalseArrays(self, size=2):
+        plt.scatter(self.height[self.size == size],self.coeff[self.size == size])
+
+
+    def findNearestDataPoint(self,xdata,ydata):
+        nearestDataPoint = (((self.ydataType - ydata)**2 - (self.xdataType-xdata)**2)**2)
+        self.nearestY = self.ydataType[np.argmin(nearestDataPoint)]
+        self.nearestX = self.xdataType[np.argmin(nearestDataPoint)]
+        self.dist = np.min(nearestDataPoint)
+
+
+    @Analyzer.plotable
+    def findAndPlotData(self,size, height):
+        correctInstance = None
+
+        for i in self.instanceList:
+            if size == i.lattice.size and height == i.lattice.height:
+                correctInstance = i
+                break
+
+        plt.subplots()
+        plt.subplot(2,1,1)
+        i.plotLocalMax()
+        plt.subplot(2,1,2)
+        i.plotAttachedSprings()
+
+
+
+
+    def plotCoeffHeight(self,size):
+        self.ydataType = self.comparer.staticCoefficiantArray[:,1][self.comparer.staticCoefficiantArray[:,2] == size]
+        self.xdataType = self.comparer.staticCoefficiantArray[:,0][self.comparer.staticCoefficiantArray[:,2] == size]
+        self.loop = True
+        while self.loop:
+            fig = plt.figure()
+            self.comparer.plotCoeffHeight(certainSize=size)
+            #self.plotFalseArrays()
+            cid = fig.canvas.mpl_connect('button_press_event', self.onClick)
+            try:
+                plt.show()
+            except:
+                pass
+
+            fig.canvas.mpl_disconnect(cid)
+
+            if self.loop:
+                self.findAndPlotData(size=size,height=self.nearestX,show = True)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class SortingHelpFormatter(argparse.RawTextHelpFormatter):
     """ Custom formatter for argparse help """
 
@@ -685,8 +792,8 @@ class Compare:
         self.staticCoefficiantArray = np.zeros([len(self.instanceList), 3])
         for i, j in zip(range(instanceLength), instanceIndex):
             self.staticCoefficiantArray[i, 0] = self.instanceList[j].getStaticFrictionCoefficient()
-            self.staticCoefficiantArray[i, 1] = self.instanceList[j].getGrooveDim()[0]
-            self.staticCoefficiantArray[i, 2] = self.instanceList[j].getGrooveDim()[1]
+            self.staticCoefficiantArray[i, 1] = self.instanceList[j].lattice.height
+            self.staticCoefficiantArray[i, 2] = self.instanceList[j].lattice.size
 
     def makeStaticCoeffArrayFromLinReg(self, endTimes, maxErrorAllowed,
                                        useAngleGreaterThanZero=False):
@@ -712,13 +819,30 @@ class Compare:
             self.staticCoefficiantArray[i, 1] = self.instanceList[j].getGrooveDim()[0]
             self.staticCoefficiantArray[i, 2] = self.instanceList[j].getGrooveDim()[1]
 
-    def plotCoeffHeight(self):
+    @Analyzer.restrict
+    @Analyzer.plotable
+    def plotCoeffHeight(self,certainSize=None):
         if not hasattr(self, "staticCoefficiantArray"):
             self.makeStaticCoeffArray()
+        if certainSize is not None:
+            plotIndex = np.where(self.staticCoefficiantArray[: ,2] == certainSize)
+            plt.scatter(self.staticCoefficiantArray[plotIndex, 1][0],self.staticCoefficiantArray[plotIndex,0][0])
+            plt.title("Static Coefficent for Size %g" %certainSize)
+        else:
+            plottedSizes = []
+            for s in self.staticCoefficiantArray[: ,2]:
+                if s not in plottedSizes:
+                    plottedSizes.append(s)
 
-        plt.plot(self.staticCoefficiantArray[:, 1],
-                 self.staticCoefficiantArray[:, 0])
-        plt.show()
+
+            colors = iter(cm.jet(np.linspace(0, 1, len(plottedSizes))))
+            for s in sorted(plottedSizes):
+                SIndex = np.where(self.staticCoefficiantArray[:, 2] == s)
+                plt.scatter(self.staticCoefficiantArray[SIndex, 1][0],self.staticCoefficiantArray[SIndex, 0][0], label = "size %g" %s, color = next(colors))
+
+        plt.xlabel("Groove Height")
+        plt.ylabel(r"$F_s/F_N$")
+        plt.legend()
 
     @Analyzer.restrict
     @Analyzer.plotable
@@ -874,13 +998,13 @@ if __name__ == '__main__':
     # manager.plotRegressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
     # manager.plotLocalMax(show=False, restrict={'size':[i for i in range(11)],'height':4	,'angle':0})
     # manager.plotPositionInterface(show=True)
-    manager.plotAttachedSprings(show=True)
-    manager.plotLocalMax(show=True)
+    #manager.plotAttachedSprings(show=True)
+    #manager.plotLocalMax(show=True)
     # plt.legend()
     # plt.show()
 
     # manager.getRigressionLine(endTimes = [0,0.2], certainSize = 1,certainHeight = 1,certainAngle = 0)
-    # comp = Compare(manager.analyzers)
+    comp = Compare(manager.analyzers)
     #comp.degDist()
     #comp.plotCoeffLinRegHeight(show = True,certainSize = 1, endTimes = [0.03,0.06])
     #comp.plotCoeffLinRegHeight(show = True,certainSize = 2, endTimes = [0.03,0.06])
@@ -893,8 +1017,9 @@ if __name__ == '__main__':
     #comp.plotCoeffLinRegSize(show = True, certainHeight=4, endTimes = [0.03,0.06])
     #comp.plotCoeffLinRegSize(show = True, certainHeight=5, endTimes = [0.03,0.06])
     # comp.plotCoeffLinRegHeight(show = True, endTimes = [0.03,0.06])
-    #comp.makeStaticCoeffArray()
-    #comp.printStaticCoeffArray()
-    #comp.plotCoeff3D()
-    #comp.plotPushers()
+
+    inter = interActiveGUI(manager, comp)
+    inter.plotSomePlot()
+
+
     #analyser = Analyzer(args.dir)

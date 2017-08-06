@@ -92,8 +92,6 @@ void DataPacketHandler::dumpSnapshot(std::vector<DataPacket> packets,
         snapshotFiles[element.first]->open(snapshotDirectory+element.second->name+".bin",
                                           element.second->modes);
     }
-    std::cout << "Writing packets " << packets.size() << std::endl;
-    std::cout << "Writing xyz" << xyz.size() << std::endl;
     for(const auto& packet: packets)
         snapshotFiles[packet.id()]->write(packet);
     for(auto& element: snapshotFiles)

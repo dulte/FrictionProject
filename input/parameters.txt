@@ -7,7 +7,7 @@
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
 nt                   5e6    # Total number of time steps 
-releaseTime          1e5    # Number of steps before the springs are released 
+releaseTime          1e3    # Number of steps before the springs are released 
 fn                   1920   # Normal load [N]
 ns                   50     # No. of interface springs per block
 tRmean               0.002  # Mean slipping time for interface spring [s]
@@ -27,7 +27,7 @@ vD                   4e-3   # Driving speed [m/s]
 pK                   4e5    # Spring coefficient of the pusher nodes, if any
 
 # Snapshot
-snapshotstart        5e5    # When to start finding and saving snapshots of maximum
+snapshotstart        1e3    # When to start finding and saving snapshots of maximum
 snapshotbuftime      1e4    # How long to buffer snapshot before dumping them to disk
 
 # Paths

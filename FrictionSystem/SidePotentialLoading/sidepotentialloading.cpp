@@ -46,7 +46,7 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     m_lattice = std::make_shared<UnstructuredLattice>();
     m_lattice->populate(parameters);
 
-    const double kappa = m_lattice->latticeInfo->kappa_n();
+    const double kappa     = m_lattice->latticeInfo->kappa_n();
     const double eta       = sqrt(0.1*mass*kappa) * relVelDampCoeff;
     const double alpha     = eta/parameters->get<double>("absDampCoeff");
 
@@ -131,7 +131,7 @@ bool SidePotentialLoading::doDumpSnapshot(double step, unsigned int timestep){
     if(timestep < m_snapshotBeginTime)
         return false;
 
-    const double driverforce = m_driverBeam->totalShearForce();
+    const double driverforce = -m_driverBeam->totalShearForce();
     if (driverforce > m_maxRecordedDriveForce){
         m_maxRecordedDriveForce = driverforce;
         m_snapshotPackets = m_currentPackets;

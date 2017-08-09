@@ -85,7 +85,7 @@ void DriverBeam::updateForcesAndMoments(){
 // #pragma omp parallel for
     for (size_t i = 0; i < m_nodes.size(); i++){
         m_nodes[i]->updateForcesAndMoments();
-        m_moment += m_nodes[i]->f().cross2d(m_r);
+        m_moment += m_nodes[i]->f().cross2d(m_r-m_nodes[i]->r());
         m_f += m_nodes[i]->f();
     }
 

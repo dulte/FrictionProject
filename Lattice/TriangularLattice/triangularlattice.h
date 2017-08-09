@@ -3,22 +3,21 @@
 
 #include <vector>
 #include "Lattice/lattice.h"
-#include "DataOutput/dumpable.h"
 #include "Node/node.h"
 #include "LatticeInfo/latticeinfo.h"
 
 class LatticeInfo;
+class Parameters;
 
 class TriangularLattice : public Lattice
 {
 public:
     TriangularLattice();
 
-    void populate(int nx, int ny, double d, double E, double nu, double hZ, double density);
-    void populateWithUnitCell(double d, double E, double nu, double hZ, double density);
-    void populateCantilever(double d, double E, double nu, double hZ, double density);
-
-    virtual std::vector<DataPacket> getDataPackets(int timetep, double time) override;
+    void populate(std::shared_ptr<Parameters>) override;
+    void populate(std::shared_ptr<Parameters>, int, int) override;
+    void populateWithUnitCell(std::shared_ptr<Parameters>);
+    void populateCantilever(std::shared_ptr<Parameters>);
  private:
     int m_nx;
     int m_ny;

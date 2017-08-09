@@ -3,7 +3,7 @@ project("Friction")
 # INCLUDE_DIRECTORIES( ${Boost_INCLUDE_DIR} )
 include_directories(".")
 set(CMAKE_BUILD_TYPE Release)
-set(CMAKE_CXX_FLAGS "-g -O3 -Wall -fopenmp -std=c++11 -D_GLIBCXX_PARALLEL -Wextra -Wfloat-equal -Wundef -Wshadow -Wstrict-overflow=5 -Wwrite-strings -Wcast-qual -Wswitch-default -march=native -Wswitch-enum -Wconversion -Wunreachable-code -Wformat=2")
+set(CMAKE_CXX_FLAGS "-g -O3 -Wall -fopenmp -std=c++11 -D_GLIBCXX_PARALLEL -Wextra -Wfloat-equal -Wundef -Wstrict-overflow=5 -Wwrite-strings -Wcast-qual -Wswitch-default -march=native -Wswitch-enum -Wconversion -Wunreachable-code -Wformat=2")
 message("CMAKE_BUILD_TYPE is ${CMAKE_BUILD_TYPE}")
 add_executable(simulate main.cpp
     Lattice/lattice.cpp
@@ -29,9 +29,10 @@ add_executable(simulate main.cpp
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp
     InputManagement/Parameters/parameters.cpp
     DriverBeam/driverbeam.cpp
-    Lattice/simplelattice.cpp
+    Lattice/TriangularLattice/triangularlattice.cpp
     Lattice/UnstructuredLattice/unstructuredlattice.cpp
     InputManagement/LatticeScanner/latticescanner.cpp
     InputManagement/Parameters/parameter.cpp
+    Simulation/simulation.cpp
   )
 # TARGET_LINK_LIBRARIES( simulate LINK_PUBLIC ${Boost_LIBRARIES} )

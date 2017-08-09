@@ -4,18 +4,34 @@
 #include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
 #include "FrictionInfo/frictioninfo.h"
 #include "LatticeInfo/latticeinfo.h"
+#include "InputManagement/Parameters/parameters.h"
+#include "DataOutput/datapackethandler.h"
 #include "datadumper.h"
+#include "Lattice/lattice.h"
+
+
+// void MakeDirectory(const std::string& path){
+//     int rc = mkpath(path.c_str(), 0755);
+//     if (rc != 0){
+//         fprintf(stderr, "Failed to create (%d: %s): %s\n",
+//                 errno, strerror(errno), path.c_str());
+//         throw std::runtime_error("Failed to make directory");
+//     }
+// }
 
 DataDumper::DataDumper(const std::string& outputPath)
     :frictionInfoPath("frictionInfo"),
      latticeInfoPath("latticeInfo"),
      systemPath("system"),
-     dumpPath("dump")
+     parametersPath("parameters"),
+     latticePath("lattice.xyz"),
+     dumpPath("info/")
 {
     this->outputPath = outputPath;
     if (this->outputPath.back() != '/')
         this->outputPath += '/';
-    // this->outputPath += dumpPath;
+    this->outputPath += dumpPath;
+    makeDirectory(this->outputPath);
 }
 
 DataDumper::~DataDumper(){}
@@ -69,4 +85,16 @@ void DataDumper::dumpSystem(const SidePotentialLoading* system) {
    std::ofstream file(outputPath+systemPath);
    file << ss.str();
    file.close();
+}
+
+void DataDumper::dumpParameters(const std::shared_ptr<Parameters> params){
+    std::ofstream file(outputPath+parametersPath);
+    file << *params;
+    file.close();
+}
+
+void DataDumper::dumpLatticeStructure(const std::shared_ptr<Lattice> lattice){
+    std::ofstream file(outputPath+latticePath);
+    file << lattice->xyzRepresentation();
+    file.close();
 }

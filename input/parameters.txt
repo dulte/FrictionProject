@@ -6,8 +6,9 @@
 #Simulation parameters
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
-nt                   5e6    # Total number of time steps 
+nt                   5e3    # Total number of time steps 
 releaseTime          1e3    # Number of steps before the springs are released 
+drivingTime          2e3    # Number of steps before the driving begins
 fn                   1920   # Normal load [N]
 ns                   50     # No. of interface springs per block
 tRmean               0.002  # Mean slipping time for interface spring [s]

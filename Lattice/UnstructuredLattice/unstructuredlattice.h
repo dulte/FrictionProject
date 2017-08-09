@@ -18,7 +18,7 @@ public:
     virtual ~UnstructuredLattice(){};
 
     void populate(std::shared_ptr<Parameters> parameters) override;
-    virtual std::vector<DataPacket> getDataPackets(int timetep, double time) override;
+    void populate(std::shared_ptr<Parameters>, int nx, int ny) override;
 protected:
     void connectNodes();
     int m_nx;

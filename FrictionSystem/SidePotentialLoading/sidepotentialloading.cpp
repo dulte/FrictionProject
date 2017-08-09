@@ -89,6 +89,8 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     dumper.dumpSystem(this);
     dumper.dumpLatticeInfo(m_lattice->latticeInfo);
     dumper.dumpFrictionInfo(frictionInfo);
+    dumper.dumpParameters(parameters);
+    dumper.dumpLatticeStructure(m_lattice);
 
     addDriver();
 }
@@ -216,7 +218,6 @@ std::string SidePotentialLoading::xyzString(double time) const
 
     for (auto & node: m_driverBeam->m_nodes)
         xyz << xyzNodeString("T", node);
-
     return xyz.str();
 }
 

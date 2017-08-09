@@ -1,8 +1,8 @@
 #include "node.h"
-#include "Lattice/simplelattice.h"
 #include "NodeInfo/nodeinfo.h"
 #include "LatticeInfo/latticeinfo.h"
 #include "Vec3/vec3.h"
+#include "Lattice/lattice.h"
 
 #include <memory>
 #include <vector>

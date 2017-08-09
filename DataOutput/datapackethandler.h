@@ -8,6 +8,8 @@
 #include "datapacket.h"
 #include "InputManagement/Parameters/parameters.h"
 
+void makeDirectory(const std::string& path);
+
 class FileWrapper;
 class SidePotentialLoading;
 class DataPacketHandler

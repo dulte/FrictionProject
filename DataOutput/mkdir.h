@@ -1,3 +1,5 @@
+#ifndef MKDIR_H
+#define MKDIR_H
 /*
 @(#)File:           $RCSfile: mkpath.c,v $
 @(#)Version:        $Revision: 1.13 $
@@ -19,7 +21,6 @@
 #include <string.h>
 #include <malloc.h>
 #include <sys/stat.h>    /* Fix up for Windows - inc mode_t */
-
 typedef struct stat Stat;
 
 /* #ifndef lint */
@@ -130,3 +131,6 @@ int mkpath(const char *path, mode_t mode)
 /* } */
 
 /* #endif /\* TEST *\/ */
+
+
+#endif /* MKDIR_H */

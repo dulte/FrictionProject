@@ -2,87 +2,19 @@
 // TODO: Write tests. Things have a tendency to go wonky after a lot of refactoring
 // TODO: Take a look at and improve vec3
 #include <iostream>
-#include <string>
-#include <memory>
-#include <chrono>
-#include "InputManagement/Parameters/parameters.h"
-#include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
+#include "Simulation/simulation.h"
 
 using namespace std;
 
-// void cantileverTest(TriangularLattice &);
-// void bulkWave(TriangularLattice &);
-// void bulkStretch(TriangularLattice &);
-double timeSince(const std::chrono::high_resolution_clock::time_point &start);
-
 int main(int argc, char *argv[])
 {
-    std::string parametersPath = "input/parameters.txt";
-    bool doDumpParameters = false;
+    Simulation simulation;
+    int retCode = simulation.setup();
+    if (retCode != 0)
+        return retCode;
 
-    auto start = std::chrono::high_resolution_clock::now();
-    // Get all of the configuration parameters
-    std::shared_ptr<Parameters> spParameters;
-    try {
-        std::cout << "Reading configuration parameters at " << timeSince(start) << std::endl;
-        spParameters = std::make_shared<Parameters>(parametersPath);
-    } catch (std::exception &ex) {
-        std::cerr << "Error: " <<ex.what() << std::endl;
-        return -1;
-    }
-
-    if (doDumpParameters){
-        std::cout << "Dumping parameters to " << spParameters->get<std::string>("dumpfilename") << std::endl;
-        spParameters->dumpParameters();
-    }
-
-    int    nt          = spParameters->get<int>("nt");
-    int    releaseTime = spParameters->get<int>("releaseTime");
-    double step        = spParameters->get<double>("step");
-
-    // For the progress output
-    double progress     = 0;
-    double prevProgress = 0;
-
-    SidePotentialLoading mySystem(spParameters);
-
-    mySystem.isLockFrictionSprings(true);
-    std :: cout << "Starting the model with springs locked at " << timeSince(start) << std::endl;
-    for (int i = 0; i<releaseTime; i++)
-    {
-        mySystem.step(step, i);
-
-        if (progress >= prevProgress){
-            std::cout << 100*progress << "% completed" << std::endl;
-            prevProgress += 0.1;
-        }
-        progress = static_cast<double>(i)/releaseTime;
-    }
-
-    mySystem.startDriving();
-    mySystem.isLockFrictionSprings(false);
-    std::cout << "Unlocking springs at " << timeSince(start) << std::endl;
-    prevProgress = 0;
-    progress = 0;
-    for (int i = releaseTime; i<nt; i++)
-    {
-        mySystem.step(step, i);
-        if (progress >= prevProgress){
-            std::cout << 100*progress << "% completed" << std::endl;
-            prevProgress += 0.1;
-        }
-        progress = static_cast<double>(i-releaseTime)/(nt-releaseTime);
-    }
-
-    std::cout << "Simulation complete at " << timeSince(start) << std::endl;
-
+    simulation.run();
     return 0;
-}
-
-double timeSince(const std::chrono::high_resolution_clock::time_point &start){
-    auto diff = std::chrono::high_resolution_clock::now() - start;
-    auto time = std::chrono::duration_cast<std::chrono::duration<double>>(diff).count();
-    return time;
 }
 
 

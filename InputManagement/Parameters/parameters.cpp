@@ -13,8 +13,8 @@
 #include "parameter.h"
 
 template <typename T>
-std::unique_ptr<Parameter<T>> newParam(){
-    return std::unique_ptr<Parameter<T>>(new Parameter<T>());
+std::unique_ptr<Parameter<T>> newParam(const std::string &name){
+    return std::unique_ptr<Parameter<T>>(new Parameter<T>(name));
 }
 
 Parameters::Parameters(const std::string &filenameConfig){
@@ -30,22 +30,22 @@ Parameters::~Parameters(){
 
 template <>
 void Parameters::addParameter<double>(std::string name){
-    m_doubleparams[name] = newParam<double>();
+    m_doubleparams[name] = newParam<double>(name);
 }
 
 template <>
 void Parameters::addParameter<int>(std::string name){
-    m_intparams[name] = newParam<int>();
+    m_intparams[name] = newParam<int>(name);
 }
 
 template <>
 void Parameters::addParameter<std::string>(std::string name){
-    m_stringparams[name] = newParam<std::string>();
+    m_stringparams[name] = newParam<std::string>(name);
 }
 
 template <>
 void Parameters::addParameter<bool>(std::string name){
-    m_boolparams[name] = newParam<bool>();
+    m_boolparams[name] = newParam<bool>(name);
 }
 
 template <>
@@ -89,6 +89,7 @@ void Parameters::constructMap(){
     addParameter<int>("ny");
     addParameter<int>("nt");
     addParameter<int>("releaseTime");
+    addParameter<int>("drivingTime");
     addParameter<double>("fn");
     addParameter<int>("ns");
     addParameter<double>("tRmean");
@@ -146,16 +147,6 @@ void Parameters::constructMap(){
     addParameter<int>("freqBeamShearForce");
 }
 
-
-int Parameters::dumpParameters(){
-    std::ofstream dumpFile(get<std::string>("dumpfilename"));
-    if (!dumpFile.is_open()){
-        std::cerr << "Could not dump parameters to file" << std::endl;
-        return -1;
-    }
-    dumpFile.close();
-    return 0;
-}
 
 void Parameters::readParameters(std::string filenameConfig){
     m_infileParameters.open(filenameConfig);
@@ -221,5 +212,17 @@ void Parameters::checkThatAllParametersAreSet(){
             throw std::exception();
         }
     }
+}
+
+std::ostream & operator<<(std::ostream &os, const Parameters &self){
+    for(auto& param: self.m_intparams)
+        os << *param.second << '\n';
+    for(auto& param: self.m_doubleparams)
+        os << *param.second << '\n';
+    for(auto& param: self.m_stringparams)
+        os << *param.second << '\n';
+    for(auto& param: self.m_boolparams)
+        os << *param.second << '\n';
+    return os;
 }
 #endif /* PARAMETERS_CPP */

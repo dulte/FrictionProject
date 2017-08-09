@@ -5,6 +5,8 @@
 class FrictionInfo;
 class LatticeInfo;
 class SidePotentialLoading;
+class Parameters;
+class Lattice;
 
 class DataDumper
 {
@@ -14,10 +16,14 @@ public:
     void dumpFrictionInfo(const std::shared_ptr<FrictionInfo>);
     void dumpLatticeInfo(const std::shared_ptr<LatticeInfo>);
     void dumpSystem(const SidePotentialLoading*);
+    void dumpParameters(const std::shared_ptr<Parameters>);
+    void dumpLatticeStructure(const std::shared_ptr<Lattice>);
 
     std::string frictionInfoPath;
     std::string latticeInfoPath;
     std::string systemPath;
+    std::string parametersPath;
+    std::string latticePath;
     std::string outputPath;
     std::string dumpPath;
 };

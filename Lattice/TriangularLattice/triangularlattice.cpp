@@ -1,7 +1,7 @@
 #include "triangularlattice.h"
 #include <math.h>
-//#include <QDebug>
 #include <sstream>
+#include "InputManagement/Parameters/parameters.h"
 #include "NodeInfo/nodeinfo.h"
 
 
@@ -13,11 +13,20 @@ TriangularLattice::TriangularLattice()
 
 }
 
+void TriangularLattice::populate(std::shared_ptr<Parameters> parameters){
+    populate(parameters, parameters->get<int>("nx"), parameters->get<int>("ny"));
+}
 
-void TriangularLattice::populate(int nx, int ny, double d, double E, double nu, double hZ, double density)
+void TriangularLattice::populate(std::shared_ptr<Parameters> parameters, int nx, int ny)
 {
     m_nx = nx;
     m_ny = ny;
+    const double E = parameters->get<double>("E");
+    const double nu = parameters->get<double>("nu");
+    const double d = parameters->get<double>("d");
+    const double hZ = parameters->get<double>("hZ");
+    const double density = parameters->get<double>("density");
+
     latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
 
     for (int j = 0; j<ny; j++)
@@ -79,8 +88,13 @@ void TriangularLattice::populate(int nx, int ny, double d, double E, double nu, 
     }
 }
 
-void TriangularLattice::populateWithUnitCell(double d, double E, double nu, double hZ, double density)
+void TriangularLattice::populateWithUnitCell(std::shared_ptr<Parameters> parameters)
 {
+    const double E = parameters->get<double>("E");
+    const double nu = parameters->get<double>("nu");
+    const double d = parameters->get<double>("d");
+    const double hZ = parameters->get<double>("hZ");
+    const double density = parameters->get<double>("density");
     latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
 
     for (int j = 0; j<3; j++)
@@ -110,8 +124,13 @@ void TriangularLattice::populateWithUnitCell(double d, double E, double nu, doub
     }
 }
 
-void TriangularLattice::populateCantilever(double d, double E, double nu, double hZ, double density)
+void TriangularLattice::populateCantilever(std::shared_ptr<Parameters> parameters)
 {
+    const double E = parameters->get<double>("E");
+    const double nu = parameters->get<double>("nu");
+    const double d = parameters->get<double>("d");
+    const double hZ = parameters->get<double>("hZ");
+    const double density = parameters->get<double>("density");
     latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
 
     double rx = 0;
@@ -136,34 +155,3 @@ void TriangularLattice::populateCantilever(double d, double E, double nu, double
     }
 }
 
-std::vector<DataPacket> TriangularLattice::getDataPackets(int timestep, double time)
-{
-    std::vector<DataPacket> packetvec                = std::vector<DataPacket>();
-
-    DataPacket position_interface_packet             = DataPacket(DataPacket::dataId::NODE_POSITION_INTERFACE, timestep, time);
-    DataPacket velocity_interface_packet             = DataPacket(DataPacket::dataId::NODE_VELOCITY_INTERFACE, timestep, time);
-    DataPacket num_springs_attached_interface_packet = DataPacket(DataPacket::dataId::NODE_SPRINGS_ATTACHED_INTERFACE, timestep, time);
-    DataPacket position_all                          = DataPacket(DataPacket::dataId::NODE_POSITION_ALL, timestep, time);
-    DataPacket velocity_all                          = DataPacket(DataPacket::dataId::NODE_VELOCITY_ALL, timestep, time);
-
-
-    for (std::shared_ptr<Node> node : bottomNodes)
-    {
-        position_interface_packet.push_back(node->r().x());
-        position_interface_packet.push_back(node->r().y());
-        velocity_interface_packet.push_back(node->v().x());
-        velocity_interface_packet.push_back(node->v().y());
-    }
-
-    for (std::shared_ptr<Node> node : nodes) {
-        position_all.push_back(node->r().x());
-        position_all.push_back(node->r().y());
-        velocity_all.push_back(node->v().x());
-        velocity_all.push_back(node->v().y());
-    }
-    packetvec.push_back(position_interface_packet);
-    packetvec.push_back(velocity_interface_packet);
-    packetvec.push_back(position_all);
-    packetvec.push_back(velocity_all);
-    return packetvec;
-}

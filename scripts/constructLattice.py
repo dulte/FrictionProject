@@ -124,6 +124,7 @@ class Lattice:
 
     def writeXYZ(self):
         with open(self.xyzPath, 'w') as outfile:
+            print("Writing lattice to ", self.xyzPath)
             # Make filewriting a bit nicer by converting the argument
             # to a string and adding newline
             outfile.print = lambda x: outfile.write('{}\n'.format(x))
@@ -145,6 +146,7 @@ class Lattice:
     def writeInterfaceStructure(self):
         path = os.path.split(self.xyzPath)[0] + '/interfaceStructure.txt'
         with open(path, 'w') as outfile:
+            print("Writing interface to ", path)
             outfile.write(str(self.geometry.getInterfaceStructure()))
 
     def makeLattice(self, geometry):

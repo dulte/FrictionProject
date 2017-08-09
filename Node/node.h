@@ -10,7 +10,7 @@ using namespace std;
 
 class NodeInfo;
 class LatticeInfo;
-class SimpleLattice;
+class Lattice;
 
 class Node : public std::enable_shared_from_this<Node>
 {
@@ -43,7 +43,7 @@ public:
     void    addModifier(std::shared_ptr<ForceModifier> modifier);
     void    clearModifiers();
     void    isSetForce(bool);
-    void    setLattice(std::shared_ptr<SimpleLattice> lattice) {m_lattice = lattice;}
+    void    setLattice(const std::shared_ptr<Lattice>& lattice) {m_lattice = lattice;}
     void    forcePosition(const vec3 &r);
     void    setMass(double newMass){ m_mass = newMass;}
     void    setMoment(double newMoment) {m_moment = newMoment;}
@@ -59,7 +59,7 @@ protected:
     double m_momentOfInertia;
     bool   m_isSetForce;
     std::shared_ptr<LatticeInfo>                m_latticeInfo;
-    std::shared_ptr<SimpleLattice>              m_lattice;
+    std::shared_ptr<Lattice>                    m_lattice;
 
     std::vector<std::shared_ptr<NodeInfo>>      neighborInfo;
     std::vector<std::shared_ptr<ForceModifier>> m_modifiers;

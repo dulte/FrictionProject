@@ -38,6 +38,7 @@ public:
             throw UnsetException();
         return value;
     };
+    virtual void setName(const std::string& name){this->name = name;}
 protected:
     void set(const T& val){
         if (!isSet()){
@@ -49,6 +50,11 @@ protected:
     };
 private:
     T value;
+    std::string name = "UnsetName";
+    friend std::ostream & operator<<(std::ostream &os, const ParameterBase<T>& self){
+        os << self.name << '\t' << self.get();
+        return os;
+    }
 };
 
 template <typename T>
@@ -56,12 +62,14 @@ class Parameter: public ParameterBase<T>
 {
 public:
     Parameter(){};
+    Parameter(const std::string &name){ParameterBase<T>::setName(name);}
 };
 
 template <>
 class Parameter<int>: public ParameterBase<int>
 {
 public:
+    Parameter<int>(const std::string &name){setName(name);}
     void read(const std::string &token) override {set(static_cast<int>(std::stod(token)));}
 };
 
@@ -69,6 +77,7 @@ template <>
 class Parameter<double>: public ParameterBase<double>
 {
 public:
+    Parameter<double>(const std::string &name){setName(name);}
     void read(const std::string &token) override {set(std::stod(token));}
 };
 
@@ -76,6 +85,7 @@ template <>
 class Parameter<std::string>: public ParameterBase<std::string>
 {
 public:
+    Parameter<std::string>(const std::string &name){setName(name);}
     void read(const std::string &token) override {set(token);}
 };
 
@@ -83,6 +93,7 @@ template <>
 class Parameter<bool>: public ParameterBase<bool>
 {
 public:
+    Parameter<bool>(const std::string &name){setName(name);}
     void read(const std::string &token) override {set(std::stoi(token));}
 };
 #endif /* PARAMETER_H */

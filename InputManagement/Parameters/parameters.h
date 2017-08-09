@@ -7,8 +7,8 @@
 #include <sstream>
 #include <string>
 #include <memory>
-#include "parameter.h"
 #include <vector>
+#include "parameter.h"
 
 class Parameters{
 public:
@@ -16,7 +16,6 @@ public:
     virtual ~Parameters();
     void readParameters(std::string filenameConfig);
     void checkThatAllParametersAreSet();
-    int dumpParameters();
     template <typename T>
     T get(std::string);
     template <typename T>
@@ -30,6 +29,9 @@ private:
     std::map<std::string, std::unique_ptr<Parameter<std::string>>> m_stringparams;
     std::map<std::string, std::unique_ptr<Parameter<bool>>> m_boolparams;
     std::map<std::string, std::unique_ptr<Parameter<double>>> m_doubleparams;
+
+    friend std::ostream & operator<<(std::ostream &os, const Parameters &self);
+
 };
 
 #endif /* PARAMETERS_H */

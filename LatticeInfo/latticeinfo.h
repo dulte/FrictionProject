@@ -9,7 +9,6 @@ public:
     double Phi()     {return m_Phi;}
     double I()       {return m_I;}
     double A, B, C;
-private:
     double m_kappa_s =0;   // Shear component of beam coefficient
     double m_kappa_n =0;   // Normal component of beam coefficient
     double m_E       =0;   // Young's modulus

@@ -5,7 +5,7 @@
 class FrictionInfo
 {
 public:
-  FrictionInfo(std::shared_ptr<Parameters> spParameters);
+    FrictionInfo(std::shared_ptr<Parameters> spParameters);
 
     double m_k;
     double m_fs;

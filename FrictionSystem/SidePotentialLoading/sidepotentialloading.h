@@ -34,6 +34,12 @@ public:
     std::shared_ptr<Parameters> m_parameters;
     std::shared_ptr<DriverBeam> m_driverBeam;
 
+    double m_loadingForce;
+    double m_mass;
+    double m_kappa;
+    double m_eta;
+    double m_alpha;
+
 protected:
     int                                m_pusherStartHeight;
     int                                m_pusherEndHeight;

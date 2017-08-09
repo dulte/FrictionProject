@@ -14,3 +14,4 @@ CMakeLists.txt
 input/
 scripts/klyngeyngler.py
 DriverBeam/
+scripts/

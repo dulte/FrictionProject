@@ -142,10 +142,16 @@ class Lattice:
             for node in self.nodes:
                 outfile.print(node)
 
+    def writeInterfaceStructure(self):
+        path = os.path.split(self.xyzPath)[0] + '/interfaceStructure.txt'
+        with open(path, 'w') as outfile:
+            outfile.write(str(self.geometry.getInterfaceStructure()))
+
     def makeLattice(self, geometry):
         self.geometry = geometry(self.parameters)
         self.nodes = self.geometry.makeGeometry()
         self.writeXYZ()
+        self.writeInterfaceStructure()
 
 
 class Meta(type):
@@ -242,6 +248,9 @@ class Geometry(metaclass=Meta):
 
     def makeXYfromIJ(self):
         raise NotImplementedError("Geometry is an abstract class")
+
+    def getInterfaceStructure(self):
+        return self.doPlaceBottomNodeHere
 
 
 class SquareGeometry(Geometry):
@@ -369,7 +378,6 @@ class SymmetricGroovesEqual(GeometryExtension):
 
         toothSize = self.grooveSize-1
         iterations = self.nx//(toothSize*4)
-
 
         restLength = self.nx
         grooves = [0]*self.nx

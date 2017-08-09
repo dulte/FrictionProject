@@ -12,6 +12,7 @@
 #include "InputManagement/Parameters/parameters.h"
 #include "InputManagement/LatticeScanner/latticescanner.h"
 #include "sidepotentialloading.h"
+#include "DataOutput/DataDumper/datadumper.h"
 
 
 #define pi 3.14159265358979323
@@ -76,6 +77,19 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
         std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(alpha);
         node->addModifier(std::move(omegaDamper));
     }
+
+    // Quick bandaid
+    m_loadingForce = N;
+    m_mass = mass;
+    m_kappa = kappa;
+    m_eta = eta;
+    m_alpha = alpha;
+
+    DataDumper dumper(parameters->get<std::string>("outputpath"));
+    dumper.dumpSystem(this);
+    dumper.dumpLatticeInfo(m_lattice->latticeInfo);
+    dumper.dumpFrictionInfo(frictionInfo);
+
     addDriver();
 }
 

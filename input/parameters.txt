@@ -46,9 +46,9 @@ pusherStartHeight    4
 pusherEndHeight      5
 
 #Driver Beam
-beamMass             0.01  # Mass of the beam [kg]
-beamAngle            0     # The final angle of the beam [degrees, anticlockwise]
-beamRotTime          1e3   # Number of steps for the beam to rotate from 0 to beamAngle
+beamMass             0.0098  # Mass of the beam [kg]
+beamAngle            0       # The final angle of the beam [degrees, anticlockwise]
+beamRotTime          1e3     # Number of steps for the beam to rotate from 0 to beamAngle
 
 #Write_data
 writeInterfacePosition        1

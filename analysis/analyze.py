@@ -4,7 +4,7 @@ import sys
 import argparse
 import os
 from operator import attrgetter
-from friction import FrictionManager, GroupAnalyzer
+from friction import FrictionManager
 from graphicalanalyzer import GraphicalAnalyzer
 from PyQt5.QtWidgets import QApplication
 

@@ -23,14 +23,14 @@ public:
 
     void normalize();
 
-    void print();
+    void print() const;
 
     double x() {return components[0];}
     double y() {return components[1];}
     double z() {return components[2];}
 
-    double lengthSquared();
-    double length();
+    double lengthSquared() const;
+    double length() const;
 
     vec3 randint(int min, int max);
     double cross2d(const vec3 &other);

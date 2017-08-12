@@ -4,7 +4,7 @@
 #include <memory>
 class FrictionInfo;
 class LatticeInfo;
-class SidePotentialLoading;
+class FrictionSystem;
 class Parameters;
 class Lattice;
 
@@ -15,7 +15,7 @@ public:
     virtual ~DataDumper();
     void dumpFrictionInfo(const std::shared_ptr<FrictionInfo>);
     void dumpLatticeInfo(const std::shared_ptr<LatticeInfo>);
-    void dumpSystem(const SidePotentialLoading*);
+    void dumpSystem(const FrictionSystem*);
     void dumpParameters(const std::shared_ptr<Parameters>);
     void dumpLatticeStructure(const std::shared_ptr<Lattice>);
 

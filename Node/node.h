@@ -39,7 +39,7 @@ public:
     double  mass()            {return m_mass;}
     double  momentOfInertia() {return m_momentOfInertia;}
     size_t  numNeighbors()    {return neighborInfo.size();}
-    const   std::vector<std::shared_ptr<NodeInfo>> & getNeighborInfo() const {return neighborInfo;}
+    const   std::vector<std::unique_ptr<NodeInfo>> & getNeighborInfo() const {return neighborInfo;}
     void    addModifier(std::shared_ptr<ForceModifier> modifier);
     void    clearModifiers();
     void    isSetForce(bool);
@@ -61,6 +61,6 @@ protected:
     std::shared_ptr<LatticeInfo>                m_latticeInfo;
     std::shared_ptr<Lattice>                    m_lattice;
 
-    std::vector<std::shared_ptr<NodeInfo>>      neighborInfo;
+    std::vector<std::unique_ptr<NodeInfo>>      neighborInfo;
     std::vector<std::shared_ptr<ForceModifier>> m_modifiers;
 };

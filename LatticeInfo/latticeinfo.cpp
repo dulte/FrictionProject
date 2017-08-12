@@ -6,7 +6,7 @@ LatticeInfo::LatticeInfo(double E, double nu, double d, double hZ)
    : m_E(E),
      m_nu(nu),
      m_hZ(hZ),
-     m_hY(d/2),
+     m_hY(d/2.0),
      m_d(d)
 {
     m_G       = m_E/(2*(1+m_nu));

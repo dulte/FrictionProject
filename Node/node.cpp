@@ -11,6 +11,11 @@
 
 #define pi 3.14159265358979323
 
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique( Args&& ...args )
+{
+    return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+}
 Node::Node(vec3 r, double mass, double momentOfInertia, shared_ptr<LatticeInfo> latticeInfo):
     m_r(r),
     m_v(vec3()),
@@ -96,7 +101,7 @@ bool Node::connectToNode(std::shared_ptr<Node> other)
     vec3 rDiff = other->r()-r();
     double phiDiff = atan2(rDiff[1], rDiff[0]);
     double d0 = rDiff.length();
-    neighborInfo.push_back(std::make_shared<NodeInfo>(other, d0, phiDiff));
+    neighborInfo.push_back(make_unique<NodeInfo>(other, d0, phiDiff));
     return true;
 }
 
@@ -104,7 +109,7 @@ bool Node::connectToNode(std::shared_ptr<Node> other, double distance)
 {
     vec3 rDiff = other->r()-r();
     double phiDiff = atan2(rDiff[1], rDiff[0]);
-    neighborInfo.push_back(std::make_shared<NodeInfo>(other, distance, phiDiff));
+    neighborInfo.push_back(make_unique<NodeInfo>(other, distance, phiDiff));
     return true;
 }
 

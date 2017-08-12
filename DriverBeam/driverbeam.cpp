@@ -72,7 +72,7 @@ void DriverBeam::stealTopNodes(std::shared_ptr<Lattice> lattice){
         m_nodes.push_back(topnode);
     }
     // then, clear the topNodes (is this necessary??) YES!
-    lattice->topNodes.clear();
+    // lattice->topNodes.clear();
     // Distribute the mass of the driver beam onto the nodes
     for (auto& node: m_nodes){
         node->setMass(m_mass/m_nodes.size());
@@ -95,7 +95,7 @@ void DriverBeam::vvstep(double dt){
     m_v   += (m_f/m_mass)*0.5*dt;
 
     if (m_isDriving){
-        m_v[0] = m_velocity;
+        // m_v[0] = m_velocity;
         m_phi  = m_angle;
     }
     else

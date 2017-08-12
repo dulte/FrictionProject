@@ -60,7 +60,7 @@ class File:
         sys.stdout.write("Reading {}...".format(self.filename))
         data = self.reader.read(self.filename)
         sys.stdout.write("done.\n")
-        if 'catnipsprings' in self.filename.lower():
+        if 'sdfssprings' in self.filename.lower():
             y = self.parameters['numBottomNodes']
             x = len(data)/y
             if int(x) != x:
@@ -75,7 +75,7 @@ class File:
             print(len(interface), self.parameters['nx'], self.parameters['numBottomNodes'], sum(interface))
             wholeLattice = np.zeros(shape=(x, len(interface)))
             mask = np.array(interface, dtype=bool)
-            wholeLattice[:, mask] = data
+            wholeLattice[:,mask] = data
             data = wholeLattice
         elif 'interface' in self.filename.lower():
             y = self.parameters['numBottomNodes']

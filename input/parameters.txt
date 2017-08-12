@@ -6,7 +6,7 @@
 #Simulation parameters
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
-nt                   5e3    # Total number of time steps 
+nt                   5e4    # Total number of time steps 
 releaseTime          1e3    # Number of steps before the springs are released 
 drivingTime          2e3    # Number of steps before the driving begins
 fn                   1920   # Normal load [N]
@@ -29,7 +29,7 @@ pK                   4e5    # Spring coefficient of the pusher nodes, if any
 
 # Snapshot
 snapshotstart        1e3    # When to start finding and saving snapshots of maximum
-snapshotbuftime      1e4    # How long to buffer snapshot before dumping them to disk
+snapshotbuftime      1e2    # How long to buffer snapshot before dumping them to disk
 
 # Paths
 dumpfilename         foo
@@ -62,7 +62,7 @@ writeAllVelocity              0
 writeAllEnergy                0
 writeAllForce                 1
 writePusherForce              0
-writeXYZ                      1
+writeXYZ                      0
 writeBeamTorque               0
 writeBeamShearForce           1
 
@@ -77,7 +77,7 @@ freqAllVelocity              100
 freqAllEnergy                100
 freqAllForce                 100
 freqPusherForce              100
-freqXYZ                      100
+freqXYZ                      1
 freqBeamTorque               100
 freqBeamShearForce           100
 

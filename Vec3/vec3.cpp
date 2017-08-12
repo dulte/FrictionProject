@@ -87,17 +87,17 @@ void vec3::normalize(){
     *this = *this/length();
 }
 
-void vec3::print(){
+void vec3::print() const{
     cout << "[" << components[0] << "," << components[1] << "," << components[2] << "]" << endl;
 }
 
 
-double vec3::lengthSquared()
+double vec3::lengthSquared() const
 {
     return components[0]*components[0] + components[1]*components[1] + components[2]*components[2];
 }
 
-double vec3::length()
+double vec3::length() const
 {
    return sqrt(lengthSquared());
 }

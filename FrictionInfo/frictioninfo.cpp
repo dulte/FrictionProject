@@ -7,6 +7,7 @@ FrictionInfo::FrictionInfo(std::shared_ptr<Parameters> spParameters)
   m_stdtime           = spParameters->get<double>("tRstd");
   m_mus               = spParameters->get<double>("mus");
   double Fn           = spParameters->get<double>("fn");
+  double k            = spParameters->get<double>("k");
 
 
   // fs blir vel helt feil? m_nx burde være antall bottom nodes
@@ -14,5 +15,5 @@ FrictionInfo::FrictionInfo(std::shared_ptr<Parameters> spParameters)
   m_k       = m_fs/1e-6;
   m_fk      = m_fs*m_mus;
   m_fnAvg   = Fn/m_ns/m_nx;
-  m_kNormal = m_k/m_ns;
+  m_kNormal = k/m_ns;
 }

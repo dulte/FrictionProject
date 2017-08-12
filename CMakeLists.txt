@@ -26,7 +26,12 @@ add_executable(simulate main.cpp
     DataOutput/filewrapper.cpp
     DataOutput/mkdir.h
     DataOutput/DataDumper/datadumper.cpp
+    FrictionSystem/frictionsystem.cpp
+    FrictionSystem/TopPotentialLoading/toppotentialloading.cpp
     FrictionSystem/SidePotentialLoading/sidepotentialloading.cpp
+    FrictionSystem/Cantilever/cantilever.cpp
+    FrictionSystem/BulkWave/bulkwave.cpp
+    FrictionSystem/BulkStretch/bulkstretch.cpp
     InputManagement/Parameters/parameters.cpp
     DriverBeam/driverbeam.cpp
     Lattice/TriangularLattice/triangularlattice.cpp

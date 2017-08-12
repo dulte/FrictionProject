@@ -82,14 +82,27 @@ void LatticeScanner::scan(){
         // Construct the node
         std::shared_ptr<Node> node = Lattice::newNode(m_parameters, m_latticeInfo, x, y);
         // Use the letters in the first column to determine the node type
-        if (tokens[0].find("T") != std::string::npos)
+        bool foundChar = false;
+        if (tokens[0].find("T") != std::string::npos){
             m_topNodes.push_back(node);
-        if (tokens[0].find("B") != std::string::npos)
+            foundChar = true;
+        }
+        if (tokens[0].find("B") != std::string::npos){
             m_bottomNodes.push_back(node);
-        if (tokens[0].find("L") != std::string::npos)
+            foundChar = true;
+        }
+        if (tokens[0].find("L") != std::string::npos){
             m_leftNodes.push_back(node);
-        if (tokens[0].find("N") != std::string::npos)
+            foundChar = true;
+        }
+        if (tokens[0].find("N") != std::string::npos){
             m_normalNodes.push_back(node);
+            foundChar = true;
+        }
+        if (!foundChar){
+            std::cerr << "Unrecongized character in line " << line << std::endl;
+            throw std::runtime_error("Unable to parse lattice file");
+        }
         m_nodes.push_back(node);
     }
 

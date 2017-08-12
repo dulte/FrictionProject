@@ -14,7 +14,6 @@ public:
 
     void initialize();
     vec3 getForceModification();
-    //void fileOutputAction(std::shared_ptr<H5::H5File>);
 
 
     std::vector<double> m_x0; // Acual position of node connection point

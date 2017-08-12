@@ -1,7 +1,7 @@
-#include <iostream>
-#include <cmath>
+#include <memory>
+#include "toppotentialloading.h"
+#include "Node/node.h"
 #include "ForceModifier/ConstantForce/constantforce.h"
-#include "ForceModifier/PotentialSurface/potentialsurface.h"
 #include "ForceModifier/PotentialPusher/potentialpusher.h"
 #include "ForceModifier/RelativeVelocityDamper/relativevelocitydamper.h"
 #include "ForceModifier/AbsoluteOmegaDamper/absoluteomegadamper.h"
@@ -11,16 +11,15 @@
 #include "Lattice/lattice.h"
 #include "InputManagement/Parameters/parameters.h"
 #include "DataOutput/DataDumper/datadumper.h"
-#include "sidepotentialloading.h"
 
-
-#define pi 3.14159265358979323
-
-SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameters)
+template<typename T, typename ...Args>
+std::unique_ptr<T> make_unique( Args&& ...args )
+{
+    return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
+}
+TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
     : FrictionSystem(parameters)
 {
-    m_pusherStartHeight    = parameters->get<int>("pusherStartHeight");
-    m_pusherEndHeight      = parameters->get<int>("pusherEndHeight");
     int nx                 = parameters->get<int>("nx");
     double topLoadingForce = parameters->get<double>("fn");
     double d               = parameters->get<double>("d");
@@ -76,23 +75,29 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
     dumper.dumpFrictionInfo(frictionInfo);
     dumper.dumpParameters(parameters);
     dumper.dumpLatticeStructure(m_lattice);
+
+    // Add the driver
+    m_driverBeam = std::make_shared<DriverBeam>(m_parameters, m_lattice);
+    m_driverBeam->attachToLattice();
+    m_lattice->nodes.push_back(m_driverBeam);
 }
 
-SidePotentialLoading::~SidePotentialLoading()
-{
-}
+TopPotentialLoading::~TopPotentialLoading() {}
 
-void SidePotentialLoading::startDriving(double tInit)
-{
-    if (m_lattice->leftNodes.size() <= 0)
-        throw std::runtime_error("Lattice has no left nodes, and can not addPusher");
-
-    for (int j = m_pusherStartHeight; j < m_pusherEndHeight; j++)
-    {
-        std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(m_k, m_vD, m_lattice->leftNodes[j]->r().x(), tInit);
-        pusherNodes.push_back(myPusher);
-
-        m_lattice->leftNodes[j]->addModifier(std::move(myPusher));
-        m_driverNodes.push_back(m_lattice->leftNodes[j]);
+void TopPotentialLoading::startDriving(double tInit){
+    m_isDriving = true;
+    m_driverBeam->startDriving();
+    for (auto& node: m_driverBeam->m_nodes){
+        std::shared_ptr<PotentialPusher> pusher = std::make_shared<PotentialPusher>(m_k, m_vD, node->r().x(), tInit);
+        pusherNodes.push_back(pusher);
+        node->addModifier(std::move(pusher));
+        m_driverNodes.push_back(node);
     }
+}
+
+size_t TopPotentialLoading::numberOfNodes() const{
+    size_t topNodes = m_isDriving ? m_driverNodes.size() : m_lattice->topNodes.size();
+    return m_lattice->normalNodes.size() +
+        m_lattice->bottomNodes.size() + m_lattice->leftNodes.size() +
+        topNodes;
 }

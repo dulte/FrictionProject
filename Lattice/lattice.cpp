@@ -42,6 +42,7 @@ void Lattice::step(double dt)
     }
     m_t += dt*0.5;
 }
+
 std::shared_ptr<LatticeInfo> Lattice::latticeInfoFromParameters(std::shared_ptr<Parameters> parameters){
     double E  = parameters->get<double>("E");
     double nu = parameters->get<double>("nu");
@@ -49,7 +50,6 @@ std::shared_ptr<LatticeInfo> Lattice::latticeInfoFromParameters(std::shared_ptr<
     double hZ = parameters->get<double>("hZ");
     return std::make_shared<LatticeInfo>(E, nu, d, hZ);
 }
-
 
 std::shared_ptr<Node> Lattice::newNode(std::shared_ptr<Parameters>  parameters,
                                        std::shared_ptr<LatticeInfo> latticeInfo,

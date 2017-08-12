@@ -1,7 +1,7 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
-#include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
+#include "FrictionSystem/frictionsystem.h"
 #include "FrictionInfo/frictioninfo.h"
 #include "LatticeInfo/latticeinfo.h"
 #include "InputManagement/Parameters/parameters.h"
@@ -74,7 +74,7 @@ void DataDumper::dumpLatticeInfo(const std::shared_ptr<LatticeInfo> info) {
     file.close();
 }
 
-void DataDumper::dumpSystem(const SidePotentialLoading* system) {
+void DataDumper::dumpSystem(const FrictionSystem* system) {
     std::stringstream ss;
     ss << "kappa\t" << system->m_kappa << '\n'
        << "loadingForcePerTopNode\t" << system->m_loadingForce << '\n'

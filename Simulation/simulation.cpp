@@ -6,10 +6,13 @@
 #include "simulation.h"
 #include "InputManagement/Parameters/parameters.h"
 #include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
+#include "FrictionSystem/TopPotentialLoading/toppotentialloading.h"
+#include "FrictionSystem/Cantilever/cantilever.h"
+#include "FrictionSystem/BulkWave/bulkwave.h"
+#include "FrictionSystem/BulkStretch/bulkstretch.h"
 
 Simulation::Simulation()
-    :
-    parametersPath("input/parameters.txt")
+    :parametersPath("input/parameters.txt")
 {}
 
 Simulation::~Simulation() {}
@@ -28,13 +31,16 @@ int Simulation::setup() {
 
     // Fill the time marks
     phases[parameters->get<int>("nt")] = &Simulation::nop;
-    phases[parameters->get<int>("releaseTime")] = &Simulation::releaseSprings;
-    phases[parameters->get<int>("drivingTime")] = &Simulation::startDriving;
+    int releaseTime = parameters->get<int>("releaseTime");
+    int drivingTime = parameters->get<int>("drivingTime");
+    if (releaseTime == drivingTime){
+        phases[releaseTime] = &Simulation::releaseSpringsNstartDriving;
+    } else {
+        phases[parameters->get<int>("releaseTime")] = &Simulation::releaseSprings;
+        phases[parameters->get<int>("drivingTime")] = &Simulation::startDriving;
+    }
 
-    // Sort the time marks and reverse them so that the lowest
-    // time values are at the end
     // std::sort(phases.begin(), phases.end());
-    // std::reverse(phases.begin(), phases.end());
 
     // Set the time mark to the first mark
     nextPhase = phases.begin();
@@ -42,17 +48,18 @@ int Simulation::setup() {
 
     try {
         std::cout << "Constructing system" << std::endl;
-        system = std::make_shared<SidePotentialLoading>(parameters);
+        system = std::make_shared<BulkStretch>(parameters);
     } catch (std::exception &ex) {
         std::cerr << "Error> " << ex.what() << std::endl;
     }
     return 0;
 }
 
+
 void Simulation::run() {
     startClock();
     system->isLockFrictionSprings(true);
-    std::cout << "Starting the model with springs locked at " << timeSinceStart() << std::endl;
+    std::cout << "Starting the simulation with the model stationary and springs locked at " << timeSinceStart() << std::endl;
     while (true){
         system->step(step, timestep);
         timestep++;
@@ -65,12 +72,14 @@ void Simulation::run() {
             ++nextPhase;
             if(nextPhase == phases.end())
                 break;
+
             restartProgress();
             timeSinceLastPhase = timeForNextPhase;
-            timeForNextPhase = (*nextPhase).first;
+            timeForNextPhase   = (*nextPhase).first;
         }
     }
     std::cout << "Simulation complete at " << timeSinceStart() << std::endl;
+    system->postProcessing();
 }
 
 void Simulation::releaseSprings(){
@@ -80,7 +89,7 @@ void Simulation::releaseSprings(){
 
 void Simulation::startDriving(){
     std::cout << "Starting to drive at " << timeSinceStart() << std::endl;
-    system->startDriving();
+    system->startDriving(timestep*step);
 }
 
 void Simulation::advanceProgress(int i){
@@ -96,4 +105,3 @@ double Simulation::timeSinceStart(){
     auto time = std::chrono::duration_cast<std::chrono::duration<double>>(diff).count();
     return time;
 }
-

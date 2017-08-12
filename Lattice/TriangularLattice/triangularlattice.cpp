@@ -38,19 +38,25 @@ void TriangularLattice::populate(std::shared_ptr<Parameters> parameters, int nx,
             vec3 pos(rx, ry,0);
             std::shared_ptr<Node> newNode= std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
             nodes.push_back(newNode);
-            if (j == 0)
 
+            bool normal = true;
+            if (j == 0)
             {
                 bottomNodes.push_back(newNode);
+                normal = false;
             }
             if (j == ny-1)
             {
                 topNodes.push_back(newNode);
+                normal = false;
             }
             if (i == 0)
             {
                 leftNodes.push_back(newNode);
+                normal = false;
             }
+            if (normal)
+                normalNodes.push_back(newNode);
         }
     }
 
@@ -136,12 +142,16 @@ void TriangularLattice::populateCantilever(std::shared_ptr<Parameters> parameter
     double rx = 0;
     double ry = d;
     vec3 pos(rx, ry,0);
-    nodes.push_back(std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo));
+    auto node1 = std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
+    nodes.push_back(node1);
+    normalNodes.push_back(node1);
 
     double rx2 = d;
     double ry2 = d;
     vec3 pos2(rx2, ry2,0);
-    nodes.push_back(std::make_shared<Node>(pos2, density*d*d*hZ/4*pi, d*d/8, latticeInfo));
+    auto node2 = std::make_shared<Node>(pos2, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
+    nodes.push_back(node2);
+    normalNodes.push_back(node2);
 
     for (auto & node : nodes)
     {

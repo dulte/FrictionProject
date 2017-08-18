@@ -40,12 +40,14 @@ void Node::updateForcesAndMoments(){
         for (auto & neighbor : neighborInfo){
             vec3 rDiff = neighbor->node()->r() - r();
             double d0 = neighbor->d0();
+            double phiOffset = neighbor->phiOffset();
+            double angleR = atan2(rDiff[1], rDiff[0]);
 
             double dij = rDiff.length();
             double neighborPhi = neighbor->node()->phi();
 
-            double phi_ij           = phi();
-            double phi_ji           = neighborPhi;
+            double phi_ij           = angleR - phi() - phiOffset;
+            double phi_ji           = angleR - neighborPhi - phiOffset;
 
             double fn               = m_latticeInfo->kappa_n()*(dij-d0);
             double fs               = -m_latticeInfo->kappa_s()*0.5*(phi_ij + phi_ji);

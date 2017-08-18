@@ -6,8 +6,6 @@
 #include <memory>
 #include <vector>
 
-using namespace std;
-
 class NodeInfo;
 class LatticeInfo;
 class Lattice;
@@ -28,6 +26,8 @@ public:
     double  distanceTo(std::shared_ptr<Node> other);
     void    setPhi(double phi);
     void    pertubatePosition(vec3 r);
+    void    pertubateRotation(double phi);
+
 
     vec3    &r()              {return m_r;}
     vec3    &v()              {return m_v;}
@@ -45,6 +45,7 @@ public:
     void    isSetForce(bool);
     void    setLattice(const std::shared_ptr<Lattice>& lattice) {m_lattice = lattice;}
     void    forcePosition(const vec3 &r);
+    void    forceVelocity(const vec3 &v);
     void    setMass(double newMass){ m_mass = newMass;}
     void    setMoment(double newMoment) {m_moment = newMoment;}
 

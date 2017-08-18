@@ -34,7 +34,7 @@ BulkStretch::BulkStretch(std::shared_ptr<Parameters> parameters)
     {
         std::shared_ptr<RelativeVelocityDamper> myDamper = std::make_shared<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(myDamper));
-        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(eta/40.0);
+        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(1e-5);
         node->addModifier(std::move(omegaDamper));
     }
 
@@ -61,14 +61,34 @@ void BulkStretch::postProcessing(){
     // bottomRightCorner.print();
     const double finalxLength = topRightCorner.x() - topLeftCorner.x();
     const double finalyLength = topLeftCorner.y() - bottomLeftCorner.y();
-    const double crossSection = hZ*finalyLength;// finalxLength * finalyLength;
-    const double strain       = (finalxLength-initialxLength)/initialxLength;
-    const double stress       = force/crossSection;
-    const double E = force*(initialxLength)/(crossSection*(finalxLength-initialxLength));
-    std::cout << "New x length:    " << finalxLength << " m \n"
-              << "New y length:    " << finalyLength << " m \n"
-              << "Cross section:   " << crossSection << " m² \n"
-              << "Strain:          " << strain << "\n"
-              << "Stress:          " << stress << " N/m²\n"
-              << "Young's modulus: " << E/1e9 << " GPa" << std::endl;
+    const double crossSection = hZ*initialyLength;
+    const double strain       = (finalxLength - initialxLength)/initialxLength; // Axial strain
+    const double strainTrans  = (finalyLength - initialyLength)/initialyLength; // Transverse strain
+    const double stress       = 21*force/crossSection;
+    const double E = stress/strain * sqrt(3);
+    const double nu = -strainTrans/strain;
+    const double G = E/(2*(1+nu));
+    const double K = E/(3*(1-2*nu));
+    const double M = K + 4*G/3; // Elastic moduli P-wave modulus
+    const double rho = m_parameters->get<double>("density");
+    const double vp = sqrt(M/rho);
+    const double actualE = m_parameters->get<double>("E") * sqrt(3);
+    const double actualNu = m_parameters->get<double>("nu");
+    const double actualG = actualE/(2*(1+nu));
+    const double actualK = actualE/(3*(1-2*nu));
+    const double actualM = actualK + 4*actualG/3;
+    const double actualVp = sqrt(actualM/rho);
+    std::cout << "Final x length:                 " << finalxLength << " m \n"
+              << "Final y length:                 " << finalyLength << " m \n"
+              << "Inital x length:               " << initialxLength << " m \n"
+              << "delta " << finalxLength - initialxLength << "m \n"
+              << "Cross section:                " << crossSection << " m² \n"
+              << "Axial strain:                 " << strain << "\n"
+              << "Transverse strain:            " << strainTrans << "\n"
+              << "Stress:                       " << stress << " N/m²\n"
+              << "Young's modulus:              " << E/1e9 << " GPa should be " << actualE/1e9 << " GPa\n"
+              << "Poisson's Ratio:              " << nu << ", should be " << actualNu << "\n"
+              << "Bulk Modulus:                 " << G/1e9 << " GPa, should be " << actualG/1e9 << " GPa\n"
+              << "Elastic Moduli P-wave modulus " << M/1e9 << " GPa, should be " << actualM/1e9 << " GPa\n"
+              << "Velocity of P-waves:          " << vp << " m/s, should be " << actualVp << " m/s\n";
 }

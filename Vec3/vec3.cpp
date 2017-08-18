@@ -3,8 +3,6 @@
 #include <stdlib.h>
 #include <iostream>
 
-using namespace std;
-
 vec3::vec3()
 {
     components[0] = 0;
@@ -88,9 +86,13 @@ void vec3::normalize(){
 }
 
 void vec3::print() const{
-    cout << "[" << components[0] << "," << components[1] << "," << components[2] << "]" << endl;
+    std::cout << "[" << components[0] << "," << components[1] << "," << components[2] << "]" << std::endl;
 }
 
+std::ostream & operator<<(std::ostream &os, const vec3 &self){
+    os << "[" << self.components[0] << ", " <<  self.components[1] << ", " << self.components[2] << "]";
+    return os;
+}
 
 double vec3::lengthSquared() const
 {

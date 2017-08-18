@@ -10,6 +10,7 @@
 #include "FrictionSystem/Cantilever/cantilever.h"
 #include "FrictionSystem/BulkWave/bulkwave.h"
 #include "FrictionSystem/BulkStretch/bulkstretch.h"
+#include "FrictionSystem/Rotate/rotate.h"
 
 Simulation::Simulation()
     :parametersPath("input/parameters.txt")
@@ -48,7 +49,7 @@ int Simulation::setup() {
 
     try {
         std::cout << "Constructing system" << std::endl;
-        system = std::make_shared<BulkStretch>(parameters);
+        system = std::make_shared<Rotate>(parameters);
     } catch (std::exception &ex) {
         std::cerr << "Error> " << ex.what() << std::endl;
     }

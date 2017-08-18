@@ -23,7 +23,7 @@ Geometry            + GeometryExtension() -> Geometry
 A + (B + C) = (A + B) + C                (Commutativity)
     Where, A, B, C are any object
 
-It is a goal to makes every GeometricExtension <insert fancy word I've forgotten>,
+It is a goal to makes every GeometricExtension idempotent,
 i.e that addition of a GeometricExtension leaves the geometry unchanged if
 there is nothing to change.
 
@@ -34,7 +34,6 @@ and add it to an already existing geometry.
 import os
 import argparse
 import inspect
-import re
 from itertools import product
 from math import sin, cos, pi, floor
 
@@ -101,6 +100,7 @@ class Lattice:
 
                 # Strings can't be evaluated.
                 # All (current) strings are something-filename
+                # This is an incredible stupid solution
                 if 'filename' in tokens[0] or 'path' in tokens[0]:
                     self.parameters[tokens[0]] = tokens[1]
                 else:
@@ -215,11 +215,6 @@ class Geometry(metaclass=Meta):
             node = Node(x, y)
             self.markNode(node, i, j)
             self.nodes.append(node)
-
-        x, y = self.makeXYfromIJ(self.nx, 0)
-        node = Node(x, y)
-        self.markNode(node, self.nx, 0)
-        self.nodes.append(node)
 
         return self.nodes
 
@@ -359,7 +354,7 @@ class SymmetricGroovesByReverseConstruction(GeometryExtension):
         prev = 0
         next = 2*self.grooveSize
         piece = [1]*self.grooveSize+[0]*self.grooveSize;
-        while restLength > 0:
+        while restLength > len(piece):
             for i in range(2):
                 grooves[prev:next] = piece
                 grooves.reverse()
@@ -490,9 +485,9 @@ class SymmetricLegs(GeometryExtension):
         # This makes triangular legs symmetric while making
         # square legs unsymmetric. Hence, check if the geometry is
         # square/already symmetric and leave it if it is
-        if not (j % 2) and i > 0 and self.doPlaceBottomNodeHere[i-1]:
+        if (j % 2) and i < self.nx-1 and self.doPlaceBottomNodeHere[i+1]:
             # Leave already symmetric geometries symmetric by comparing the
-            # x-coordiante for two nodes above each other
+            # x-coordinate for two nodes above each other
             if self.makeXYfromIJ(1, 1)[0] != self.makeXYfromIJ(1, 2)[0]:
                 return True
         # For groove nodes, check if there should be a node at the current i-index

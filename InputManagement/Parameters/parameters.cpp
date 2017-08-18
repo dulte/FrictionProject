@@ -20,6 +20,7 @@ std::unique_ptr<Parameter<T>> newParam(const std::string &name){
 Parameters::Parameters(const std::string &filenameConfig){
     constructMap();
     readParameters(filenameConfig);
+    checkVersion();
     checkThatAllParametersAreSet();
     m_infileParameters.close();
 }
@@ -85,6 +86,7 @@ bool Parameters::get(std::string name){
 }
 
 void Parameters::constructMap(){
+    addParameter<double>("version");
     addParameter<int>("nx");
     addParameter<int>("ny");
     addParameter<int>("nt");
@@ -105,6 +107,7 @@ void Parameters::constructMap(){
     addParameter<double>("mus");
     addParameter<double>("absDampCoeff");
     addParameter<double>("relVelDampCoeff");
+    addParameter<double>("alpha");
     addParameter<int>("snapshotstart");
     addParameter<int>("snapshotbuftime");
     addParameter<std::string>("outputpath");
@@ -211,6 +214,22 @@ void Parameters::checkThatAllParametersAreSet(){
             std::cerr << param.first << " is not set.";
             throw std::exception();
         }
+    }
+}
+
+void Parameters::checkVersion() {
+    double version;
+    try {
+        version = get<double>("version");
+    } catch (std::exception &ex) {
+        std::stringstream msg;
+        msg << "Version incompatible with parameters. Expected version " << VERSION << ", got none." << std::endl;
+        throw std::runtime_error(msg.str());
+    }
+    if (version != VERSION){
+        std::stringstream msg;
+        msg << "Version incompatible with parameters. Expected version " << VERSION << ", got " << version << std::endl;
+        throw std::runtime_error(msg.str());
     }
 }
 

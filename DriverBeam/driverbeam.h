@@ -27,6 +27,8 @@ public :
     void stealTopNodes(std::shared_ptr<Lattice>);
     void updateForcesAndMoments();
     void vvstep(double dt);
+    void correctVelocity();
+    void beginCorrectVelocity();
     double totalShearForce();
 
     // The top nodes of to lattice to which the attachment nodes are attached
@@ -40,9 +42,13 @@ protected :
     double m_vD;              // Velocity of the beam
     double m_angle;           // Wanted angle
     int    m_rotTime;         // Time it takes for the beam to go from 0 to angle
+    int    m_velocityTime;    // Time it takes for the beam to go to the desired velocity
+    double m_beamMass;
     // Not read from parameters
-    double             m_phiStep;         // Change in angle required to reach angle after rotTime
-    double             m_velocity;        // Current velocity of the driver in the x-direction
+    double m_phiStep;         // Change in angle required to reach angle after rotTime
+    double m_velocity;        // Current velocity of the driver in the x-direction
+    double m_velocityStep;    // Change in velocity required to reach the desired velocity after velocityTime
+    double m_initalVel;       // The inital velocity from which velocityStep begins
     std::vector<double> m_distFromCenter;
     std::shared_ptr<Parameters> m_parameters;
     bool m_isDriving = false;

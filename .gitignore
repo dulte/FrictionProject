@@ -71,3 +71,12 @@ Thumbs.db
 *.dll
 *.exe
 
+/CMakeCache.txt
+/CMakeFiles
+/GPATH
+/GRTAGS
+/GTAGS
+/*.el
+InputManagement/Parameters/CMakeFiles/
+output/
+/analysis/jobs*

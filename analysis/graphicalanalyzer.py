@@ -32,6 +32,11 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
         self.ykey = 'static coefficient'
         self.colorkey = 'height'
         self.pickerEpsilon = 5
+        self.labels = {'size': 'Size of grooves [nr. blocks wide]',
+                       'height': 'height of grooves',
+                       'static coefficient': r'Static coefficient   $F_S/F_N$',
+                       'driver speed': 'Driver speed [mm/s]'}
+
         self.createMainFrame()
         self.onDraw()
 
@@ -103,17 +108,18 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
         else:
             self.scatterData = self.df[[self.xkey, self.ykey, self.colorkey]]
 
-        cmap = ListedColormap(sns.color_palette("coolwarm").as_hex())
+        cmap = ListedColormap(sns.color_palette("coolwarm").as_hex() )
+        # cmap = ListedColormap(['r', 'b'])
         self.axes = self.fig.add_subplot(111)
         points = self.axes.scatter(self.scatterData[self.xkey],
                                    self.scatterData[self.ykey],
                                    c=self.scatterData[self.colorkey],
                                    picker=self.pickerEpsilon,
                                    cmap=cmap)
-        cb = self.fig.colorbar(points)
-        cb.set_label(self.colorkey)
-        self.axes.set_xlabel(self.xkey)
-        self.axes.set_ylabel(self.ykey)
+        cb = self.fig.colorbar(points, ax=self.axes)
+        cb.set_label(self.labels[self.colorkey])
+        self.axes.set_xlabel(self.labels[self.xkey])
+        self.axes.set_ylabel(self.labels[self.ykey])
         self.canvas.draw()
 
     def onKeyPress(self, event):
@@ -131,7 +137,7 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
                              'height': [l.height for l in lattices],
                              'size': [l.size for l in lattices],
                              'angle': [l.angle for l in lattices],
-                             'driver speed': [l.speed for l in lattices],
+                             'driver speed': [l.speed/1e-3 for l in lattices],
                              'beam mass': [l.beamMass for l in lattices],
                              'static coefficient': manager.getStaticFrictionCoefficient()},
                             index=manager.id)

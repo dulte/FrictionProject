@@ -34,7 +34,7 @@ SidePotentialLoading::SidePotentialLoading(std::shared_ptr<Parameters> parameter
 
     const double kappa     = m_lattice->latticeInfo->kappa_n();
     const double eta       = sqrt(0.1*mass*kappa) * relVelDampCoeff;
-    const double alpha     = eta/parameters->get<double>("absDampCoeff");
+    const double alpha     = parameters->get<double>("alpha");
 
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 
@@ -84,15 +84,20 @@ SidePotentialLoading::~SidePotentialLoading()
 
 void SidePotentialLoading::startDriving(double tInit)
 {
+    double pK = m_parameters->get<double>("pK");
     if (m_lattice->leftNodes.size() <= 0)
         throw std::runtime_error("Lattice has no left nodes, and can not addPusher");
 
-    for (int j = m_pusherStartHeight; j < m_pusherEndHeight; j++)
+    // for (int j = m_pusherStartHeight; j < m_pusherEndHeight; j++)
+    for(auto& node: m_lattice->topNodes)
     {
-        std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(m_k, m_vD, m_lattice->leftNodes[j]->r().x(), tInit);
+        // std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(pK, m_vD, m_lattice->leftNodes[j]->r().x(), tInit);
+         std::shared_ptr<PotentialPusher> myPusher = std::make_shared<PotentialPusher>(pK, m_vD, node->r().x(), tInit);
         pusherNodes.push_back(myPusher);
 
-        m_lattice->leftNodes[j]->addModifier(std::move(myPusher));
-        m_driverNodes.push_back(m_lattice->leftNodes[j]);
+        // m_lattice->leftNodes[j]->addModifier(std::move(myPusher));
+        node->addModifier(std::move(myPusher));
+        m_driverNodes.push_back(node);
+        // m_driverNodes.push_back(m_lattice->leftNodes[j]);
     }
 }

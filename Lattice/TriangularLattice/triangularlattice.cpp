@@ -110,7 +110,9 @@ void TriangularLattice::populateWithUnitCell(std::shared_ptr<Parameters> paramet
             double rx = i*d+(j%2)*d*cos(pi/3);
             double ry = j*d*sin(pi/3);
             vec3 pos(rx, ry,0);
-            nodes.push_back(std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo));
+            auto node = std::make_shared<Node>(pos, density*d*d*hZ/4*pi, d*d/8, latticeInfo);
+            nodes.push_back(node);
+            normalNodes.push_back(node);
         }
     }
     double rx = -d*cos(pi/3);

@@ -1,4 +1,5 @@
 #include <memory>
+#include <random>
 #include "toppotentialloading.h"
 #include "Node/node.h"
 #include "ForceModifier/ConstantForce/constantforce.h"
@@ -33,7 +34,7 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
 
     const double kappa     = m_lattice->latticeInfo->kappa_n();
     const double eta       = sqrt(0.1*mass*kappa) * relVelDampCoeff;
-    const double alpha     = eta/parameters->get<double>("absDampCoeff");
+    const double alpha     = parameters->get<double>("alpha");
 
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 
@@ -41,7 +42,7 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
     double N = -topLoadingForce/nx;
     for (auto & node : m_lattice->topNodes)
     {
-        std::shared_ptr<ConstantForce> force = std::make_shared<ConstantForce>(vec3(0, N, 0));
+        std::unique_ptr<ConstantForce> force = make_unique<ConstantForce>(vec3(0, N, 0));
         node->addModifier(std::move(force));
     }
 
@@ -54,12 +55,15 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
     }
 
     // Add dampning force
+    std::uniform_real_distribution<double> unif(0,0.2);
+    std::default_random_engine re;
     for (auto & node : m_lattice->nodes)
     {
-        std::shared_ptr<RelativeVelocityDamper> damper = std::make_shared<RelativeVelocityDamper>(eta);
+        std::unique_ptr<RelativeVelocityDamper> damper = make_unique<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(damper));
-        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(alpha);
+        std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = make_unique<AbsoluteOmegaDamper>(alpha);
         node->addModifier(std::move(omegaDamper));
+        node->pertubateRotation(unif(re));
     }
 
     // Quick bandaid
@@ -80,6 +84,10 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
     m_driverBeam = std::make_shared<DriverBeam>(m_parameters, m_lattice);
     m_driverBeam->attachToLattice();
     m_lattice->nodes.push_back(m_driverBeam);
+
+    // And add dampning
+    std::unique_ptr<RelativeVelocityDamper> damper = make_unique<RelativeVelocityDamper>(eta);
+    m_driverBeam->addModifier(std::move(damper));
 }
 
 TopPotentialLoading::~TopPotentialLoading() {}
@@ -87,12 +95,12 @@ TopPotentialLoading::~TopPotentialLoading() {}
 void TopPotentialLoading::startDriving(double tInit){
     m_isDriving = true;
     m_driverBeam->startDriving();
-    for (auto& node: m_driverBeam->m_nodes){
-        std::shared_ptr<PotentialPusher> pusher = std::make_shared<PotentialPusher>(m_k, m_vD, node->r().x(), tInit);
-        pusherNodes.push_back(pusher);
-        node->addModifier(std::move(pusher));
-        m_driverNodes.push_back(node);
-    }
+    // for (auto& node: m_driverBeam->m_nodes){
+    //     std::shared_ptr<PotentialPusher> pusher = std::make_shared<PotentialPusher>(m_k, m_vD, node->r().x(), tInit);
+    //     pusherNodes.push_back(pusher);
+    //     node->addModifier(std::move(pusher));
+    //     m_driverNodes.push_back(node);
+    // }
 }
 
 size_t TopPotentialLoading::numberOfNodes() const{

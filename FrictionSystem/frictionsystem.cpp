@@ -159,6 +159,7 @@ std::string xyzNodeString(const std::string& c, const std::shared_ptr<Node>& nod
     std::stringstream ss;
     vec3 r = node->r();
     vec3 f = node->f();
-    ss << c << " " << r[0] << " " << r[1] << " " << f[0] << " " << f[1] << '\n';
+    ss << c << " " << r[0] << " " << r[1] << " " << f[0] << " " << f[1] <<
+        " " << node->phi() << " " << node->omega() << " " << node->moment() <<  '\n';
     return ss.str();
 }

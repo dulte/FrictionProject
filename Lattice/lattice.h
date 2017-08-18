@@ -21,6 +21,7 @@ public:
     virtual void populate(std::shared_ptr<Parameters> parameters) = 0;
     virtual void populate(std::shared_ptr<Parameters>, int nx, int ny) = 0;
     virtual void populateCantilever(std::shared_ptr<Parameters>){};
+    virtual void populateWithUnitCell(std::shared_ptr<Parameters>){};
     static std::shared_ptr<LatticeInfo> latticeInfoFromParameters(std::shared_ptr<Parameters> parameters);
     static std::shared_ptr<Node> newNode(std::shared_ptr<Parameters>, std::shared_ptr<LatticeInfo>,
                                          double x, double y);

@@ -187,6 +187,7 @@ class FrictionAnalyzer(Analyzer):
                                                    self.lattice.height))
                  # linestyle=lines[i[0]])
         self.plotReleaseTime()
+        self.plotDrivingTime()
         plt.xlabel("Time [s]")
         plt.ylabel(r"$F_S/F_N$")
         plt.title(("Local Max for Beam Shear Force for "
@@ -198,6 +199,10 @@ class FrictionAnalyzer(Analyzer):
     def plotReleaseTime(self):
         plt.axvline(x=self.parameters['releaseTime']*self.parameters['step'],
                     linestyle='--', color='k')
+
+    def plotDrivingTime(self):
+        plt.axvline(x=self.parameters['drivingTime']*self.parameters['step'],
+                    linestyle='-.', color='k')
 
 
 class FrictionManager(AnalyzerManager):

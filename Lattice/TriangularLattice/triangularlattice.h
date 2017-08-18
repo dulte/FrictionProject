@@ -16,7 +16,7 @@ public:
 
     void populate(std::shared_ptr<Parameters>) override;
     void populate(std::shared_ptr<Parameters>, int, int) override;
-    void populateWithUnitCell(std::shared_ptr<Parameters>);
+    void populateWithUnitCell(std::shared_ptr<Parameters>) override;
     void populateCantilever(std::shared_ptr<Parameters>);
  private:
     int m_nx;

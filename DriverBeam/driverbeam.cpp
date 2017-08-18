@@ -26,9 +26,7 @@ DriverBeam::DriverBeam(std::shared_ptr<Parameters>  parameters,
     m_angle   = parameters->get<double>("beamAngle");
     m_rotTime = parameters->get<int>("beamRotTime");
     m_phiStep = m_angle/m_rotTime;
-    m_mass    = parameters->get<double>("beamMass");
-    double d  = parameters->get<double>("d");
-    m_moment  = m_mass*d*m_nx*d*m_nx/12.0;
+    m_beamMass    = parameters->get<double>("beamMass");
     m_velocity = 0;
 }
 
@@ -48,7 +46,6 @@ void DriverBeam::attachToLattice(){
     for (size_t i = 0; i < m_nodes.size(); i++){
         m_distFromCenter.push_back(m_r[0]-m_nodes[i]->r()[0]);
     }
-
 }
 
 void DriverBeam::stealTopNodes(std::shared_ptr<Lattice> lattice){
@@ -73,10 +70,13 @@ void DriverBeam::stealTopNodes(std::shared_ptr<Lattice> lattice){
     }
     // then, clear the topNodes (is this necessary??) YES!
     // lattice->topNodes.clear();
-    // Distribute the mass of the driver beam onto the nodes
+    // Sum the nodes3
     for (auto& node: m_nodes){
-        node->setMass(m_mass/m_nodes.size());
+        m_mass += node->mass();
     }
+    m_mass += m_beamMass;
+    double d  = m_parameters->get<double>("d");
+    m_moment  = m_mass*d*m_nx*d*m_nx/12.0;
 }
 
 void DriverBeam::updateForcesAndMoments(){
@@ -95,7 +95,7 @@ void DriverBeam::vvstep(double dt){
     m_v   += (m_f/m_mass)*0.5*dt;
 
     if (m_isDriving){
-        // m_v[0] = m_velocity;
+        m_v[0] = m_velocity;
         m_phi  = m_angle;
     }
     else
@@ -110,13 +110,14 @@ void DriverBeam::vvstep(double dt){
         r[0] -= cos(m_phi)*m_distFromCenter[i];
         r[1] += sin(m_phi)*m_distFromCenter[i];
         m_nodes[i]->forcePosition(r);
+        m_nodes[i]->forceVelocity(m_v);
     }
 }
 
 std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();
 
-    DataPacket torque   = DataPacket(DataPacket::dataId::BEAM_TORQUE, timestep, time);
+    DataPacket torque     = DataPacket(DataPacket::dataId::BEAM_TORQUE, timestep, time);
     DataPacket shearForce = DataPacket(DataPacket::dataId::BEAM_SHEAR_FORCE, timestep, time);
 
     for (std::shared_ptr<Node> node : m_nodes) {
@@ -126,6 +127,15 @@ std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){
     packetvec.push_back(torque);
     packetvec.push_back(shearForce);
     return packetvec;
+}
+
+void DriverBeam::correctVelocity(){
+    
+}
+
+void DriverBeam::beginCorrectVelocity(){
+    m_initalVel = m_v[0];
+    m_velocityStep = (m_velocity-m_initalVel)/m_velocityTime;
 }
 
 double DriverBeam::totalShearForce(){

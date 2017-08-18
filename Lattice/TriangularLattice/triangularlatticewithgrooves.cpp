@@ -297,7 +297,6 @@ void TriangularLatticeWithGrooves::populateCantilever(double d, double E, double
     }
 }
 
-
 std::vector<DataPacket> TriangularLatticeWithGrooves::getDataPackets(int timestep, double time)
 {
     std::vector<DataPacket> packetvec = std::vector<DataPacket>();

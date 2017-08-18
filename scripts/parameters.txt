@@ -2,66 +2,83 @@
 # Comments start with '#'
 # Only the first two words are processed.
 # The first word is the parameter name, the second is its value.
-¤global x; x = 5
+version 0.9
+
 #Simulation parameters
-nx                   [64, 78, 31, 22]    # Number of nodes in the x direction
-ny                   [x**i for i in range(5)]    # Number of nodes in the y direction
-writingFreq          100   # Useless??
-nt                   5e5  # Total number of time steps 
-releaseTime          1e4   # Number of steps before the springs are released 
-fn                   1920 
-ns                   50
-tau                  0.002
-d                    0.005
-E                    3e9   # Youngs modul
-k                    4e6
-nu                   0.33
-hZ                   0.006
+nx                   64     # Number of nodes in the x direction
+ny                   31     # Number of nodes in the y direction
+nt                   5e5    # Total number of time steps 
+releaseTime          1e4    # Number of steps before the springs are released 
+drivingTime          2e4    # Number of steps before the driving begins
+fn                   1920   # Normal load [N]
+ns                   50     # No. of interface springs per block
+tRmean               0.002  # Mean slipping time for interface spring [s]
+tRstd                0.0006 # Standard deviation slipping time for interface spring, tRmean*0.3 [s]
+d                    0.005  # Distance between neighbour nodes [m]
+E                    3e9    # Youngs modul [Pa]
+k                    4e6    # Driving spring modulus [N/m]
+nu                   0.33   # Poisson's modulus, 1/3 
+hZ                   0.006  # Depth in the z-direction
 density              1300
-step                 2e-7  # Time step [s]
+absDampCoeff         40     # Divisor for absolute omega damping, eta/40
+relVelDampCoeff      1      # Multiplicator for relative velocity damping
+mud                  0.17   # Slipping force coefficient
+mus                  0.4    # Threshold force coefficient
+step                 2e-7   # Time step [s]
+vD                   4e-3   # Driving speed [m/s]
+pK                   4e5    # Spring coefficient of the pusher nodes, if any
+
+# Snapshot
+snapshotstart        1e7    # When to start finding and saving snapshots of maximum
+snapshotbuftime      1e2    # How long to buffer snapshot before dumping them to disk
+
+# Paths
+dumpfilename         foo
+outputpath           output/ # Where to save the output
 
 # Grooves
-grooveSize           5
-grooveHeight         0
+grooveSize           range(1,21)
+grooveHeight         range(1,21)
 
 #Filenames
-latticefilename      Config/lattice.txt
+latticefilename      input/lattice.xyz
 
 #Pusher
-vD                   4e1
-pK                   4e5
 pusherStartHeight    4
 pusherEndHeight      5
 
 #Driver Beam
-driverSprings_k      4e6
-attachmentSprings_k  1e6
-driverForce          1    # Gjør ingenting 
-driverVD             4e1     #4e-4
-straightenerK        4e7
+beamMass             0.0     # Mass of the beam [kg]
+beamAngle            0       # The final angle of the beam [degrees, anticlockwise]
+beamRotTime          1e3     # Number of steps for the beam to rotate from 0 to beamAngle
 
 #Write_data
-writeNodePositionInterface        0
-writeNodeVelocityInterface        0
-writeNodeSpringsAttachedInterface 0
-writeNodePositionAll              0
-writeNodeVelocityAll              0
-writeTotalEnergyAll               0
-writeTotalForceAll                0
-writePusherForce                  0
-writeNormalForce                  0
-writeShearForce                   0
-writeXYZ                          1
+writeInterfacePosition        0
+writeInterfaceVelocity        0
+writeInterfaceAttachedSprings 1
+writeInterfaceNormalForce     0
+writeInterfaceShearForce      0
+writeAllPosition              0
+writeAllVelocity              0
+writeAllEnergy                0
+writeAllForce                 0
+writePusherForce              0
+writeXYZ                      1
+writeBeamTorque               0
+writeBeamShearForce           1
 
-#Write_data_frequency
-freqNodePositionInterface        100
-freqNodeVelocityInterface        1000
-freqNodeSpringsAttachedInterface 100
-freqNodePositionAll              100000
-freqNodeVelocityAll              10000
-freqTotalEnergyAll               10000
-freqTotalForceAll                10000
-freqPusherForce                  100
-freqNormalForce                  100
-freqShearForce                   100
-freqXYZ                          100
+# Frequency for writing data
+freqInterfacePosition        100
+freqInterfaceVelocity        100
+freqInterfaceAttachedSprings 100
+freqInterfaceNormalForce     100
+freqInterfaceShearForce      100
+freqAllPosition              100
+freqAllVelocity              100
+freqAllEnergy                100
+freqAllForce                 100
+freqPusherForce              100
+freqXYZ                      100
+freqBeamTorque               100
+freqBeamShearForce           100
+

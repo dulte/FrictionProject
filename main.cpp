@@ -1,5 +1,5 @@
 // TODO: Take a look at and improve vec3
-#include <iostream>
+// TODO: Start hastigheten sakt
 #include "Simulation/simulation.h"
 
 int main(int argc, char *argv[])

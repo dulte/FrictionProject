@@ -10,6 +10,8 @@
 #include <vector>
 #include "parameter.h"
 
+#define VERSION 0.9
+
 class Parameters{
 public:
     explicit Parameters(const std::string &filenameConfig);
@@ -20,6 +22,7 @@ public:
     T get(std::string);
     template <typename T>
     void addParameter(std::string name);
+    void checkVersion();
 
 
 private:

@@ -59,15 +59,15 @@ void DataDumper::dumpLatticeInfo(const std::shared_ptr<LatticeInfo> info) {
     std::stringstream ss;
     ss << "kappa_s" << '\t' << info->m_kappa_s << '\n'
        << "kappa_n" << '\t' << info->m_kappa_n << '\n'
-       << "E" << '\t' << info->m_E << '\n'
-       << "G" << '\t' << info->m_G << '\n'
-       << "nu" << '\t' << info->m_nu << '\n'
-       << "hZ" << '\t' << info->m_hZ << '\n'
-       << "hY" << '\t' << info->m_hY << '\n'
-       << "I" << '\t' << info->m_I << '\n'
-       << "d" << '\t' << info->m_d << '\n'
-       << "Phi" << '\t' << info->m_Phi << '\n'
-       << "A" << '\t' << info->m_A << std::endl;
+       << "E"       << '\t' << info->m_E << '\n'
+       << "G"       << '\t' << info->m_G << '\n'
+       << "nu"      << '\t' << info->m_nu << '\n'
+       << "hZ"      << '\t' << info->m_hZ << '\n'
+       << "hY"      << '\t' << info->m_hY << '\n'
+       << "I"       << '\t' << info->m_I << '\n'
+       << "d"       << '\t' << info->m_d << '\n'
+       << "Phi"     << '\t' << info->m_Phi << '\n'
+       << "A"       << '\t' << info->m_A << std::endl;
 
     std::ofstream file(outputPath+latticeInfoPath);
     file << ss.str();

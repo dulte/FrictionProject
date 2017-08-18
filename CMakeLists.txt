@@ -32,6 +32,7 @@ add_executable(simulate main.cpp
     FrictionSystem/Cantilever/cantilever.cpp
     FrictionSystem/BulkWave/bulkwave.cpp
     FrictionSystem/BulkStretch/bulkstretch.cpp
+    FrictionSystem/Rotate/rotate.cpp
     InputManagement/Parameters/parameters.cpp
     DriverBeam/driverbeam.cpp
     Lattice/TriangularLattice/triangularlattice.cpp

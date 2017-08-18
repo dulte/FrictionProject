@@ -4,6 +4,7 @@
 #include "Vec3/vec3.h"
 #include "Lattice/lattice.h"
 
+#include <iostream>
 #include <memory>
 #include <vector>
 #include <memory>
@@ -16,7 +17,7 @@ std::unique_ptr<T> make_unique( Args&& ...args )
 {
     return std::unique_ptr<T>( new T( std::forward<Args>(args)... ) );
 }
-Node::Node(vec3 r, double mass, double momentOfInertia, shared_ptr<LatticeInfo> latticeInfo):
+Node::Node(vec3 r, double mass, double momentOfInertia, std::shared_ptr<LatticeInfo> latticeInfo):
     m_r(r),
     m_v(vec3()),
     m_f(vec3()),
@@ -55,7 +56,6 @@ void Node::updateForcesAndMoments(){
             m_f += rDiff/dij*fn +vec3(-rDiff[0], rDiff[1],0)*fs/dij;
         }
     }
-
     for (auto & modifier : m_modifiers)
     {
         m_f      += modifier->getForceModification();
@@ -133,6 +133,10 @@ void Node::pertubatePosition(vec3 r)
     m_r += r;
 }
 
+void Node::pertubateRotation(double phi){
+    m_phi += phi;
+}
+
 double Node::t()
 {
     return m_lattice->t();
@@ -142,7 +146,7 @@ void Node::addModifier(std::shared_ptr<ForceModifier> modifier)
 {
     modifier->setNode(shared_from_this());
     modifier->initialize();
-    m_modifiers.push_back(move(modifier));
+    m_modifiers.push_back(std::move(modifier));
 }
 
 void Node::clearModifiers()
@@ -157,4 +161,8 @@ void Node::isSetForce(bool isSetForce)
 
 void Node::forcePosition(const vec3 &r){
     m_r = r;
+}
+
+void Node::forceVelocity(const vec3& v) {
+    m_v = v;
 }

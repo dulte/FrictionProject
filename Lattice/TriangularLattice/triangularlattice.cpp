@@ -96,12 +96,12 @@ void TriangularLattice::populate(std::shared_ptr<Parameters> parameters, int nx,
 
 void TriangularLattice::populateWithUnitCell(std::shared_ptr<Parameters> parameters)
 {
-    const double E = parameters->get<double>("E");
-    const double nu = parameters->get<double>("nu");
-    const double d = parameters->get<double>("d");
-    const double hZ = parameters->get<double>("hZ");
+    const double E       = parameters->get<double>("E");
+    const double nu      = parameters->get<double>("nu");
+    const double d       = parameters->get<double>("d");
+    const double hZ      = parameters->get<double>("hZ");
     const double density = parameters->get<double>("density");
-    latticeInfo = std::make_shared<LatticeInfo>(E, nu, d, hZ);
+    latticeInfo          = std::make_shared<LatticeInfo>(E, nu, d, hZ);
 
     for (int j = 0; j<3; j++)
     {

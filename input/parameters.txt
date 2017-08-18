@@ -2,13 +2,14 @@
 # Comments start with '#'
 # Only the first two words are processed.
 # The first word is the parameter name, the second is its value.
+version 0.9
 
 #Simulation parameters
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
 nt                   5e4    # Total number of time steps 
-releaseTime          1e3    # Number of steps before the springs are released 
-drivingTime          2e3    # Number of steps before the driving begins
+releaseTime          1e4    # Number of steps before the springs are released 
+drivingTime          2e4    # Number of steps before the driving begins
 fn                   1920   # Normal load [N]
 ns                   50     # No. of interface springs per block
 tRmean               0.002  # Mean slipping time for interface spring [s]
@@ -19,8 +20,9 @@ k                    4e6    # Driving spring modulus [N/m]
 nu                   0.33   # Poisson's modulus, 1/3 
 hZ                   0.006  # Depth in the z-direction
 density              1300
-absDampCoeff         40     # Divisor for absolute omega damping, eta/40
+absDampCoeff         40     # Divisor for absolute damping, eta/40
 relVelDampCoeff      1      # Multiplicator for relative velocity damping
+alpha                1e-5   # Coefficient for angular momentum damping
 mud                  0.17   # Slipping force coefficient
 mus                  0.4    # Threshold force coefficient
 step                 2e-7   # Time step [s]
@@ -28,7 +30,7 @@ vD                   4e-3   # Driving speed [m/s]
 pK                   4e5    # Spring coefficient of the pusher nodes, if any
 
 # Snapshot
-snapshotstart        1e3    # When to start finding and saving snapshots of maximum
+snapshotstart        1e7    # When to start finding and saving snapshots of maximum
 snapshotbuftime      1e2    # How long to buffer snapshot before dumping them to disk
 
 # Paths
@@ -36,8 +38,8 @@ dumpfilename         foo
 outputpath           output/ # Where to save the output
 
 # Grooves
-grooveSize           5
-grooveHeight         4
+grooveSize           4
+grooveHeight         5
 
 #Filenames
 latticefilename      input/lattice.xyz
@@ -47,22 +49,22 @@ pusherStartHeight    4
 pusherEndHeight      5
 
 #Driver Beam
-beamMass             0.0098  # Mass of the beam [kg]
+beamMass             0.0     # Mass of the beam [kg]
 beamAngle            0       # The final angle of the beam [degrees, anticlockwise]
 beamRotTime          1e3     # Number of steps for the beam to rotate from 0 to beamAngle
 
 #Write_data
-writeInterfacePosition        1
+writeInterfacePosition        0
 writeInterfaceVelocity        0
 writeInterfaceAttachedSprings 1
 writeInterfaceNormalForce     0
 writeInterfaceShearForce      0
-writeAllPosition              1
+writeAllPosition              0
 writeAllVelocity              0
 writeAllEnergy                0
-writeAllForce                 1
+writeAllForce                 0
 writePusherForce              0
-writeXYZ                      0
+writeXYZ                      1
 writeBeamTorque               0
 writeBeamShearForce           1
 

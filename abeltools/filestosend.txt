@@ -14,5 +14,5 @@ CMakeLists.txt
 input/
 scripts/klyngeyngler.py
 DriverBeam/
-scripts/
+scripts/constructLattice.py
 Simulation/

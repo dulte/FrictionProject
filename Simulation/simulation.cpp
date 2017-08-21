@@ -49,7 +49,7 @@ int Simulation::setup() {
 
     try {
         std::cout << "Constructing system" << std::endl;
-        system = std::make_shared<Rotate>(parameters);
+        system = std::make_shared<TopPotentialLoading>(parameters);
     } catch (std::exception &ex) {
         std::cerr << "Error> " << ex.what() << std::endl;
     }

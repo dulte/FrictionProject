@@ -45,6 +45,7 @@ void DriverBeam::attachToLattice(){
     // store the default x-distance from the center for each node
     for (size_t i = 0; i < m_nodes.size(); i++){
         m_distFromCenter.push_back(m_r[0]-m_nodes[i]->r()[0]);
+        m_nodes[i]->setPhi(0.0);
     }
 }
 
@@ -76,7 +77,7 @@ void DriverBeam::stealTopNodes(std::shared_ptr<Lattice> lattice){
     }
     m_mass += m_beamMass;
     double d  = m_parameters->get<double>("d");
-    m_moment  = m_mass*d*m_nx*d*m_nx/12.0;
+    m_momentOfInertia = m_mass*d*m_nx*d*m_nx/12.0;
 }
 
 void DriverBeam::updateForcesAndMoments(){
@@ -85,14 +86,16 @@ void DriverBeam::updateForcesAndMoments(){
 // #pragma omp parallel for
     for (size_t i = 0; i < m_nodes.size(); i++){
         m_nodes[i]->updateForcesAndMoments();
-        m_moment += m_nodes[i]->f().cross2d(m_r-m_nodes[i]->r());
+        m_moment += -m_nodes[i]->f().cross2d(m_r-m_nodes[i]->r());
         m_f += m_nodes[i]->f();
     }
 
 }
 
 void DriverBeam::vvstep(double dt){
-    m_v   += (m_f/m_mass)*0.5*dt;
+    // m_omega += (m_moment/m_momentOfInertia)*0.5*dt;
+    // m_phi   += m_omega*dt;
+    m_v     += (m_f/m_mass)*0.5*dt;
 
     if (m_isDriving){
         m_v[0] = m_velocity;
@@ -106,6 +109,9 @@ void DriverBeam::vvstep(double dt){
 // #pragma omp parallel for
     // Align the top nodes along the axis of the beam
     for (size_t i = 0; i < m_nodes.size(); i++){
+        // m_nodes[i]->m_omega += (m_nodes[i]->m_moment/m_nodes[i]->m_momentOfInertia)*0.5*dt;
+        // m_nodes[i]->m_phi += m_nodes[i]->m_omega*dt;
+
         vec3 r = m_r;
         r[0] -= cos(m_phi)*m_distFromCenter[i];
         r[1] += sin(m_phi)*m_distFromCenter[i];

@@ -23,6 +23,7 @@ BulkStretch::BulkStretch(std::shared_ptr<Parameters> parameters)
     const double kappa = m_lattice->latticeInfo->kappa_n();
     const double mass  = density*d*d*hZ/4.0 * pi;
     const double eta   = sqrt(0.1*mass*kappa);
+    const double alpha = parameters->get<double>("alpha");
     for (int i = 0; i<ny; i++)
     {
         std::shared_ptr<ConstantForce> myModifier = std::make_shared<ConstantForce>(vec3(-force, 0, 0));
@@ -34,7 +35,7 @@ BulkStretch::BulkStretch(std::shared_ptr<Parameters> parameters)
     {
         std::shared_ptr<RelativeVelocityDamper> myDamper = std::make_shared<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(myDamper));
-        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(1e-5);
+        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(alpha);
         node->addModifier(std::move(omegaDamper));
     }
 

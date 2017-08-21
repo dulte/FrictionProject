@@ -41,21 +41,41 @@ void Node::updateForcesAndMoments(){
         for (auto & neighbor : neighborInfo){
             vec3 rDiff = neighbor->node()->r() - r();
             double d0 = neighbor->d0();
-            double phiOffset = neighbor->phiOffset();
-            double angleR = atan2(rDiff[1], rDiff[0]);
-
             double dij = rDiff.length();
-            double neighborPhi = neighbor->node()->phi();
 
-            double phi_ij           = angleR - phi() - phiOffset;
-            double phi_ji           = angleR - neighborPhi - phiOffset;
+            double phiToNeighbor    = atan2(rDiff.y(), rDiff.x());
+            double neighborPhi      = neighbor->node()->phi();
+            double phiCorrection    = neighbor->phiOffset()-phiToNeighbor;
+            if(phiCorrection > pi)
+            {
+                phiCorrection -= 2*pi;
+            }
+
+            double phi_ij           = phi()+phiCorrection;
+            double phi_ji           = neighborPhi+phiCorrection;
+
+            if (phi_ij >pi/2)
+            {
+                std::cout << "phi_ij " << phi_ij << std::endl;
+            }
+
+            if (phi_ji > pi/2)
+            {
+                std::cout <<"phi_ji "<< phi_ji << std::endl;
+            }
+
+            if (phi_ij + phi_ji > pi)
+            {
+                std::cout << phi_ij+phi_ji << std::endl;
+                // exit(1);
+            }
 
             double fn               = m_latticeInfo->kappa_n()*(dij-d0);
             double fs               = -m_latticeInfo->kappa_s()*0.5*(phi_ij + phi_ji);
             double m                = -m_latticeInfo->kappa_s()*dij*(m_latticeInfo->Phi()/12.0*(phi_ij-phi_ji)+0.5*(2.0/3.0*phi_ij+1.0/3.0*phi_ji));
 
             m_moment += m;
-            m_f += rDiff/dij*fn +vec3(-rDiff[0], rDiff[1],0)*fs/dij;
+            m_f += rDiff/dij*fn +vec3(-rDiff.y(), rDiff.x(),0)*fs/dij;
         }
     }
     for (auto & modifier : m_modifiers)

@@ -9,6 +9,7 @@
 class NodeInfo;
 class LatticeInfo;
 class Lattice;
+class DriverBeam;
 
 class Node : public std::enable_shared_from_this<Node>
 {
@@ -48,6 +49,7 @@ public:
     void    forceVelocity(const vec3 &v);
     void    setMass(double newMass){ m_mass = newMass;}
     void    setMoment(double newMoment) {m_moment = newMoment;}
+    friend DriverBeam;
 
 protected:
     vec3   m_r;

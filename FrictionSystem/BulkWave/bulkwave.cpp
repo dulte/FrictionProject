@@ -23,6 +23,7 @@ BulkWave::BulkWave(std::shared_ptr<Parameters> parameters)
     const double kappa     = m_lattice->latticeInfo->kappa_n();
     const double mass      = density*d*d*hZ/4.0 * pi;
     const double eta       = sqrt(0.1*mass*kappa);
+    const double alpha     = parameters->get<double>("alpha");
 
     for (int i = 0; i<ny; i++)
     {
@@ -34,7 +35,7 @@ BulkWave::BulkWave(std::shared_ptr<Parameters> parameters)
         std::shared_ptr<RelativeVelocityDamper> myModifier = std::make_shared<RelativeVelocityDamper>(eta);
         node->addModifier(std::move(myModifier));
 
-        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(eta/40.0);
+        std::shared_ptr<AbsoluteOmegaDamper> omegaDamper = std::make_shared<AbsoluteOmegaDamper>(alpha);
         node->addModifier(std::move(omegaDamper));
     }
 }

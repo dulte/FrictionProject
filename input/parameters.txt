@@ -2,9 +2,10 @@
 # Comments start with '#'
 # Only the first two words are processed.
 # The first word is the parameter name, the second is its value.
-version 0.9
+version 0.91
 
 #Simulation parameters
+frictionsystem       rotate
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
 nt                   5e3    # Total number of time steps 
@@ -22,7 +23,7 @@ hZ                   0.006  # Depth in the z-direction
 density              1300
 absDampCoeff         40     # Divisor for absolute damping, eta/40
 relVelDampCoeff      1      # Multiplicator for relative velocity damping
-alpha                2e-5   # Coefficient for angular momentum damping
+alpha                1e-5   # Coefficient for angular momentum damping
 mud                  0.17   # Slipping force coefficient
 mus                  0.4    # Threshold force coefficient
 step                 2e-7   # Time step [s]
@@ -30,7 +31,7 @@ vD                   4e-3   # Driving speed [m/s]
 pK                   4e5    # Spring coefficient of the pusher nodes, if any
 
 # Snapshot
-snapshotstart        1e7    # When to start finding and saving snapshots of maximum
+snapshotstart        1e2    # When to start finding and saving snapshots of maximum
 snapshotbuftime      1e2    # How long to buffer snapshot before dumping them to disk
 
 # Paths

@@ -35,7 +35,7 @@ class FrictionAnalyzer(Analyzer):
         blockSize = 10000  # Each xyz-block is atleast larger than 0
         numberOfBottomNodes = 0
         numberofTopNodes = 0
-        with open(os.path.join(self.input, filename)) as xyz:
+        with open(os.path.join(self.info, filename)) as xyz:
             for i, line in enumerate(xyz):
                 if i == 0:
                     blockSize = int(line)
@@ -75,6 +75,7 @@ class FrictionAnalyzer(Analyzer):
     def getInterfaceStructure(self):
         print(self.input)
         filename = 'interfaceStructure.txt'
+        return
         try:
             with open(os.path.join(self.input, filename)) as xyz:
                 self.parameters['interfaceStructure'] = eval(xyz.readline())

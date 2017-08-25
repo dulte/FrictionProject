@@ -28,6 +28,7 @@ private:
     std::string snapshotDirectory;
     std::shared_ptr<Parameters> parameters;
     std::map<DataPacket::dataId, std::unique_ptr<FileWrapper>> fileMap;
+    std::map<DataPacket::dataId, std::unique_ptr<FileWrapper>> snapshotFiles;
     bool doWriteXYZ;
     std::ofstream ofXYZ;
     unsigned int freqXYZ;

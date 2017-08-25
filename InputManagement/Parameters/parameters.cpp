@@ -87,6 +87,7 @@ bool Parameters::get(std::string name){
 
 void Parameters::constructMap(){
     addParameter<double>("version");
+    addParameter<std::string>("frictionsystem");
     addParameter<int>("nx");
     addParameter<int>("ny");
     addParameter<int>("nt");

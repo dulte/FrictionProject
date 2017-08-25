@@ -35,7 +35,7 @@ def getArgs():
     parser.add_argument('--plotpath', default=os.path.abspath('./plots'),
                         type=os.path.abspath,
                         help="Path to place the plots.")
-    parser.add_argument('--paramname', default='parameters.txt',
+    parser.add_argument('--paramname', default='parameters',
                         help="Name of the parameter file.")
     parser.add_argument('--input', default='input',
                         help='Directory to search for input files.')

@@ -61,6 +61,7 @@ DataPacketHandler::~DataPacketHandler()
 }
 
 void DataPacketHandler::addBinary(DataPacket::dataId id, const std::string &name){
+    // Make standard output files
     std::string path = outputDirectory + name + ".bin";
     std::string Name = name;
     Name[0] = toupper(name[0]);
@@ -71,6 +72,12 @@ void DataPacketHandler::addBinary(DataPacket::dataId id, const std::string &name
     if (parameters->get<bool>("write"+Name))
         file->open(path, std::ios::out | std::ios::binary);
     fileMap[id] = std::move(file);
+
+    // Make snapshot files
+    auto snapFile = make_unique<FileWrapper>();
+    snapFile->name = name;
+    snapFile->open(snapshotDirectory+name+".bin", std::ios::out | std::ios::binary);
+    snapshotFiles[id] = std::move(snapFile);
 }
 
 void DataPacketHandler::step(std::vector<DataPacket> packets)
@@ -85,13 +92,6 @@ void DataPacketHandler::dumpXYZ(const std::string &xyzstring){
 
 void DataPacketHandler::dumpSnapshot(std::vector<DataPacket> packets,
                                      const std::string& xyz){
-    // Create a map from all types of packets to the files in the snapshot directory
-    std::map<DataPacket::dataId, std::unique_ptr<FileWrapper>> snapshotFiles;
-    for(const auto& element: fileMap){
-        snapshotFiles[element.first] = make_unique<FileWrapper>();
-        snapshotFiles[element.first]->open(snapshotDirectory+element.second->name+".bin",
-                                          element.second->modes);
-    }
     for(const auto& packet: packets)
         snapshotFiles[packet.id()]->write(packet);
     for(auto& element: snapshotFiles)

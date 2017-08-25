@@ -17,7 +17,7 @@ Rotate::Rotate(std::shared_ptr<Parameters> parameters)
     : FrictionSystem(parameters)
 {
     m_lattice = std::make_shared<TriangularLattice>();
-    m_lattice->populateCantilever(parameters);
+    // m_lattice->populateCantilever(parameters);
     m_lattice->populateWithUnitCell(parameters);
     std::cout << m_lattice->nodes.size();
 

@@ -28,6 +28,7 @@ class Analyzer:
         self.wd = os.path.abspath(workDirectory)
         self.input = inputPath
         self.output = outputPath
+        self.info = os.path.join(self.output, 'info')
         self.id = self._index[0]
         self._index[0] += 1
 
@@ -43,7 +44,7 @@ class Analyzer:
         Args:
              filename: Name of the parameter file
         """
-        path = os.path.join(self.input, filename)
+        path = os.path.join(self.info, filename)
         try:
             self.parameters = Parser.parse(path)
         except Exception as parent:

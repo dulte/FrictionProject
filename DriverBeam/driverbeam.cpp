@@ -87,7 +87,7 @@ void DriverBeam::updateForcesAndMoments(){
     for (size_t i = 0; i < m_nodes.size(); i++){
         m_nodes[i]->updateForcesAndMoments();
         m_moment += -m_nodes[i]->f().cross2d(m_r-m_nodes[i]->r());
-        m_f += m_nodes[i]->f();
+        m_f      += m_nodes[i]->f();
     }
 
 }
@@ -110,7 +110,8 @@ void DriverBeam::vvstep(double dt){
     // Align the top nodes along the axis of the beam
     for (size_t i = 0; i < m_nodes.size(); i++){
         // m_nodes[i]->m_omega += (m_nodes[i]->m_moment/m_nodes[i]->m_momentOfInertia)*0.5*dt;
-        // m_nodes[i]->m_phi += m_nodes[i]->m_omega*dt;
+        // / m_nodes[i]->m_phi += m_nodes[i]->m_omega*dt;
+        m_nodes[i]->m_phi = m_phi;
 
         vec3 r = m_r;
         r[0] -= cos(m_phi)*m_distFromCenter[i];

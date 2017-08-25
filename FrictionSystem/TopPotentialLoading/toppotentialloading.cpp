@@ -63,7 +63,6 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
         node->addModifier(std::move(damper));
         std::unique_ptr<AbsoluteOmegaDamper> omegaDamper = make_unique<AbsoluteOmegaDamper>(alpha);
         node->addModifier(std::move(omegaDamper));
-        node->pertubateRotation(unif(re));
     }
 
     // Quick bandaid

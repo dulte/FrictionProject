@@ -10,7 +10,9 @@ void FileWrapper::open(const std::string &path, std::ios_base::openmode mode){
     modes = mode;
     stream.open(fpath, mode);
     if (!(stream.is_open() && good())){
-        std::cerr << "Outputfile " << path << " could not be opened" << std::endl;
+        std::cerr << "Outputfile " << path << " could not be opened.\n"
+                  << "Is open: " << stream.is_open() << "\n"
+                  << "Good:    " << good() << std::endl;
         throw std::runtime_error("Could not open outputfile.");
     }
     is_open = true;

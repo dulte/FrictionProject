@@ -3,6 +3,7 @@
 #include <chrono>
 #include <string>
 #include <algorithm>
+#include <string>
 #include "simulation.h"
 #include "InputManagement/Parameters/parameters.h"
 #include "FrictionSystem/SidePotentialLoading/sidepotentialloading.h"
@@ -49,7 +50,24 @@ int Simulation::setup() {
 
     try {
         std::cout << "Constructing system" << std::endl;
-        system = std::make_shared<TopPotentialLoading>(parameters);
+        auto systemType = parameters->get<std::string>("frictionsystem");
+        std::transform(systemType.begin(), systemType.end(), systemType.begin(), ::tolower);
+
+        if(systemType == "sidepotentialloading")
+            system = std::make_shared<SidePotentialLoading>(parameters);
+        else if (systemType == "toppotentialloading")
+            system = std::make_shared<TopPotentialLoading>(parameters);
+        else if (systemType == "bulkwave")
+            system = std::make_shared<BulkWave>(parameters);
+        else if (systemType == "bulkstretch")
+            system = std::make_shared<BulkStretch>(parameters);
+        else if (systemType == "rotate")
+            system = std::make_shared<Rotate>(parameters);
+        else if (systemType == "cantilever")
+            system = std::make_shared<Cantilever>(parameters);
+        else
+            throw std::runtime_error("frictionsystem is not recognized");
+
     } catch (std::exception &ex) {
         std::cerr << "Error> " << ex.what() << std::endl;
     }

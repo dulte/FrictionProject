@@ -13,7 +13,6 @@ from matplotlib.backends.backend_qt5agg import (
     NavigationToolbar2QT as NavigationToolbar)
 from PyQt5 import QtWidgets, QtCore
 
-
 try:
     import seaborn as sns
     sns.set_style("dark")
@@ -35,7 +34,14 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
         self.labels = {'size': 'Size of grooves [nr. blocks wide]',
                        'height': 'height of grooves',
                        'static coefficient': r'Static coefficient   $F_S/F_N$',
-                       'driver speed': 'Driver speed [mm/s]'}
+                       'driver speed': 'Driver speed [mm/s]',
+                       'ny': 'Number of blocks in y-direction',
+                       'nx': 'Number of nodes in x-direction',
+                       'nodes': 'number of nodes',
+                       'angle': 'Angle of driver beam [degrees]',
+                       'beam mass': 'Mass of driver beam [kg]',
+                       'top nodes': 'Number of top nodes',
+                       'bottom nodes': 'Number of bottom nodes'}
 
         self.createMainFrame()
         self.onDraw()
@@ -116,8 +122,9 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
                                    c=self.scatterData[self.colorkey],
                                    picker=self.pickerEpsilon,
                                    cmap=cmap)
-        cb = self.fig.colorbar(points, ax=self.axes)
-        cb.set_label(self.labels[self.colorkey])
+        self.cb = self.fig.colorbar(points, ax=self.axes)
+        self.cb.set_label(self.labels[self.colorkey])
+        self.setAxisTicks()
         self.axes.set_xlabel(self.labels[self.xkey])
         self.axes.set_ylabel(self.labels[self.ykey])
         self.canvas.draw()
@@ -153,12 +160,79 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
         nearest = np.argmin(dist)
         return nearest, self.df.iloc[nearest]
 
+    def setAxisTicks(self):
+        # Make the ticks discerete if the values are discrete
+        discreteValues = {'nx', 'ny', 'nodes', 'top nodes',
+                          'bottom nodes', 'height', 'size'}
+        if self.xkey in discreteValues:
+            minVal = min(self.scatterData[self.xkey])
+            maxVal = max(self.scatterData[self.xkey])
+            ticks = np.arange(minVal, maxVal+1, 1)
+            self.axes.xaxis.set(ticks=ticks)
+        if self.ykey in discreteValues:
+            minVal = min(self.scatterData[self.ykey])
+            maxVal = max(self.scatterData[self.ykey])
+            ticks = np.arange(minVal, maxVal+1, 1)
+            self.axes.yaxis.set(ticks=ticks)
+        if self.colorkey in discreteValues:
+            minVal = min(self.scatterData[self.colorkey])
+            maxVal = max(self.scatterData[self.colorkey])
+            ticks = np.arange(minVal, maxVal+1, 1)
+            # self.cb.ax.get_yaxis().set_ticks(ticks)
+
     def plotAnalyzer(self, event):
         id, entry = self.entryFromEvent(event)
         analyzer = self.manager.get(id)
-        plt.subplots()
-        plt.subplot(2, 1, 1)
-        analyzer.plotLocalMax()
-        plt.subplot(2, 1, 2)
-        analyzer.plotAttachedSprings()
-        plt.show()
+        plot = GraphicalSingle(analyzer, parent=self)
+        plot.show()
+
+
+class GraphicalSingle(QtWidgets.QMainWindow):
+    def __init__(self, analyzer, parent=None):
+        QtWidgets.QMainWindow.__init__(self, parent)
+        self.analyzer = analyzer
+        self.createMainFrame()
+        self.onDraw()
+
+    def createMainFrame(self):
+        self.mainFrame = QtWidgets.QWidget()
+        self.fig = Figure((5.0, 4.0), dpi=100)
+        self.canvas = FigureCanvas(self.fig)
+        self.canvas.setParent(self.mainFrame)
+        self.canvas.setFocusPolicy(QtCore.Qt.StrongFocus)
+        self.canvas.setFocus()
+
+        self.mpl_toolbar = NavigationToolbar(self.canvas, self.mainFrame)
+        self.canvas.mpl_connect('key_press_event', self.onKeyPress)
+
+        # Other GUI widgets
+        self.xyzButton = QtWidgets.QPushButton("View &lattice")
+        self.xyzButton.clicked.connect(self.showLattice)
+
+        # Add all widgets to layout
+        layout = QtWidgets.QVBoxLayout()
+        layout.addWidget(self.canvas)
+        layout.addWidget(self.mpl_toolbar)
+
+        hbox = QtWidgets.QHBoxLayout()
+        hbox.addWidget(self.xyzButton)
+        layout.addLayout(hbox)
+
+        self.mainFrame.setLayout(layout)
+        self.setCentralWidget(self.mainFrame)
+
+    def onDraw(self):
+        self.fig.clear()
+        ax1 = self.fig.add_subplot(211)
+        self.analyzer.plotLocalMax(ax1)
+        ax2 = self.fig.add_subplot(212)
+        self.analyzer.plotAttachedSprings(ax2, self.fig)
+        self.canvas.draw()
+
+    def onKeyPress(self, event):
+        key_press_handler(event, self.canvas)
+
+    def showLattice(self):
+        fig, ax = plt.subplots()
+        self.analyzer.plotLattice(ax, fig)
+        fig.show()

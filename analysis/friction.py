@@ -3,8 +3,11 @@ from dataio import File, Globbler
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 from scipy.signal import argrelmax
 import pandas as pd
+import subprocess
+import sys
 
 
 try:
@@ -16,7 +19,7 @@ except ImportError:
 
 class Lattice:
     """ Wrapper around useful parameters """
-    def __init__(self, parameters):
+    def __init__(self, parameters, xyzPath):
         self.nx = parameters['nx']
         self.ny = parameters['ny']
         self.numBottom = parameters['numBottomNodes']
@@ -27,6 +30,15 @@ class Lattice:
         self.speed = parameters['vD']
         self.angle = parameters['beamAngle']
         self.beamMass = parameters['beamMass']
+        self.xyzPath = xyzPath
+        self.structurePath = os.path.join(os.path.split(xyzPath)[0],
+                                          'lattice.png')
+
+    def render(self):
+        if not os.path.exists(self.structurePath):
+            sys.stdout.write("Rendering " + self.xyzPath + "...")
+            subprocess.call(['ovitos', 'renderxyz.py', self.xyzPath])
+            sys.stdout.write('done\n')
 
 
 class FrictionAnalyzer(Analyzer):
@@ -35,7 +47,7 @@ class FrictionAnalyzer(Analyzer):
         blockSize = 10000  # Each xyz-block is atleast larger than 0
         numberOfBottomNodes = 0
         numberofTopNodes = 0
-        with open(os.path.join(self.info, filename)) as xyz:
+        with open(os.path.join(self.input, filename)) as xyz:
             for i, line in enumerate(xyz):
                 if i == 0:
                     blockSize = int(line)
@@ -102,23 +114,23 @@ class FrictionAnalyzer(Analyzer):
 
     @Analyzer.restrict
     @plotable
-    def plotAttachedSprings(self):
+    def plotAttachedSprings(self, axis, figure):
         savepath = 'attachedSprings.png'
         data = self.interfaceAttachedSprings.get()
         time = self.interfaceAttachedSprings.time()
-        plt.pcolormesh(data, cmap=plt.get_cmap('jet'))
+        points = axis.pcolormesh(data, cmap=plt.get_cmap('jet'))
         ticks = [int(t) for t in np.linspace(0, data.shape[0]-1, 10)]
-        plt.yticks(ticks, time[ticks])
-        cb = plt.colorbar()
+        axis.yaxis.set(ticks=ticks, ticklabels=time[ticks])
+        cb = figure.colorbar(points, ax=axis)
         cb.set_label("Fraction of pinned springs")
         cb.ax.get_yaxis().set_ticks([])
         for i, lab in enumerate(['0%', '100%']):
             cb.ax.text(1, 0.95*i, lab)
-        plt.title(("Percent of pinned springs for "
+        axis.set_title(("Percent of pinned springs for "
                    "size {} and height {}".format(self.lattice.size,
                                                   self.lattice.height)))
-        plt.xlabel("Block index")
-        plt.ylabel("Time [s]")
+        axis.set_xlabel("Block index")
+        axis.set_ylabel("Time [s]")
 
     def getFrontVelocities(self, cutoffPoint=0.1):
         """Finds the front velocity of the rapture of the springs.
@@ -180,30 +192,38 @@ class FrictionAnalyzer(Analyzer):
 
     @plotable
     @Analyzer.restrict
-    def plotLocalMax(self, i=[0]):
+    def plotLocalMax(self, axis, i=[0]):
         lines = ['-', '--', '-.']
         time, data = self.getLocalMax()
-        plt.plot(time, data,
-                 label='Size {}, height {}'.format(self.lattice.size,
-                                                   self.lattice.height))
+        axis.plot(time, data,
+                  label='Size {}, height {}'.format(self.lattice.size,
+                                                    self.lattice.height))
                  # linestyle=lines[i[0]])
-        self.plotReleaseTime()
-        self.plotDrivingTime()
-        plt.xlabel("Time [s]")
-        plt.ylabel(r"$F_S/F_N$")
-        plt.title(("Local Max for Beam Shear Force for "
-                   "size {} height {}".format(self.lattice.size,
-                                              self.lattice.height)))
+        self.plotReleaseTime(axis)
+        self.plotDrivingTime(axis)
+        axis.set_xlabel("Time [s]")
+        axis.set_ylabel(r"$F_S/F_N$")
+        axis.set_title(("Local Max for Beam Shear Force for "
+                        "size {} height {}".format(self.lattice.size,
+                                                   self.lattice.height)))
         i[0] += 1
         i[0] %= len(lines)
 
-    def plotReleaseTime(self):
-        plt.axvline(x=self.parameters['releaseTime']*self.parameters['step'],
-                    linestyle='--', color='k')
+    def plotReleaseTime(self, axis):
+        axis.axvline(x=self.parameters['releaseTime']*self.parameters['step'],
+                     linestyle='--', color='k')
 
-    def plotDrivingTime(self):
-        plt.axvline(x=self.parameters['drivingTime']*self.parameters['step'],
-                    linestyle='-.', color='k')
+    def plotDrivingTime(self, axis):
+        axis.axvline(x=self.parameters['drivingTime']*self.parameters['step'],
+                     linestyle='-.', color='k')
+
+    def plotLattice(self, axis, figure=None):
+        if not os.path.exists(self.lattice.xyzPath):
+            print(self.lattice.xyzPath, " does not exist")
+            return
+        self.lattice.render()
+        img = mpimg.imread(self.lattice.structurePath)
+        axis.imshow(img)
 
 
 class FrictionManager(AnalyzerManager):
@@ -219,7 +239,9 @@ class FrictionManager(AnalyzerManager):
                 analyzer.readParameters(args.paramname)
                 analyzer.readNumberOfNodes()
                 analyzer.getInterfaceStructure()
-                analyzer.lattice = Lattice(analyzer.parameters)
+                analyzer.lattice = Lattice(analyzer.parameters,
+                                           os.path.join(analyzer.info,
+                                                        'lattice.xyz'))
                 analyzer.setUpFiles()
             except CorruptAnalyzer as exc:
                 self.handleException(analyzer, exc)

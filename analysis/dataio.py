@@ -78,7 +78,7 @@ class File:
             wholeLattice[:,mask] = data
             data = wholeLattice
         elif 'interface' in self.filename.lower():
-            y = 64#self.parameters['numBottomNodes']
+            y = self.parameters['numBottomNodes']
             x = len(data)/y
             if int(x) != x:
                 raise RuntimeError(("Could not resize {}. len={}, "
@@ -88,7 +88,7 @@ class File:
             x = int(x)
             data.resize((x, y))
         elif 'beam' in self.filename.lower():
-            y = 64#self.parameters['numTopNodes']
+            y = self.parameters['numTopNodes']
             x = len(data)/y
             if int(x) != x:
                 raise RuntimeError(("Could not resize {}. len={}, "

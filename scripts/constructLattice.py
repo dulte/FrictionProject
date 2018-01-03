@@ -35,7 +35,7 @@ import os
 import argparse
 import inspect
 from itertools import product
-from math import sin, cos, pi, floor
+from math import sin, cos, pi, floor,ceil
 
 BOTTOM_NODE_CHAR = 'B'
 TOP_NODE_CHAR = 'T'
@@ -248,6 +248,10 @@ class Geometry(metaclass=Meta):
 
     def getInterfaceStructure(self):
         return self.doPlaceBottomNodeHere
+
+
+
+
 
 
 class SquareGeometry(Geometry):
@@ -494,6 +498,44 @@ class SymmetricLegs(GeometryExtension):
         # by using the self.doPlaceBottomNodeHere as a lookup
         return self.doPlaceBottomNodeHere[i]
 
+class SingleTooth(GeometryExtension):
+    def makeGeometry(self):
+        height = self.ny + self.grooveHeight
+        width = self.nx
+        for i, j in product(range(width),range(height)):
+            if not self.doMakeNode(i, j):
+                continue
+
+            x, y = self.makeXYfromIJ(i, j)
+            node = Node(x, y)
+            self.markNode(node, i, j)
+            self.nodes.append(node)
+
+        return self.nodes
+
+    def markNode(self, node, i, j):
+        """ Marks the node as top, bottom or left based on i and j """
+        if i == 0:
+            node.isLeft = True
+        if j == 0:
+            node.isBottom = True
+        if j == self.ny + self.grooveHeight-1:
+            node.isTop = True
+
+class ConstructSingleTooth(GeometryExtension):
+    def makeGrooveList(self):
+        grooves = [0 for i in range(self.nx)]
+        midpoint = ceil(self.nx/2.)
+        nodesInFrontOfMidpoint = midpoint + floor(self.grooveSize/2.)
+        nodesBackOfMidpoint = midpoint - ceil(self.grooveSize/2.)
+
+        grooves[nodesBackOfMidpoint:nodesInFrontOfMidpoint] = \
+                    [1 for i in range(self.grooveSize)]
+
+        assert -nodesBackOfMidpoint+nodesInFrontOfMidpoint == self.grooveSize \
+                    , "Something went wrong with the creation of bottomNodes"
+
+        self.doPlaceBottomNodeHere = grooves
 
 def getArgs():
     parser = argparse.ArgumentParser()
@@ -506,6 +548,8 @@ if __name__ == '__main__':
     args = getArgs()
     lattice = Lattice(args.parampath, args.outputpath)
     geometry = (TriangleGeometry
-                + SymmetricLegs()
-                + SymmetricGroovesEqual())
+                + ConstructSingleTooth()
+                + SingleTooth())
+                # + SymmetricLegs()
+                # + SymmetricGroovesEqual())
     lattice.makeLattice(geometry)

@@ -5,7 +5,7 @@
 version 0.91
 
 #Simulation parameters
-frictionsystem       rotate
+frictionsystem       toppotentialloading
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
 nt                   5e3    # Total number of time steps 

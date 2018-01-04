@@ -101,6 +101,10 @@ class File:
             pass
         self.xlength = data.shape[0]
 
+        # Temp fix for initial spike
+        if 'beamshearforce' in self.filename.lower():
+            data[:100] = 0
+
         if persistent:
             self.data = data
 

@@ -5,12 +5,12 @@
 version 0.91
 
 #Simulation parameters
-frictionsystem       rotate
+frictionsystem       toppotentialloading
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
-nt                   5e3    # Total number of time steps 
-releaseTime          1e3    # Number of steps before the springs are released 
-drivingTime          2e3    # Number of steps before the driving begins
+nt                   5e5    # Total number of time steps 
+releaseTime          2e3    # Number of steps before the springs are released 
+drivingTime          4e3    # Number of steps before the driving begins
 fn                   1920   # Normal load [N]
 ns                   50     # No. of interface springs per block
 tRmean               0.002  # Mean slipping time for interface spring [s]
@@ -39,7 +39,7 @@ dumpfilename         foo
 outputpath           output/ # Where to save the output
 
 # Grooves
-grooveSize           4
+grooveSize           3
 grooveHeight         5
 
 #Filenames
@@ -65,7 +65,7 @@ writeAllVelocity              0
 writeAllEnergy                0
 writeAllForce                 0
 writePusherForce              0
-writeXYZ                      1
+writeXYZ                      0
 writeBeamTorque               0
 writeBeamShearForce           1
 
@@ -80,7 +80,7 @@ freqAllVelocity              100
 freqAllEnergy                100
 freqAllForce                 100
 freqPusherForce              100
-freqXYZ                      1
+freqXYZ                      100
 freqBeamTorque               100
 freqBeamShearForce           100
 

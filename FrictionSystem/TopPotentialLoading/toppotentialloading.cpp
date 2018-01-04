@@ -22,6 +22,7 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
     : FrictionSystem(parameters)
 {
     int nx                 = parameters->get<int>("nx");
+    int grooveSize         = parameters->get<int>("grooveSize");
     double topLoadingForce = parameters->get<double>("fn");
     double d               = parameters->get<double>("d");
     double density         = parameters->get<double>("density");
@@ -39,6 +40,8 @@ TopPotentialLoading::TopPotentialLoading(std::shared_ptr<Parameters> parameters)
     std::shared_ptr<FrictionInfo> frictionInfo = std::make_shared<FrictionInfo>(parameters);
 
     // Add top loading force
+    topLoadingForce *= grooveSize/double(nx); //This is to ensure constant pressure on the single tooth
+
     double N = -topLoadingForce/nx;
     for (auto & node : m_lattice->topNodes)
     {

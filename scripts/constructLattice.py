@@ -101,7 +101,8 @@ class Lattice:
                 # Strings can't be evaluated.
                 # All (current) strings are something-filename
                 # This is an incredible stupid solution
-                if 'filename' in tokens[0] or 'path' in tokens[0]:
+                if 'filename' in tokens[0] or 'path' in tokens[0] \
+                                    or 'frictionsystem' in tokens[0]:
                     self.parameters[tokens[0]] = tokens[1]
                 else:
                     # Otherwise, evaluate the expression to get

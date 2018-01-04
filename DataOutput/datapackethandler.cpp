@@ -77,7 +77,9 @@ void DataPacketHandler::addBinary(DataPacket::dataId id, const std::string &name
     auto snapFile = make_unique<FileWrapper>();
     snapFile->name = name;
     snapFile->open(snapshotDirectory+name+".bin", std::ios::out | std::ios::binary);
+    snapFile->close();
     snapshotFiles[id] = std::move(snapFile);
+
 }
 
 void DataPacketHandler::step(std::vector<DataPacket> packets)
@@ -92,10 +94,14 @@ void DataPacketHandler::dumpXYZ(const std::string &xyzstring){
 
 void DataPacketHandler::dumpSnapshot(std::vector<DataPacket> packets,
                                      const std::string& xyz){
+    std::cout << "Now dumping snapshot" << std::endl;
+    for(auto& element: snapshotFiles)
+        element.second->open();
     for(const auto& packet: packets)
         snapshotFiles[packet.id()]->write(packet);
     for(auto& element: snapshotFiles)
-        element.second->stream.close();
+        element.second->close();
+    std::cout << std::endl;
 
     std::ofstream xyzStream;
     xyzStream.open(snapshotDirectory+"model.xyz", std::ofstream::out);

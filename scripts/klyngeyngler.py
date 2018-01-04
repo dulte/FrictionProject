@@ -54,7 +54,6 @@ def SupportMultiprocessing(func):
                 for process in cls.mps_list:
                     if process == pid:
                         # If it did not terminate, wait till it does
-                        #process.join()
                         logger.debug("Removing %s from list", pid)
                         # Finally, remove it
                         cls.mps_list.remove(process)
@@ -128,7 +127,7 @@ class Parser:
                 try:
                     # Handle all floats and ints
                     value = eval(value[0])
-                except:
+                except Exception as e:
                     # Strings
                     value = value[0]
             else:

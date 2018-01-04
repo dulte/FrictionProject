@@ -5,6 +5,7 @@ import numpy as np
 # matplotlib.use('Qt5Agg')
 import matplotlib.pyplot as plt
 import pandas as pd
+import datetime
 from matplotlib.figure import Figure
 from matplotlib.colors import ListedColormap
 from matplotlib.backend_bases import key_press_handler
@@ -26,6 +27,7 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
         QtWidgets.QMainWindow.__init__(self, parent)
         self.manager = manager
         self.df = self.createDataFrame()
+        self.saveDataFrame(self.df)
         self.scatterData = {}
         self.xkey = 'size'
         self.ykey = 'static coefficient'
@@ -41,10 +43,39 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
                        'angle': 'Angle of driver beam [degrees]',
                        'beam mass': 'Mass of driver beam [kg]',
                        'top nodes': 'Number of top nodes',
-                       'bottom nodes': 'Number of bottom nodes'}
+                       'bottom nodes': 'Number of bottom nodes',
+                       'size/height': 'Size/Height',
+                       'height/size': 'Height/Size',
+                       'bottom nodes/nodes': 'Bottom Nodes/Nodes'}
 
         self.createMainFrame()
         self.onDraw()
+
+    def createDataFrame(self):
+        manager = self.manager
+        lattices = manager.lattice
+        df = pd.DataFrame({'nx': [l.nx for l in lattices],
+                           'ny': [l.ny for l in lattices],
+                           'nodes': [l.numNodes for l in lattices],
+                           'top nodes': [l.numTop for l in lattices],
+                           'bottom nodes': [l.numBottom for l in lattices],
+                           'height': [l.height for l in lattices],
+                           'size': [l.size for l in lattices],
+                           'angle': [l.angle for l in lattices],
+                           'driver speed': [l.speed/1e-3 for l in lattices],
+                           'beam mass': [l.beamMass for l in lattices],
+                           'static coefficient': manager.getStaticFrictionCoefficient()},
+                          index=manager.id)
+        df['size/height'] = df['size']/df['height']
+        df['height/size'] = df['height']/df['size']
+        df['bottom nodes/nodes'] = df['bottom nodes']/df['nodes']
+        return df
+
+    def saveDataFrame(self, df):
+        now = datetime.datetime.now()
+        df.to_csv('friction_data_{}-{}-{}'.format(
+            now.year, now.month, now.day),
+                  sep='\t')
 
     def createMainFrame(self):
         self.mainFrame = QtWidgets.QWidget()
@@ -132,22 +163,6 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
     def onKeyPress(self, event):
         print(event.key)
         key_press_handler(event, self.canvas)
-
-    def createDataFrame(self):
-        manager = self.manager
-        lattices = manager.lattice
-        return pd.DataFrame({'nx': [l.nx for l in lattices],
-                             'ny': [l.ny for l in lattices],
-                             'nodes': [l.numNodes for l in lattices],
-                             'top nodes': [l.numTop for l in lattices],
-                             'bottom nodes': [l.numBottom for l in lattices],
-                             'height': [l.height for l in lattices],
-                             'size': [l.size for l in lattices],
-                             'angle': [l.angle for l in lattices],
-                             'driver speed': [l.speed/1e-3 for l in lattices],
-                             'beam mass': [l.beamMass for l in lattices],
-                             'static coefficient': manager.getStaticFrictionCoefficient()},
-                            index=manager.id)
 
     def getChangingKeys(self):
         return sorted([key for key in self.df.columns

@@ -11,6 +11,8 @@ public:
     FileWrapper();
     virtual ~FileWrapper();
     void open(const std::string &path, std::ios_base::openmode mode);
+    void open();
+    void close();
     bool good() const {return stream.good();}
     void write(const DataPacket&);
     std::ofstream stream;

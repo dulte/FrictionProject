@@ -56,12 +56,12 @@ void Node::updateForcesAndMoments(){
 
             if (phi_ij >pi/2)
             {
-                std::cout << "phi_ij " << phi_ij << std::endl;
+                // std::cout << "phi_ij " << phi_ij << std::endl;
             }
 
             if (phi_ji > pi/2)
             {
-                std::cout <<"phi_ji "<< phi_ji << std::endl;
+                // std::cout <<"phi_ji "<< phi_ji << std::endl;
             }
 
             if (phi_ij + phi_ji > pi)

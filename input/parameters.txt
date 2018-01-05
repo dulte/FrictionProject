@@ -9,8 +9,8 @@ frictionsystem       toppotentialloading
 nx                   64     # Number of nodes in the x direction
 ny                   31     # Number of nodes in the y direction
 nt                   5e5    # Total number of time steps 
-releaseTime          2e3    # Number of steps before the springs are released 
-drivingTime          4e3    # Number of steps before the driving begins
+releaseTime          1e5    # Number of steps before the springs are released 
+drivingTime          2e5    # Number of steps before the driving begins
 fn                   1920   # Normal load [N]
 ns                   50     # No. of interface springs per block
 tRmean               0.002  # Mean slipping time for interface spring [s]
@@ -27,19 +27,19 @@ alpha                1e-5   # Coefficient for angular momentum damping
 mud                  0.17   # Slipping force coefficient
 mus                  0.4    # Threshold force coefficient
 step                 2e-7   # Time step [s]
-vD                   4e-3   # Driving speed [m/s]
+vD                   4e-4   # Driving speed [m/s]
 pK                   4e5    # Spring coefficient of the pusher nodes, if any
 
 # Snapshot
-snapshotstart        1e2    # When to start finding and saving snapshots of maximum
-snapshotbuftime      1e2    # How long to buffer snapshot before dumping them to disk
+snapshotstart        1e5    # When to start finding and saving snapshots of maximum
+snapshotbuftime      3e3    # How long to buffer snapshot before dumping them to disk
 
 # Paths
 dumpfilename         foo
 outputpath           output/ # Where to save the output
 
 # Grooves
-grooveSize           3
+grooveSize           12
 grooveHeight         5
 
 #Filenames

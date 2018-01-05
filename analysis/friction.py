@@ -177,12 +177,12 @@ class FrictionAnalyzer(Analyzer):
         else:
             shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
 
-        staticCoefficient = np.max(-shearForce_on_rod)/np.float(self.parameters['fn'])
+        staticCoefficient = np.max(-shearForce_on_rod)/np.float(self.parameters['fn'])* float(self.parameters["nx"])/self.parameters["grooveSize"]
         return staticCoefficient
 
     def getLocalMax(self):
         shearForce = -1*self.beamShearForce.get()
-        force = np.sum(shearForce, axis=1)/self.parameters['fn']
+        force = np.sum(shearForce, axis=1)/self.parameters['fn']* float(self.parameters["nx"])/self.parameters["grooveSize"]
         locMaxIndex = argrelmax(force)[0]
         # timeArray = self.getTimeArray(force, 'freqBeamShearForce')[argrelmax(force)[0]]
         time = self.beamShearForce.time()[locMaxIndex]

@@ -533,6 +533,8 @@ class ConstructSingleTooth(GeometryExtension):
         grooves[nodesBackOfMidpoint:nodesInFrontOfMidpoint] = \
                     [1 for i in range(self.grooveSize)]
 
+        print(sum(grooves), grooves)
+
         assert -nodesBackOfMidpoint+nodesInFrontOfMidpoint == self.grooveSize \
                     , "Something went wrong with the creation of bottomNodes"
 

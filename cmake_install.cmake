@@ -1,4 +1,4 @@
-# Install script for directory: /home/daniehei/Documents/Skole/FrictionProject
+# Install script for directory: /home/daniehei/Documents/Skole/New_FrictionProject/FrictionProject
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -40,5 +40,5 @@ endif()
 
 string(REPLACE ";" "\n" CMAKE_INSTALL_MANIFEST_CONTENT
        "${CMAKE_INSTALL_MANIFEST_FILES}")
-file(WRITE "/home/daniehei/Documents/Skole/FrictionProject/${CMAKE_INSTALL_MANIFEST}"
+file(WRITE "/home/daniehei/Documents/Skole/New_FrictionProject/FrictionProject/${CMAKE_INSTALL_MANIFEST}"
      "${CMAKE_INSTALL_MANIFEST_CONTENT}")

@@ -94,7 +94,6 @@ void DataPacketHandler::dumpXYZ(const std::string &xyzstring){
 
 void DataPacketHandler::dumpSnapshot(std::vector<DataPacket> packets,
                                      const std::string& xyz){
-    std::cout << "Now dumping snapshot" << std::endl;
     for(auto& element: snapshotFiles)
         element.second->open();
     for(const auto& packet: packets)

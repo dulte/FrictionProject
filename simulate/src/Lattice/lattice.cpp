@@ -4,6 +4,10 @@
 #include "LatticeInfo/latticeinfo.h"
 #include "DataOutput/datapacket.h"
 
+#ifndef NUM_THREADS
+    #define NUM_THREADS 4
+#endif // NUM_THREADS
+
 #define pi 3.14159265358979323
 
 Lattice::Lattice()
@@ -18,7 +22,7 @@ Lattice::~Lattice()
 
 void Lattice::step(double dt)
 {
-    omp_set_num_threads( 4 );
+    omp_set_num_threads( NUM_THREADS );
 #pragma omp flush(dt)
 
 #pragma omp parallel for

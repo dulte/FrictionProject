@@ -177,7 +177,8 @@ class FrictionAnalyzer(Analyzer):
         else:
             shearForce_on_rod = np.sum(shearForce_on_rod, axis=1)
 
-        staticCoefficient = np.max(-shearForce_on_rod)/np.float(self.parameters['fn'])* float(self.parameters["nx"])/self.parameters["grooveSize"]
+        staticCoefficient = np.max(-shearForce_on_rod)/np.float(self.parameters['fn']) *\
+                             float(self.parameters["nx"])/self.parameters["grooveSize"]
         return staticCoefficient
 
     def getLocalMax(self):

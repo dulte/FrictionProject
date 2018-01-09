@@ -152,7 +152,7 @@ class GraphicalAnalyzer(QtWidgets.QMainWindow):
                                    self.scatterData[self.ykey],
                                    c=self.scatterData[self.colorkey],
                                    picker=self.pickerEpsilon,
-                                   cmap=cmap)
+                                   cmap=cmap,s=200)
         self.cb = self.fig.colorbar(points, ax=self.axes)
         self.cb.set_label(self.labels[self.colorkey])
         self.setAxisTicks()
@@ -238,10 +238,12 @@ class GraphicalSingle(QtWidgets.QMainWindow):
 
     def onDraw(self):
         self.fig.clear()
-        ax1 = self.fig.add_subplot(211)
+        ax1 = self.fig.add_subplot(311)
         self.analyzer.plotLocalMax(ax1)
-        ax2 = self.fig.add_subplot(212)
+        ax2 = self.fig.add_subplot(312)
         self.analyzer.plotAttachedSprings(ax2, self.fig)
+        ax3 = self.fig.add_subplot(313)
+        self.analyzer.plotNormalForceAtMax(ax3)
         self.canvas.draw()
 
     def onKeyPress(self, event):

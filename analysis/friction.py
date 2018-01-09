@@ -77,6 +77,8 @@ class FrictionAnalyzer(Analyzer):
         self.xyz = nFile('model.xyz')
         self.beamTorque = nFile('beamTorque.bin')
         self.beamShearForce = nFile('beamShearForce.bin')
+        self.snapshotInterfaceNormalForce = File("interfaceNormalForce.bin",\
+                                    self.parameters,self.output + "/snapshot/")
         self.activeFiles = []
         self.files = [self.interfacePosition, self.interfaceVelocity,
                       self.interfaceAttachedSprings, self.allPosition,
@@ -217,6 +219,16 @@ class FrictionAnalyzer(Analyzer):
     def plotDrivingTime(self, axis):
         axis.axvline(x=self.parameters['drivingTime']*self.parameters['step'],
                      linestyle='-.', color='k')
+
+
+    @plotable
+    @Analyzer.restrict
+    def plotNormalForceAtMax(self,axis):
+        data = self.snapshotInterfaceNormalForce.get()[0]
+        axis.plot(data)
+        axis.set_xlabel("Block")
+        axis.set_ylabel("Normal Force [N]")
+        axis.set_title("Normal Force over the Tooth")
 
     def plotLattice(self, axis, figure=None):
         if not os.path.exists(self.lattice.xyzPath):

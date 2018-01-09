@@ -225,10 +225,25 @@ class FrictionAnalyzer(Analyzer):
     @Analyzer.restrict
     def plotNormalForceAtMax(self,axis):
         data = self.snapshotInterfaceNormalForce.get()[0]
+        time = self.getTimeOfMax()
         axis.plot(data)
         axis.set_xlabel("Block")
         axis.set_ylabel("Normal Force [N]")
-        axis.set_title("Normal Force over the Tooth")
+        axis.set_title("Normal Force over the Tooth as {} s".format(time))
+
+
+    def getTimeOfMax(self):
+        """
+        This is a easy, temp solution since Erlends file class didn't give the
+        the time, only the data. So this was easier than finding the
+        place where that happens in the file class...
+        """
+        with open(self.output + "/snapshot/model.xyz") as f:
+            f.readline()
+            time = f.readline().split()[1]
+
+        return time
+
 
     def plotLattice(self, axis, figure=None):
         if not os.path.exists(self.lattice.xyzPath):

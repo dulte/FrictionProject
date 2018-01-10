@@ -77,12 +77,16 @@ class FrictionAnalyzer(Analyzer):
         self.xyz = nFile('model.xyz')
         self.beamTorque = nFile('beamTorque.bin')
         self.beamShearForce = nFile('beamShearForce.bin')
+        self.interfaceNormalForce = nFile("interfaceNormalForce.bin")
+        self.snapshotInterfaceNormalForce = File("interfaceNormalForce.bin",\
+                                    self.parameters,self.output + "/snapshot/")
         self.activeFiles = []
         self.files = [self.interfacePosition, self.interfaceVelocity,
                       self.interfaceAttachedSprings, self.allPosition,
                       self.allVelocity, self.allEnergy, self.allForce,
                       self.pusherForce, self.xyz, self.beamTorque,
-                      self.beamShearForce]
+                      self.beamShearForce,self.interfaceNormalForce,
+                      self.snapshotInterfaceNormalForce]
 
     def getInterfaceStructure(self):
         print(self.input)
@@ -131,6 +135,21 @@ class FrictionAnalyzer(Analyzer):
                                                   self.lattice.height)))
         axis.set_xlabel("Block index")
         axis.set_ylabel("Time [s]")
+
+    def plotNormalForce(self,axis,figure):
+        savepath = 'normalForce.png'
+        data = self.interfaceNormalForce.get()
+        time = self.interfaceNormalForce.time()
+        points = axis.pcolormesh(data, cmap=plt.get_cmap('jet'))
+        ticks = [int(t) for t in np.linspace(0, data.shape[0]-1, 10)]
+        axis.yaxis.set(ticks=ticks, ticklabels=time[ticks])
+        cb = figure.colorbar(points, ax=axis)
+        cb.set_label("Force [N]")
+        cb.ax.get_yaxis().set_ticks([])
+        axis.set_title(("Normal Force for "
+                   "size {} and height {}".format(self.lattice.size,
+                                                  self.lattice.height)))
+
 
     def getFrontVelocities(self, cutoffPoint=0.1):
         """Finds the front velocity of the rapture of the springs.
@@ -217,6 +236,31 @@ class FrictionAnalyzer(Analyzer):
     def plotDrivingTime(self, axis):
         axis.axvline(x=self.parameters['drivingTime']*self.parameters['step'],
                      linestyle='-.', color='k')
+
+
+    @plotable
+    @Analyzer.restrict
+    def plotNormalForceAtMax(self,axis):
+        data = self.snapshotInterfaceNormalForce.get()[0]
+        time = self.getTimeOfMax()
+        axis.plot(data)
+        axis.set_xlabel("Block")
+        axis.set_ylabel("Normal Force [N]")
+        axis.set_title("Normal Force over the Tooth as {} s".format(time))
+
+
+    def getTimeOfMax(self):
+        """
+        This is a easy, temp solution since Erlends file class didn't give the
+        the time, only the data. So this was easier than finding the
+        place where that happens in the file class...
+        """
+        with open(self.output + "/snapshot/model.xyz") as f:
+            f.readline()
+            time = f.readline().split()[1]
+
+        return time
+
 
     def plotLattice(self, axis, figure=None):
         if not os.path.exists(self.lattice.xyzPath):

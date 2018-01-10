@@ -237,14 +237,24 @@ class GraphicalSingle(QtWidgets.QMainWindow):
         self.setCentralWidget(self.mainFrame)
 
     def onDraw(self):
-        self.fig.clear()
-        ax1 = self.fig.add_subplot(311)
-        self.analyzer.plotLocalMax(ax1)
-        ax2 = self.fig.add_subplot(312)
-        self.analyzer.plotAttachedSprings(ax2, self.fig)
-        ax3 = self.fig.add_subplot(313)
-        self.analyzer.plotNormalForceAtMax(ax3)
-        self.canvas.draw()
+        try:
+            self.fig.clear()
+            ax1 = self.fig.add_subplot(311)
+            self.analyzer.plotLocalMax(ax1)
+            ax2 = self.fig.add_subplot(312)
+            self.analyzer.plotAttachedSprings(ax2, self.fig)
+            ax3 = self.fig.add_subplot(313)
+            self.analyzer.plotNormalForce(ax3,self.fig)
+            self.canvas.draw()
+        except:
+            self.fig.clear()
+            ax1 = self.fig.add_subplot(311)
+            self.analyzer.plotLocalMax(ax1)
+            ax2 = self.fig.add_subplot(312)
+            self.analyzer.plotAttachedSprings(ax2, self.fig)
+            ax3 = self.fig.add_subplot(313)
+            self.analyzer.plotNormalForceAtMax(ax3)
+            self.canvas.draw()
 
     def onKeyPress(self, event):
         key_press_handler(event, self.canvas)

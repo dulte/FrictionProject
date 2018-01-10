@@ -2,7 +2,7 @@
 # Comments start with '#'
 # Only the first two words are processed.
 # The first word is the parameter name, the second is its value.
-version 0.91
+version 0.92
 
 #Simulation parameters
 frictionsystem       bulkwave
@@ -53,6 +53,8 @@ pusherEndHeight      5
 beamMass             0.0     # Mass of the beam [kg]
 beamAngle            0       # The final angle of the beam [degrees, anticlockwise]
 beamRotTime          1e3     # Number of steps for the beam to rotate from 0 to beamAngle
+accelerationPeriod   1e3     # Number of steps to accelerate the beam from 0 to vD after
+                             # drivingTime has begun
 
 #Write_data
 writeInterfacePosition        0

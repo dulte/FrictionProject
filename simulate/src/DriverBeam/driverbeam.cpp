@@ -20,13 +20,14 @@ DriverBeam::DriverBeam(std::shared_ptr<Parameters>  parameters,
     m_lattice(lattice),
     m_parameters(parameters)
 {
-    m_nx      = parameters->get<int>("nx");
-    m_ny      = parameters->get<int>("ny");
-    m_vD      = parameters->get<double>("vD");
-    m_angle   = parameters->get<double>("beamAngle");
-    m_rotTime = parameters->get<int>("beamRotTime");
-    m_phiStep = m_angle/m_rotTime;
-    m_beamMass    = parameters->get<double>("beamMass");
+    m_nx       = parameters->get<int>("nx");
+    m_ny       = parameters->get<int>("ny");
+    m_vD       = parameters->get<double>("vD");
+    m_angle    = parameters->get<double>("beamAngle");
+    m_rotTime  = parameters->get<int>("beamRotTime");
+    m_phiStep  = m_angle/m_rotTime;
+    m_beamMass = parameters->get<double>("beamMass");
+    m_velocityTime = parameters->get<int>("accelerationPeriod");
     m_velocity = 0;
 }
 
@@ -98,7 +99,7 @@ void DriverBeam::vvstep(double dt){
     m_v     += (m_f/m_mass)*0.5*dt;
 
     if (m_isDriving){
-        m_v[0] = m_velocity;
+        m_v[0] = correctVelocity();
         m_phi  = m_angle;
     }
     else
@@ -136,8 +137,13 @@ std::vector<DataPacket> DriverBeam::getDataPackets(int timestep, double time){
     return packetvec;
 }
 
-void DriverBeam::correctVelocity(){
-    
+double DriverBeam::correctVelocity(){
+    if (m_velocityStepCounter < m_velocityTime){
+            m_velocityStepCounter++;
+            return m_velocityStep*m_velocityStepCounter;
+    } else {
+        return m_velocity;
+    }
 }
 
 void DriverBeam::beginCorrectVelocity(){

@@ -25,7 +25,7 @@ int Simulation::setup() {
         std::cout << "Attempting to read parameters from " << parametersPath << std::endl;
         parameters = std::make_shared<Parameters>(parametersPath);
     } catch (std::exception &ex) {
-        std::cerr << "Error: " <<ex.what() << std::endl;
+        std::cerr << "Error: " <<ex.what();
         return -1;
     }
 

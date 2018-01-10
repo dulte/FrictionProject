@@ -52,8 +52,9 @@ void Parameters::addParameter<bool>(std::string name){
 template <>
 int Parameters::get(std::string name){
     if (m_intparams.find(name) == m_intparams.end()){
-        std::cerr << "Tried to get a non-existent int paramter: " << name << std::endl;
-        throw std::exception();
+        std::stringstream msg;
+        msg << "Tried to get a non-existent int parameter: " << name;
+        throw std::runtime_error(msg.str());
     }
     return m_intparams[name]->get();
 }
@@ -61,8 +62,9 @@ int Parameters::get(std::string name){
 template <>
 double Parameters::get(std::string name){
     if (m_doubleparams.find(name) == m_doubleparams.end()){
-        std::cerr << "Tried to get a non-existent double paramter: " << name << std::endl;
-        throw std::exception();
+        std::stringstream msg;
+        msg << "Tried to get a non-existent double parameter: " << name;
+        throw std::runtime_error(msg.str());
     }
     return m_doubleparams[name]->get();
 }
@@ -70,8 +72,9 @@ double Parameters::get(std::string name){
 template <>
 std::string Parameters::get(std::string name){
     if (m_stringparams.find(name) == m_stringparams.end()){
-        std::cerr << "Tried to get a non-existent string paramter: " << name << std::endl;
-        throw std::exception();
+        std::stringstream msg;
+        msg << "Tried to get a non-existent string parameter: " << name;
+        throw std::runtime_error(msg.str());
     }
     return m_stringparams[name]->get();
 }
@@ -79,8 +82,9 @@ std::string Parameters::get(std::string name){
 template <>
 bool Parameters::get(std::string name){
     if (m_boolparams.find(name) == m_boolparams.end()){
-        std::cerr << "Tried to get a non-existent bool paramter: " << name << std::endl;
-        throw std::exception();
+        std::stringstream msg;
+        msg << "Tried to get a non-existent bool parameter: " << name << std::endl;
+        throw std::runtime_error(msg.str());
     }
     return m_boolparams[name]->get();
 }
@@ -123,6 +127,7 @@ void Parameters::constructMap(){
     addParameter<double>("beamMass");
     addParameter<double>("beamAngle");
     addParameter<int>("beamRotTime");
+    addParameter<double>("accelerationPeriod");
     addParameter<bool>("writeInterfacePosition");
     addParameter<bool>("writeInterfaceVelocity");
     addParameter<bool>("writeInterfaceAttachedSprings");
@@ -156,8 +161,9 @@ void Parameters::readParameters(std::string filenameConfig){
     m_infileParameters.open(filenameConfig);
 
     if (!m_infileParameters) {
-        std::cerr << "The config file " << filenameConfig << " could not be opened" << std::endl;
-        throw std::runtime_error("The config could not be read");
+        std::stringstream msg;
+        msg << "The config file " << filenameConfig << " could not be opened.";
+        throw std::runtime_error(msg.str());
     }
 
     std::string line;
@@ -194,26 +200,30 @@ void Parameters::readParameters(std::string filenameConfig){
 void Parameters::checkThatAllParametersAreSet(){
     for (auto& param: m_intparams){
         if (!param.second->isSet()){
-            std::cerr << param.first << " is not set.";
-            throw std::exception();
+            std::stringstream msg;
+            msg << param.first << " is not set.";
+            throw std::runtime_error(msg.str());
         }
     }
     for (auto& param: m_doubleparams){
         if (!param.second->isSet()){
-            std::cerr << param.first << " is not set.";
-            throw std::exception();
+            std::stringstream msg;
+            msg << param.first << " is not set.";
+            throw std::runtime_error(msg.str());
         }
     }
     for (auto& param: m_stringparams){
         if (!param.second->isSet()){
-            std::cerr << param.first << " is not set.";
-            throw std::exception();
+            std::stringstream msg;
+            msg << param.first << " is not set.";
+            throw std::runtime_error(msg.str());
         }
     }
     for (auto& param: m_boolparams){
         if (!param.second->isSet()){
-            std::cerr << param.first << " is not set.";
-            throw std::exception();
+            std::stringstream msg;
+            msg << param.first << " is not set.";
+            throw std::runtime_error(msg.str());
         }
     }
 }

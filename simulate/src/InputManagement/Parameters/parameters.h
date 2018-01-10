@@ -10,7 +10,7 @@
 #include <vector>
 #include "parameter.h"
 
-#define VERSION 0.91
+#define VERSION 0.92
 
 class Parameters{
 public:

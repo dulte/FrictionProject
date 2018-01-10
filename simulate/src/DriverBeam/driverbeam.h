@@ -27,7 +27,7 @@ public :
     void stealTopNodes(std::shared_ptr<Lattice>);
     void updateForcesAndMoments();
     void vvstep(double dt);
-    void correctVelocity();
+    double correctVelocity();
     void beginCorrectVelocity();
     double totalShearForce();
 
@@ -49,6 +49,7 @@ protected :
     double m_velocity;        // Current velocity of the driver in the x-direction
     double m_velocityStep;    // Change in velocity required to reach the desired velocity after velocityTime
     double m_initalVel;       // The inital velocity from which velocityStep begins
+    int    m_velocityStepCounter = 0;
     std::vector<double> m_distFromCenter;
     std::shared_ptr<Parameters> m_parameters;
     bool m_isDriving = false;

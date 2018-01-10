@@ -4,6 +4,8 @@ project("Friction")
 # Options
 option(TEST "Build all tests." OFF)
 option(CORES "Set the number of threads to use for multiprocessing" 4)
+set(CORES 4)
+
 add_definitions(-DNUM_THREADS=${CORES})
 
 set(PROJECT_NAME Friction)

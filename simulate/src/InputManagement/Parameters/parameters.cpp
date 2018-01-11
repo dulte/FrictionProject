@@ -127,7 +127,7 @@ void Parameters::constructMap(){
     addParameter<double>("beamMass");
     addParameter<double>("beamAngle");
     addParameter<int>("beamRotTime");
-    addParameter<double>("accelerationPeriod");
+    addParameter<int>("accelerationPeriod");
     addParameter<bool>("writeInterfacePosition");
     addParameter<bool>("writeInterfaceVelocity");
     addParameter<bool>("writeInterfaceAttachedSprings");

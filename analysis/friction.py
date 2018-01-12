@@ -80,13 +80,18 @@ class FrictionAnalyzer(Analyzer):
         self.interfaceNormalForce = nFile("interfaceNormalForce.bin")
         self.snapshotInterfaceNormalForce = File("interfaceNormalForce.bin",\
                                     self.parameters,self.output + "/snapshot/")
+        self.interfaceShearForce = nFile("interfaceShearForce.bin")
+        self.snapshotInterfaceShearForce = File("interfaceShearForce.bin",\
+                                    self.parameters,self.output + "/snapshot/")
         self.activeFiles = []
         self.files = [self.interfacePosition, self.interfaceVelocity,
                       self.interfaceAttachedSprings, self.allPosition,
                       self.allVelocity, self.allEnergy, self.allForce,
                       self.pusherForce, self.xyz, self.beamTorque,
                       self.beamShearForce,self.interfaceNormalForce,
-                      self.snapshotInterfaceNormalForce]
+                      self.snapshotInterfaceNormalForce,
+                      self.interfaceShearForce,
+                      self.snapshotInterfaceShearForce]
 
     def getInterfaceStructure(self):
         print(self.input)
@@ -247,6 +252,20 @@ class FrictionAnalyzer(Analyzer):
         axis.set_xlabel("Block")
         axis.set_ylabel("Normal Force [N]")
         axis.set_title("Normal Force over the Tooth as {} s".format(time))
+
+    def getNormalForceAtMax(self):
+        data = self.snapshotInterfaceNormalForce.get()
+        try:
+            return data[0]
+        except:
+            return data
+
+    def getShearForceAtMax(self):
+        data = self.snapshotInterfaceShearForce.get()
+        try:
+            return data[0]
+        except:
+            return data
 
 
     def getTimeOfMax(self):
